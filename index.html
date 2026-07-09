@@ -3,218 +3,453 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Daily Mindset Builder - Questionnaire</title>
+  <title>Daily Mindset Builder</title>
 
   <style>
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
 
     body {
       min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      background: #222;
       font-family: Georgia, "Times New Roman", serif;
-      background: linear-gradient(180deg, #f8f6f6 0%, #d8cfd2 55%, #878194 100%);
+    }
+
+    .screen {
+      width: 412px;
+      min-height: 917px;
+      padding: 18px 10px 66px;
+      background: linear-gradient(
+        180deg,
+        #f8f6f8 0%,
+        #ded9de 35%,
+        #b9b0ba 68%,
+        #8c8497 100%
+      );
+      color: #000;
+      overflow: hidden;
+      animation: pageOpen 0.8s ease forwards;
+    }
+
+    @keyframes pageOpen {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .top {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 45px;
+    }
+
+    .logo-wrap {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.75);
       display: flex;
       justify-content: center;
       align-items: center;
-      color: #111;
-    }
-
-    .app-screen {
-      width: 100%;
-      max-width: 430px;
-      min-height: 100vh;
-      padding: 24px 28px 34px;
-    }
-
-    .top-bar {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 34px;
+      margin-left: 1px;
     }
 
     .logo {
-      width: 48px;
-      height: 48px;
-      border-radius: 16px;
-      background: #111;
+      width: 43px;
+      height: 43px;
+      border-radius: 12px;
+      background: #151515;
       color: white;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 23px;
-      box-shadow: 0 0 0 10px rgba(255,255,255,0.6);
+      font-size: 25px;
+      animation: logoPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes logoPulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.07);
+      }
     }
 
     .brand {
-      font-size: 15px;
+      font-size: 16px;
+      margin-top: -5px;
     }
 
-    h1 {
+    .main-title {
       text-align: center;
-      font-size: 30px;
+      font-size: 31px;
       font-style: italic;
       font-weight: 400;
-      margin-bottom: 28px;
+      margin-bottom: 27px;
     }
 
-    .question-box {
-      background: rgba(255,255,255,0.7);
-      border: 1px solid rgba(0,0,0,0.25);
-      box-shadow: inset 0 0 18px rgba(0,0,0,0.16);
-      padding: 24px 18px;
+    .question-title {
+      width: 315px;
+      min-height: 118px;
+      margin: 0 auto 22px;
+      background: rgba(255, 255, 255, 0.68);
+      border: 1px solid rgba(0, 0, 0, 0.28);
+      box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.18);
+      display: flex;
+      justify-content: center;
+      align-items: center;
       text-align: center;
-      font-size: 30px;
-      line-height: 1.15;
-      margin-bottom: 18px;
+      font-size: 31px;
+      line-height: 1.12;
+      padding: 12px;
     }
 
-    .progress {
-      text-align: center;
-      font-size: 14px;
-      margin-bottom: 16px;
-      opacity: 0.65;
-    }
-
-    .answers-card {
-      background: rgba(218, 195, 199, 0.75);
+    .question-card {
+      width: 315px;
+      min-height: 485px;
+      margin: 0 auto;
       border-radius: 28px;
-      padding: 34px 28px;
+      background: rgba(220, 197, 201, 0.75);
       box-shadow:
-        0 22px 25px rgba(0,0,0,0.25),
-        0 0 12px rgba(130, 55, 55, 0.55),
-        inset 0 0 20px rgba(255,255,255,0.25);
-      min-height: 455px;
+        0 27px 28px rgba(0, 0, 0, 0.30),
+        0 0 11px rgba(132, 45, 45, 0.58),
+        inset 0 0 22px rgba(255, 255, 255, 0.24);
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 16px;
+      gap: 18px;
+      padding: 34px 56px;
+      animation: smoothFloat 4s ease-in-out infinite;
+    }
+
+    @keyframes smoothFloat {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-5px);
+      }
     }
 
     .answer-btn {
       width: 100%;
+      height: 43px;
       border: 1.5px solid #111;
-      background: rgba(255,255,255,0.82);
       border-radius: 999px;
-      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.78);
       font-family: Georgia, "Times New Roman", serif;
-      font-size: 28px;
+      font-size: 29px;
       font-style: italic;
       cursor: pointer;
-      transition: 0.2s ease;
+      transition: 0.25s ease;
     }
 
     .answer-btn:hover,
     .answer-btn.selected {
       background: #111;
-      color: white;
-      transform: scale(1.02);
+      color: #fff;
+      transform: scale(1.04);
     }
 
-    .bottom-actions {
+    .quiz-actions {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
-      margin-top: 22px;
+      width: 315px;
+      margin: 24px auto 0;
     }
 
     .small-btn {
-      flex: 1;
-      border: none;
-      border-radius: 999px;
-      padding: 13px 16px;
-      font-size: 16px;
+      height: 48px;
+      min-width: 120px;
+      border: 2px solid #111;
+      background: rgba(255, 255, 255, 0.70);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 22px;
+      font-style: italic;
       cursor: pointer;
-      background: rgba(255,255,255,0.65);
-      color: #111;
+      box-shadow: 0 4px 7px rgba(0, 0, 0, 0.28);
+      transition: 0.25s ease;
     }
 
-    .small-btn.primary {
+    .small-btn:hover {
       background: #111;
       color: white;
+      transform: translateY(-3px);
     }
 
     .small-btn:disabled {
-      opacity: 0.4;
+      opacity: 0.35;
       cursor: not-allowed;
     }
 
-    .result-card {
+    .result-screen {
       display: none;
-      background: rgba(255,255,255,0.78);
-      border-radius: 28px;
-      padding: 28px;
-      box-shadow: 0 18px 35px rgba(0,0,0,0.22);
-      text-align: center;
-      margin-top: 20px;
     }
 
-    .result-card h2 {
-      font-size: 28px;
+    .result-title {
+      width: 280px;
+      height: 43px;
+      margin: 0 auto 27px;
+      background: rgba(255, 255, 255, 0.82);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 30px;
       font-style: italic;
-      margin-bottom: 16px;
       font-weight: 400;
     }
 
-    .result-card p {
-      font-size: 21px;
-      line-height: 1.35;
-      margin-bottom: 20px;
+    .quote-card {
+      width: 374px;
+      height: 354px;
+      margin: 0 auto;
+      border-radius: 42px;
+      background: rgba(226, 202, 204, 0.78);
+      box-shadow:
+        0 27px 28px rgba(0, 0, 0, 0.30),
+        0 0 11px rgba(132, 45, 45, 0.58),
+        inset 0 0 22px rgba(255, 255, 255, 0.24);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      animation: smoothFloat 4s ease-in-out infinite;
     }
 
-    @media (max-width: 390px) {
-      .app-screen {
-        padding: 22px 20px 32px;
+    .quote-card::before {
+      content: "";
+      position: absolute;
+      width: 120px;
+      height: 600px;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.28),
+        transparent
+      );
+      top: -120px;
+      left: -160px;
+      transform: rotate(18deg);
+      animation: shine 5s ease-in-out infinite;
+    }
+
+    @keyframes shine {
+      0% {
+        left: -170px;
+      }
+      45% {
+        left: 430px;
+      }
+      100% {
+        left: 430px;
+      }
+    }
+
+    .quote {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 39px;
+      line-height: 1.34;
+      font-weight: 400;
+      z-index: 2;
+      transition: 0.35s ease;
+      margin-top: -5px;
+    }
+
+    .quote.fade {
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+    }
+
+    .arrows {
+      position: absolute;
+      bottom: 22px;
+      left: 34px;
+      right: 34px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 3;
+    }
+
+    .arrow-btn {
+      width: 75px;
+      height: 28px;
+      border: none;
+      background: transparent;
+      color: white;
+      font-size: 31px;
+      line-height: 20px;
+      cursor: pointer;
+      transition: 0.25s ease;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .arrow-btn:hover {
+      transform: scale(1.15);
+      filter: drop-shadow(0 0 6px white);
+    }
+
+    .explanation {
+      width: 300px;
+      height: 106px;
+      margin: 22px auto 74px;
+      background: rgba(224, 170, 160, 0.82);
+      box-shadow:
+        0 8px 15px rgba(0, 0, 0, 0.28),
+        inset 0 0 12px rgba(255, 255, 255, 0.20);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      font-size: 24px;
+      font-style: italic;
+      line-height: 1.95;
+      transition: 0.35s ease;
+    }
+
+    .explanation.fade {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .bottom-buttons {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 18px;
+    }
+
+    .btn {
+      height: 59px;
+      border: 2px solid #111;
+      background: rgba(255, 255, 255, 0.70);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 24px;
+      font-style: italic;
+      cursor: pointer;
+      box-shadow: 0 4px 7px rgba(0, 0, 0, 0.35);
+      transition: 0.25s ease;
+    }
+
+    .start-btn {
+      width: 140px;
+    }
+
+    .save-btn {
+      width: 163px;
+    }
+
+    .btn:hover {
+      background: #111;
+      color: white;
+      transform: translateY(-4px);
+      box-shadow: 0 9px 15px rgba(0, 0, 0, 0.45);
+    }
+
+    .saved-message {
+      position: fixed;
+      left: 50%;
+      bottom: 26px;
+      transform: translateX(-50%) translateY(30px);
+      background: #111;
+      color: white;
+      padding: 12px 22px;
+      border-radius: 999px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.35s ease;
+      z-index: 20;
+    }
+
+    .saved-message.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 430px) {
+      .screen {
+        width: 100vw;
       }
 
-      h1 {
-        font-size: 27px;
-      }
-
-      .question-box {
-        font-size: 27px;
-      }
-
-      .answer-btn {
-        font-size: 25px;
+      .quote-card {
+        width: calc(100vw - 38px);
       }
     }
   </style>
 </head>
 
 <body>
-  <main class="app-screen">
-    <div class="top-bar">
-      <div class="logo">✦</div>
+  <main class="screen">
+    <header class="top">
+      <div class="logo-wrap">
+        <div class="logo">✦</div>
+      </div>
       <div class="brand">Daily Mindset Builder</div>
-    </div>
+    </header>
 
-    <h1>Daily Mindset Check-In</h1>
+    <section class="quiz-screen" id="quizScreen">
+      <h1 class="main-title">Daily Mindset Check-In</h1>
 
-    <section id="quiz">
-      <div class="question-box" id="questionText">
+      <div class="question-title" id="questionText">
         How are you feeling today?
       </div>
 
-      <div class="progress" id="progressText">Question 1 of 10</div>
+      <div class="question-card" id="answersCard"></div>
 
-      <div class="answers-card" id="answersCard"></div>
-
-      <div class="bottom-actions">
+      <div class="quiz-actions">
         <button class="small-btn" id="backBtn">Back</button>
-        <button class="small-btn primary" id="nextBtn">Next</button>
+        <button class="small-btn" id="nextBtn">Next</button>
       </div>
     </section>
 
-    <section class="result-card" id="resultCard">
-      <h2>Your Mindset Quote</h2>
-      <p id="quoteText"></p>
-      <button class="small-btn primary" onclick="restartQuiz()">Start Again</button>
+    <section class="result-screen" id="resultScreen">
+      <h1 class="main-title">Daily Mindset Check-In</h1>
+
+      <div class="result-title">Your Mindset Quote</div>
+
+      <section class="quote-card">
+        <p class="quote" id="quoteText">
+          “Your peace is<br>
+          not lost<br>
+          It is waiting for<br>
+          you to return<br>
+          to yourself”
+        </p>
+
+        <div class="arrows">
+          <button class="arrow-btn" id="prevQuoteBtn">←──</button>
+          <button class="arrow-btn" id="nextQuoteBtn">──→</button>
+        </div>
+      </section>
+
+      <section class="explanation" id="explanationText">
+        Under quote: short<br>
+        explanation
+      </section>
+
+      <div class="bottom-buttons">
+        <button class="btn start-btn" id="startAgainBtn">Start Again</button>
+        <button class="btn save-btn" id="saveBtn">Save My Quote</button>
+      </div>
     </section>
   </main>
+
+  <div class="saved-message" id="savedMessage">Quote saved ✦</div>
 
   <script>
     const questions = [
@@ -260,38 +495,46 @@
       }
     ];
 
-    const quotes = {
-      Calm: "Peace grows when you stop rushing your own heart.",
-      Tired: "Rest is not failure. It is how your strength returns.",
-      Stressed: "You do not need to solve your whole life today. Just breathe and take one step.",
-      Motivated: "Your future is built by the small brave choices you make today.",
-      Sad: "Even soft days are still part of your growth.",
-      Confused: "You do not need all the answers to keep moving forward.",
-      Confidence: "You are allowed to take up space and believe in your own voice.",
-      Peace: "Choose the thought that brings your heart back home.",
-      Energy: "Start small. Momentum will meet you after the first step.",
-      Hope: "Something good can still grow from this moment.",
-      "Self-love": "Speak to yourself like someone you truly want to protect.",
-      Focus: "Your energy becomes powerful when you stop giving it everywhere."
-    };
+    const quoteResults = [
+      {
+        quote: "“Your peace is<br>not lost<br>It is waiting for<br>you to return<br>to yourself”",
+        explanation: "Under quote: short<br>explanation"
+      },
+      {
+        quote: "“You do not need<br>to fix everything<br>today<br>One small step<br>is enough”",
+        explanation: "A soft reminder to breathe<br>and move slowly."
+      },
+      {
+        quote: "“Rest is not<br>weakness<br>Rest is how<br>your energy<br>comes back”",
+        explanation: "This quote is for tired days<br>when you need care."
+      },
+      {
+        quote: "“Your future is<br>built by the brave<br>choice you make<br>today”",
+        explanation: "A quote for confidence<br>and motivation."
+      },
+      {
+        quote: "“Soft days are<br>still part of<br>your healing”",
+        explanation: "A gentle reminder that<br>growth can be quiet."
+      }
+    ];
 
     let currentQuestion = 0;
     let userAnswers = [];
+    let currentQuote = 0;
 
+    const quizScreen = document.getElementById("quizScreen");
+    const resultScreen = document.getElementById("resultScreen");
     const questionText = document.getElementById("questionText");
-    const progressText = document.getElementById("progressText");
     const answersCard = document.getElementById("answersCard");
     const backBtn = document.getElementById("backBtn");
     const nextBtn = document.getElementById("nextBtn");
-    const quiz = document.getElementById("quiz");
-    const resultCard = document.getElementById("resultCard");
     const quoteText = document.getElementById("quoteText");
+    const explanationText = document.getElementById("explanationText");
+    const savedMessage = document.getElementById("savedMessage");
 
     function loadQuestion() {
       const q = questions[currentQuestion];
-
       questionText.textContent = q.question;
-      progressText.textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
       answersCard.innerHTML = "";
 
       q.answers.forEach(answer => {
@@ -306,8 +549,8 @@
         btn.onclick = () => {
           userAnswers[currentQuestion] = answer;
 
-          document.querySelectorAll(".answer-btn").forEach(b => {
-            b.classList.remove("selected");
+          document.querySelectorAll(".answer-btn").forEach(button => {
+            button.classList.remove("selected");
           });
 
           btn.classList.add("selected");
@@ -330,7 +573,7 @@
         currentQuestion++;
         loadQuestion();
       } else {
-        finishQuiz();
+        showResult();
       }
     });
 
@@ -341,30 +584,74 @@
       }
     });
 
-    function finishQuiz() {
-      localStorage.setItem("mindsetAnswers", JSON.stringify(userAnswers));
+    function showResult() {
+      quizScreen.style.display = "none";
+      resultScreen.style.display = "block";
 
-      const mainAnswer = userAnswers[0];
-      const secondAnswer = userAnswers[1];
-
-      const finalQuote =
-        quotes[secondAnswer] ||
-        quotes[mainAnswer] ||
-        "You are becoming stronger, softer, and wiser one day at a time.";
-
-      quiz.style.display = "none";
-      resultCard.style.display = "block";
-      quoteText.textContent = finalQuote;
+      currentQuote = 0;
+      showQuote(currentQuote);
+      window.scrollTo(0, 0);
     }
 
-    function restartQuiz() {
+    function showQuote(index) {
+      quoteText.classList.add("fade");
+      explanationText.classList.add("fade");
+
+      setTimeout(() => {
+        quoteText.innerHTML = quoteResults[index].quote;
+        explanationText.innerHTML = quoteResults[index].explanation;
+
+        quoteText.classList.remove("fade");
+        explanationText.classList.remove("fade");
+      }, 300);
+    }
+
+    document.getElementById("nextQuoteBtn").addEventListener("click", () => {
+      currentQuote++;
+
+      if (currentQuote >= quoteResults.length) {
+        currentQuote = 0;
+      }
+
+      showQuote(currentQuote);
+    });
+
+    document.getElementById("prevQuoteBtn").addEventListener("click", () => {
+      currentQuote--;
+
+      if (currentQuote < 0) {
+        currentQuote = quoteResults.length - 1;
+      }
+
+      showQuote(currentQuote);
+    });
+
+    document.getElementById("saveBtn").addEventListener("click", () => {
+      const savedQuotes = JSON.parse(localStorage.getItem("savedQuotes")) || [];
+
+      savedQuotes.push({
+        quote: quoteText.innerText,
+        explanation: explanationText.innerText,
+        savedAt: new Date().toISOString()
+      });
+
+      localStorage.setItem("savedQuotes", JSON.stringify(savedQuotes));
+
+      savedMessage.classList.add("show");
+
+      setTimeout(() => {
+        savedMessage.classList.remove("show");
+      }, 1800);
+    });
+
+    document.getElementById("startAgainBtn").addEventListener("click", () => {
       currentQuestion = 0;
       userAnswers = [];
-      localStorage.removeItem("mindsetAnswers");
-      quiz.style.display = "block";
-      resultCard.style.display = "none";
+      resultScreen.style.display = "none";
+      quizScreen.style.display = "block";
       loadQuestion();
-    }
+      window.scrollTo(0, 0);
+    });
 
     loadQuestion();
   </script>
