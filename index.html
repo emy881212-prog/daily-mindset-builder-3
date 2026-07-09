@@ -1,1 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Mindset Builder - Questionnaire</title>
 
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Georgia, "Times New Roman", serif;
+      background: linear-gradient(180deg, #f8f6f6 0%, #d8cfd2 55%, #878194 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #111;
+    }
+
+    .app-screen {
+      width: 100%;
+      max-width: 430px;
+      min-height: 100vh;
+      padding: 24px 28px 34px;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 34px;
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      background: #111;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 23px;
+      box-shadow: 0 0 0 10px rgba(255,255,255,0.6);
+    }
+
+    .brand {
+      font-size: 15px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 30px;
+      font-style: italic;
+      font-weight: 400;
+      margin-bottom: 28px;
+    }
+
+    .question-box {
+      background: rgba(255,255,255,0.7);
+      border: 1px solid rgba(0,0,0,0.25);
+      box-shadow: inset 0 0 18px rgba(0,0,0,0.16);
+      padding: 24px 18px;
+      text-align: center;
+      font-size: 30px;
+      line-height: 1.15;
+      margin-bottom: 18px;
+    }
+
+    .progress {
+      text-align: center;
+      font-size: 14px;
+      margin-bottom: 16px;
+      opacity: 0.65;
+    }
+
+    .answers-card {
+      background: rgba(218, 195, 199, 0.75);
+      border-radius: 28px;
+      padding: 34px 28px;
+      box-shadow:
+        0 22px 25px rgba(0,0,0,0.25),
+        0 0 12px rgba(130, 55, 55, 0.55),
+        inset 0 0 20px rgba(255,255,255,0.25);
+      min-height: 455px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .answer-btn {
+      width: 100%;
+      border: 1.5px solid #111;
+      background: rgba(255,255,255,0.82);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 28px;
+      font-style: italic;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .answer-btn:hover,
+    .answer-btn.selected {
+      background: #111;
+      color: white;
+      transform: scale(1.02);
+    }
+
+    .bottom-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .small-btn {
+      flex: 1;
+      border: none;
+      border-radius: 999px;
+      padding: 13px 16px;
+      font-size: 16px;
+      cursor: pointer;
+      background: rgba(255,255,255,0.65);
+      color: #111;
+    }
+
+    .small-btn.primary {
+      background: #111;
+      color: white;
+    }
+
+    .small-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .result-card {
+      display: none;
+      background: rgba(255,255,255,0.78);
+      border-radius: 28px;
+      padding: 28px;
+      box-shadow: 0 18px 35px rgba(0,0,0,0.22);
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .result-card h2 {
+      font-size: 28px;
+      font-style: italic;
+      margin-bottom: 16px;
+      font-weight: 400;
+    }
+
+    .result-card p {
+      font-size: 21px;
+      line-height: 1.35;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 390px) {
+      .app-screen {
+        padding: 22px 20px 32px;
+      }
+
+      h1 {
+        font-size: 27px;
+      }
+
+      .question-box {
+        font-size: 27px;
+      }
+
+      .answer-btn {
+        font-size: 25px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app-screen">
+    <div class="top-bar">
+      <div class="logo">✦</div>
+      <div class="brand">Daily Mindset Builder</div>
+    </div>
+
+    <h1>Daily Mindset Check-In</h1>
+
+    <section id="quiz">
+      <div class="question-box" id="questionText">
+        How are you feeling today?
+      </div>
+
+      <div class="progress" id="progressText">Question 1 of 10</div>
+
+      <div class="answers-card" id="answersCard"></div>
+
+      <div class="bottom-actions">
+        <button class="small-btn" id="backBtn">Back</button>
+        <button class="small-btn primary" id="nextBtn">Next</button>
+      </div>
+    </section>
+
+    <section class="result-card" id="resultCard">
+      <h2>Your Mindset Quote</h2>
+      <p id="quoteText"></p>
+      <button class="small-btn primary" onclick="restartQuiz()">Start Again</button>
+    </section>
+  </main>
+
+  <script>
+    const questions = [
+      {
+        question: "How are you feeling today?",
+        answers: ["Calm", "Tired", "Stressed", "Motivated", "Sad", "Confused"]
+      },
+      {
+        question: "What do you need most right now?",
+        answers: ["Confidence", "Peace", "Energy", "Hope", "Self-love", "Focus"]
+      },
+      {
+        question: "What kind of quote do you prefer?",
+        answers: ["Soft", "Strong", "Deep", "Positive", "Short", "Emotional"]
+      },
+      {
+        question: "What is your main goal today?",
+        answers: ["Feel better", "Stay focused", "Believe in myself", "Let go", "Start again", "Be grateful"]
+      },
+      {
+        question: "What energy do you want today?",
+        answers: ["Gentle", "Powerful", "Peaceful", "Brave", "Creative", "Grounded"]
+      },
+      {
+        question: "What is blocking you right now?",
+        answers: ["Fear", "Stress", "Overthinking", "Low energy", "Doubt", "Distraction"]
+      },
+      {
+        question: "How do you want to speak to yourself?",
+        answers: ["Kindly", "Honestly", "Bravely", "Softly", "Clearly", "Patiently"]
+      },
+      {
+        question: "What reminder do you need?",
+        answers: ["I am enough", "I can continue", "I am safe", "I can grow", "I deserve peace", "I trust myself"]
+      },
+      {
+        question: "What mood color fits you today?",
+        answers: ["Soft pink", "Warm yellow", "Calm blue", "Deep purple", "Clean white", "Natural green"]
+      },
+      {
+        question: "How should your quote feel?",
+        answers: ["Comforting", "Motivating", "Healing", "Powerful", "Simple", "Spiritual"]
+      }
+    ];
+
+    const quotes = {
+      Calm: "Peace grows when you stop rushing your own heart.",
+      Tired: "Rest is not failure. It is how your strength returns.",
+      Stressed: "You do not need to solve your whole life today. Just breathe and take one step.",
+      Motivated: "Your future is built by the small brave choices you make today.",
+      Sad: "Even soft days are still part of your growth.",
+      Confused: "You do not need all the answers to keep moving forward.",
+      Confidence: "You are allowed to take up space and believe in your own voice.",
+      Peace: "Choose the thought that brings your heart back home.",
+      Energy: "Start small. Momentum will meet you after the first step.",
+      Hope: "Something good can still grow from this moment.",
+      "Self-love": "Speak to yourself like someone you truly want to protect.",
+      Focus: "Your energy becomes powerful when you stop giving it everywhere."
+    };
+
+    let currentQuestion = 0;
+    let userAnswers = [];
+
+    const questionText = document.getElementById("questionText");
+    const progressText = document.getElementById("progressText");
+    const answersCard = document.getElementById("answersCard");
+    const backBtn = document.getElementById("backBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const quiz = document.getElementById("quiz");
+    const resultCard = document.getElementById("resultCard");
+    const quoteText = document.getElementById("quoteText");
+
+    function loadQuestion() {
+      const q = questions[currentQuestion];
+
+      questionText.textContent = q.question;
+      progressText.textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+      answersCard.innerHTML = "";
+
+      q.answers.forEach(answer => {
+        const btn = document.createElement("button");
+        btn.className = "answer-btn";
+        btn.textContent = answer;
+
+        if (userAnswers[currentQuestion] === answer) {
+          btn.classList.add("selected");
+        }
+
+        btn.onclick = () => {
+          userAnswers[currentQuestion] = answer;
+
+          document.querySelectorAll(".answer-btn").forEach(b => {
+            b.classList.remove("selected");
+          });
+
+          btn.classList.add("selected");
+        };
+
+        answersCard.appendChild(btn);
+      });
+
+      backBtn.disabled = currentQuestion === 0;
+      nextBtn.textContent = currentQuestion === questions.length - 1 ? "Finish" : "Next";
+    }
+
+    nextBtn.addEventListener("click", () => {
+      if (!userAnswers[currentQuestion]) {
+        alert("Please choose one answer.");
+        return;
+      }
+
+      if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
+        loadQuestion();
+      } else {
+        finishQuiz();
+      }
+    });
+
+    backBtn.addEventListener("click", () => {
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        loadQuestion();
+      }
+    });
+
+    function finishQuiz() {
+      localStorage.setItem("mindsetAnswers", JSON.stringify(userAnswers));
+
+      const mainAnswer = userAnswers[0];
+      const secondAnswer = userAnswers[1];
+
+      const finalQuote =
+        quotes[secondAnswer] ||
+        quotes[mainAnswer] ||
+        "You are becoming stronger, softer, and wiser one day at a time.";
+
+      quiz.style.display = "none";
+      resultCard.style.display = "block";
+      quoteText.textContent = finalQuote;
+    }
+
+    function restartQuiz() {
+      currentQuestion = 0;
+      userAnswers = [];
+      localStorage.removeItem("mindsetAnswers");
+      quiz.style.display = "block";
+      resultCard.style.display = "none";
+      loadQuestion();
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
