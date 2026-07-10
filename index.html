@@ -2134,6 +2134,99 @@
 
   restartMovingBubbles();
   setTimeout(restartMovingBubbles, 500);
+</script><style>
+  .live-bubbles-layer {
+    position: absolute !important;
+    inset: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+    z-index: 2 !important;
+  }
+
+  .live-bubble {
+    position: absolute !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.42) !important;
+    box-shadow:
+      0 0 14px rgba(255, 255, 255, 0.75),
+      inset 0 0 8px rgba(255, 255, 255, 0.45) !important;
+    opacity: 0.65 !important;
+  }
+
+  .screen {
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  .screen > *:not(.live-bubbles-layer) {
+    position: relative;
+    z-index: 3;
+  }
+</style>
+
+<script>
+  function startRealMovingBubbles() {
+    const screen = document.querySelector(".screen");
+    if (!screen) return;
+
+    document.querySelectorAll(
+      ".floating-bubbles-layer, .extra-bubbles-bottom, .soft-bubbles-upgrade, .visible-bubbles-layer, .live-bubbles-layer"
+    ).forEach(layer => layer.remove());
+
+    const layer = document.createElement("div");
+    layer.className = "live-bubbles-layer";
+    screen.prepend(layer);
+
+    const bubbles = [];
+
+    for (let i = 0; i < 55; i++) {
+      const bubble = document.createElement("span");
+      bubble.className = "live-bubble";
+
+      const size = 5 + Math.random() * 12;
+
+      const item = {
+        element: bubble,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        size: size,
+        speed: 0.018 + Math.random() * 0.035,
+        drift: -0.018 + Math.random() * 0.036,
+        opacity: 0.28 + Math.random() * 0.42
+      };
+
+      bubble.style.width = item.size + "px";
+      bubble.style.height = item.size + "px";
+      bubble.style.opacity = item.opacity;
+
+      layer.appendChild(bubble);
+      bubbles.push(item);
+    }
+
+    function animateBubbles() {
+      bubbles.forEach(item => {
+        item.y -= item.speed;
+        item.x += item.drift;
+
+        if (item.y < -8) {
+          item.y = 105;
+          item.x = Math.random() * 100;
+        }
+
+        if (item.x < -5) item.x = 105;
+        if (item.x > 105) item.x = -5;
+
+        item.element.style.left = item.x + "%";
+        item.element.style.top = item.y + "%";
+      });
+
+      requestAnimationFrame(animateBubbles);
+    }
+
+    animateBubbles();
+  }
+
+  startRealMovingBubbles();
 </script>
 </body>
 
