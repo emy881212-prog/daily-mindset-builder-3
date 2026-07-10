@@ -1770,6 +1770,132 @@
   finalArrowsAndBubblesFix();
   setTimeout(finalArrowsAndBubblesFix, 300);
   setTimeout(finalArrowsAndBubblesFix, 1000);
+</script><style>
+  /* SHORT MODERN ARROWS ONLY */
+  .arrows,
+  .final-arrow-layer {
+    left: 42px !important;
+    right: 42px !important;
+    bottom: 24px !important;
+    height: 30px !important;
+  }
+
+  .arrow-btn,
+  .final-arrow-btn {
+    width: 52px !important;
+    height: 30px !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .arrow-btn::before,
+  .final-arrow-btn::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 50% !important;
+    width: 30px !important;
+    height: 2px !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-radius: 999px !important;
+    box-shadow: 0 0 6px rgba(255,255,255,0.75) !important;
+  }
+
+  .arrow-btn.left::before,
+  .final-arrow-btn.left::before {
+    left: 13px !important;
+  }
+
+  .arrow-btn.right::before,
+  .final-arrow-btn.right::before {
+    right: 13px !important;
+  }
+
+  .arrow-btn.left::after,
+  .final-arrow-btn.left::after {
+    content: "" !important;
+    position: absolute !important;
+    left: 9px !important;
+    top: 10px !important;
+    width: 9px !important;
+    height: 9px !important;
+    border-left: 2px solid rgba(255,255,255,0.95) !important;
+    border-bottom: 2px solid rgba(255,255,255,0.95) !important;
+    transform: rotate(45deg) !important;
+    box-shadow: none !important;
+  }
+
+  .arrow-btn.right::after,
+  .final-arrow-btn.right::after {
+    content: "" !important;
+    position: absolute !important;
+    right: 9px !important;
+    top: 10px !important;
+    width: 9px !important;
+    height: 9px !important;
+    border-right: 2px solid rgba(255,255,255,0.95) !important;
+    border-top: 2px solid rgba(255,255,255,0.95) !important;
+    transform: rotate(45deg) !important;
+    box-shadow: none !important;
+  }
+
+  .quote-mini-text,
+  .final-quote-mini-text {
+    bottom: 1px !important;
+    font-size: 9px !important;
+    opacity: 0.9 !important;
+  }
+
+  /* MORE OF THE SAME SOFT BUBBLES */
+  .same-extra-bubble {
+    position: absolute !important;
+    bottom: -50px !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.42) !important;
+    box-shadow: 0 0 16px rgba(255, 255, 255, 0.75) !important;
+    animation: softBubbleFloat 18s linear infinite !important;
+  }
+</style>
+
+<script>
+  function addMoreSameBubblesOnly() {
+    const screen = document.querySelector(".screen");
+    if (!screen) return;
+
+    let bubbleLayer =
+      document.querySelector(".soft-bubbles-upgrade") ||
+      document.querySelector(".extra-bubbles-bottom");
+
+    if (!bubbleLayer) {
+      bubbleLayer = document.createElement("div");
+      bubbleLayer.className = "soft-bubbles-upgrade";
+      screen.insertAdjacentElement("afterbegin", bubbleLayer);
+    }
+
+    if (document.querySelectorAll(".same-extra-bubble").length > 0) return;
+
+    for (let i = 0; i < 35; i++) {
+      const bubble = document.createElement("span");
+      bubble.className = "same-extra-bubble";
+
+      const size = 5 + Math.floor(Math.random() * 8);
+      const left = Math.floor(Math.random() * 96);
+      const delay = Math.random() * 18;
+      const duration = 14 + Math.random() * 10;
+
+      bubble.style.width = size + "px";
+      bubble.style.height = size + "px";
+      bubble.style.left = left + "%";
+      bubble.style.animationDelay = delay + "s";
+      bubble.style.animationDuration = duration + "s";
+
+      bubbleLayer.appendChild(bubble);
+    }
+  }
+
+  addMoreSameBubblesOnly();
+  setTimeout(addMoreSameBubblesOnly, 300);
+  setTimeout(addMoreSameBubblesOnly, 1000);
 </script>
 </body>
 
