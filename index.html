@@ -2977,6 +2977,34 @@
       right: 34px !important;
     }
   }
+</style><style>
+  /* MAKE MENU BUTTON STAY STILL */
+  .anime-menu-btn {
+    position: fixed !important;
+    top: 96px !important;
+    right: calc(50% - 178px) !important;
+    transform: none !important;
+    animation: none !important;
+    transition: background 0.25s ease, box-shadow 0.25s ease !important;
+    z-index: 99999 !important;
+  }
+
+  .anime-menu-btn:hover {
+    transform: none !important;
+  }
+
+  .anime-menu-btn.open {
+    transform: none !important;
+  }
+
+  @media (max-width: 430px) {
+    .anime-menu-btn {
+      position: fixed !important;
+      top: 96px !important;
+      right: 34px !important;
+      transform: none !important;
+    }
+  }
 </style>
 </body>
 
