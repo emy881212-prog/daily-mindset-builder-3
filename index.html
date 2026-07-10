@@ -3184,6 +3184,141 @@
   setTimeout(createRealFixedMenuButton, 300);
   setTimeout(createRealFixedMenuButton, 1000);
   window.addEventListener("scroll", createRealFixedMenuButton);
+</script><style>
+  /* ABSOLUTE MENU THAT STAYS VISUALLY FIXED */
+  #fixedAnimeMenuBtn {
+    position: absolute !important;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    border: 1px solid rgba(0,0,0,0.18) !important;
+    background: rgba(255,255,255,0.72) !important;
+    backdrop-filter: blur(12px) !important;
+    box-shadow:
+      0 8px 20px rgba(0,0,0,0.16),
+      inset 0 0 14px rgba(255,255,255,0.55) !important;
+    z-index: 2147483647 !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  #fixedAnimeMenuBtn span {
+    position: absolute !important;
+    width: 20px !important;
+    height: 2px !important;
+    border-radius: 999px !important;
+    background: #111 !important;
+  }
+
+  #fixedAnimeMenuBtn span:nth-child(1) {
+    transform: translateY(-7px);
+  }
+
+  #fixedAnimeMenuBtn span:nth-child(2) {
+    transform: translateY(0);
+  }
+
+  #fixedAnimeMenuBtn span:nth-child(3) {
+    transform: translateY(7px);
+  }
+
+  #fixedAnimeMenuBtn.open span:nth-child(1) {
+    transform: rotate(45deg);
+  }
+
+  #fixedAnimeMenuBtn.open span:nth-child(2) {
+    opacity: 0;
+  }
+
+  #fixedAnimeMenuBtn.open span:nth-child(3) {
+    transform: rotate(-45deg);
+  }
+
+  #animeMenuBtn {
+    display: none !important;
+  }
+</style>
+
+<script>
+  function finalMenuNeverMovesFix() {
+    const oldBtn = document.getElementById("animeMenuBtn");
+
+    if (oldBtn) {
+      oldBtn.style.display = "none";
+    }
+
+    let btn = document.getElementById("fixedAnimeMenuBtn");
+
+    if (!btn) {
+      btn = document.createElement("button");
+      btn.id = "fixedAnimeMenuBtn";
+      btn.type = "button";
+      btn.innerHTML = "<span></span><span></span><span></span>";
+      document.body.appendChild(btn);
+    }
+
+    const panel = document.getElementById("animeMenuPanel");
+    const overlay = document.getElementById("animeMenuOverlay");
+
+    function placeButton() {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
+      const screen = document.querySelector(".screen");
+      const screenRect = screen ? screen.getBoundingClientRect() : null;
+
+      const topPosition = scrollTop + 96;
+
+      let leftPosition;
+
+      if (screenRect) {
+        leftPosition = screenRect.left + screenRect.width - 72;
+      } else {
+        leftPosition = window.innerWidth - 72;
+      }
+
+      btn.style.top = topPosition + "px";
+      btn.style.left = leftPosition + "px";
+      btn.style.right = "auto";
+    }
+
+    placeButton();
+
+    window.addEventListener("scroll", placeButton, { passive: true });
+    window.addEventListener("resize", placeButton);
+
+    btn.onclick = function () {
+      if (!panel || !overlay) return;
+
+      const isOpen = panel.classList.contains("show");
+
+      if (isOpen) {
+        btn.classList.remove("open");
+        panel.classList.remove("show");
+        overlay.classList.remove("show");
+      } else {
+        btn.classList.add("open");
+        panel.classList.add("show");
+        overlay.classList.add("show");
+      }
+
+      placeButton();
+    };
+
+    if (overlay) {
+      overlay.onclick = function () {
+        btn.classList.remove("open");
+        panel.classList.remove("show");
+        overlay.classList.remove("show");
+      };
+    }
+  }
+
+  finalMenuNeverMovesFix();
+  setTimeout(finalMenuNeverMovesFix, 300);
+  setTimeout(finalMenuNeverMovesFix, 1000);
 </script>
 </body>
 
