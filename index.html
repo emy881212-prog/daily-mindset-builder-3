@@ -1084,5 +1084,466 @@
 
     loadQuestion();
   </script>
-</body>
+</body><style>
+  /* slow white bubbles */
+  .screen {
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  .screen > *:not(.soft-bubbles-upgrade) {
+    position: relative;
+    z-index: 3;
+  }
+
+  .soft-bubbles-upgrade {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .soft-bubbles-upgrade span {
+    position: absolute;
+    bottom: -50px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.42);
+    box-shadow: 0 0 16px rgba(255, 255, 255, 0.75);
+    animation: softBubbleFloat 18s linear infinite;
+  }
+
+  .soft-bubbles-upgrade span:nth-child(1) { left: 7%; width: 6px; height: 6px; animation-delay: 0s; }
+  .soft-bubbles-upgrade span:nth-child(2) { left: 18%; width: 10px; height: 10px; animation-delay: 3s; }
+  .soft-bubbles-upgrade span:nth-child(3) { left: 30%; width: 7px; height: 7px; animation-delay: 6s; }
+  .soft-bubbles-upgrade span:nth-child(4) { left: 43%; width: 12px; height: 12px; animation-delay: 1s; }
+  .soft-bubbles-upgrade span:nth-child(5) { left: 56%; width: 8px; height: 8px; animation-delay: 5s; }
+  .soft-bubbles-upgrade span:nth-child(6) { left: 69%; width: 11px; height: 11px; animation-delay: 2s; }
+  .soft-bubbles-upgrade span:nth-child(7) { left: 81%; width: 6px; height: 6px; animation-delay: 8s; }
+  .soft-bubbles-upgrade span:nth-child(8) { left: 93%; width: 9px; height: 9px; animation-delay: 4s; }
+
+  @keyframes softBubbleFloat {
+    0% {
+      transform: translateY(0) translateX(0) scale(0.7);
+      opacity: 0;
+    }
+
+    15% {
+      opacity: 0.55;
+    }
+
+    50% {
+      transform: translateY(-48vh) translateX(18px) scale(1);
+      opacity: 0.45;
+    }
+
+    100% {
+      transform: translateY(-110vh) translateX(-18px) scale(1.25);
+      opacity: 0;
+    }
+  }
+
+  /* fixed arrows */
+  .arrows {
+    position: absolute !important;
+    bottom: 26px !important;
+    left: 34px !important;
+    right: 34px !important;
+    height: 34px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    z-index: 30 !important;
+    pointer-events: none !important;
+  }
+
+  .arrow-btn {
+    width: 95px !important;
+    height: 34px !important;
+    border: none !important;
+    background: transparent !important;
+    cursor: pointer !important;
+    position: relative !important;
+    pointer-events: auto !important;
+    font-size: 0 !important;
+    color: transparent !important;
+    box-shadow: none !important;
+    transition: 0.25s ease !important;
+  }
+
+  .arrow-btn::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 50% !important;
+    width: 70px !important;
+    height: 2px !important;
+    background: white !important;
+    box-shadow: 0 0 8px rgba(255,255,255,0.95) !important;
+  }
+
+  .arrow-btn.left::before {
+    left: 22px !important;
+  }
+
+  .arrow-btn.right::before {
+    right: 22px !important;
+  }
+
+  .arrow-btn.left::after {
+    content: "←" !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: -8px !important;
+    color: white !important;
+    font-size: 34px !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+    text-shadow: 0 0 8px rgba(255,255,255,0.95) !important;
+  }
+
+  .arrow-btn.right::after {
+    content: "→" !important;
+    position: absolute !important;
+    right: 0 !important;
+    top: -8px !important;
+    color: white !important;
+    font-size: 34px !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+    text-shadow: 0 0 8px rgba(255,255,255,0.95) !important;
+  }
+
+  .arrow-btn.left:hover {
+    transform: translateX(-8px) scale(1.08) !important;
+  }
+
+  .arrow-btn.right:hover {
+    transform: translateX(8px) scale(1.08) !important;
+  }
+
+  .quote-mini-text {
+    position: absolute !important;
+    left: 50% !important;
+    bottom: 6px !important;
+    transform: translateX(-50%) !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+    font-size: 10px !important;
+    letter-spacing: 0.4px !important;
+    color: rgba(255, 255, 255, 0.95) !important;
+    text-shadow: 0 0 8px rgba(255,255,255,0.9) !important;
+    white-space: nowrap !important;
+    pointer-events: none !important;
+  }
+
+  .result-back-fixed {
+    font-size: 28px !important;
+    line-height: 1 !important;
+  }
+
+  /* free quote limit popup */
+  .quote-limit-popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 18, 22, 0.55);
+    backdrop-filter: blur(12px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 5000;
+    padding: 20px;
+  }
+
+  .quote-limit-box {
+    width: 340px;
+    max-width: 92vw;
+    border-radius: 32px;
+    background:
+      radial-gradient(circle at top left, rgba(255,255,255,0.95), transparent 35%),
+      linear-gradient(180deg, rgba(250,247,248,0.98), rgba(219,194,199,0.98));
+    box-shadow:
+      0 28px 60px rgba(0,0,0,0.38),
+      inset 0 0 22px rgba(255,255,255,0.35);
+    padding: 30px 24px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.6);
+  }
+
+  .quote-limit-icon {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 14px;
+    border-radius: 16px;
+    background: #111;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    box-shadow: 0 0 0 10px rgba(255,255,255,0.45);
+  }
+
+  .quote-limit-box h2 {
+    font-size: 29px;
+    font-style: italic;
+    font-weight: 400;
+    margin-bottom: 10px;
+  }
+
+  .quote-limit-box p {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    opacity: 0.78;
+    margin-bottom: 20px;
+  }
+
+  .upgrade-btn,
+  .close-limit-btn {
+    width: 100%;
+    border: none;
+    border-radius: 999px;
+    padding: 14px 16px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.25s ease;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-top: 10px;
+  }
+
+  .upgrade-btn {
+    background: #111;
+    color: white;
+  }
+
+  .close-limit-btn {
+    background: rgba(255,255,255,0.65);
+    color: #111;
+    border: 1px solid rgba(0,0,0,0.16);
+  }
+</style>
+
+<div class="quote-limit-popup" id="quoteLimitPopup">
+  <div class="quote-limit-box">
+    <div class="quote-limit-icon">✦</div>
+
+    <h2>Free Limit Reached</h2>
+
+    <p>
+      You used your 10 free quotes. Upgrade your subscription to unlock unlimited mindset quotes.
+    </p>
+
+    <button class="upgrade-btn" type="button">Upgrade Subscription</button>
+    <button class="close-limit-btn" id="closeLimitPopup" type="button">Maybe Later</button>
+  </div>
+</div>
+
+<script>
+  function applyUpgradeChanges() {
+    const FREE_QUOTE_LIMIT = 10;
+
+    function isPaidUser() {
+      return localStorage.getItem("mindsetSubscription") === "paid";
+    }
+
+    function getUsedQuotes() {
+      return Number(localStorage.getItem("freeQuotesUsed") || "0");
+    }
+
+    function setUsedQuotes(number) {
+      localStorage.setItem("freeQuotesUsed", String(number));
+    }
+
+    function showLimitPopup() {
+      const popup = document.getElementById("quoteLimitPopup");
+
+      if (popup) {
+        popup.style.display = "flex";
+      }
+    }
+
+    function updateMiniText() {
+      const miniText = document.getElementById("quoteMiniText");
+
+      if (!miniText) return;
+
+      if (isPaidUser()) {
+        miniText.textContent = "Unlimited quotes";
+        return;
+      }
+
+      miniText.textContent = `${getUsedQuotes()} / ${FREE_QUOTE_LIMIT} free quotes`;
+    }
+
+    function canUseQuote() {
+      if (isPaidUser()) return true;
+
+      const used = getUsedQuotes();
+
+      if (used >= FREE_QUOTE_LIMIT) {
+        showLimitPopup();
+        updateMiniText();
+        return false;
+      }
+
+      setUsedQuotes(used + 1);
+      updateMiniText();
+      return true;
+    }
+
+    const screen = document.querySelector(".screen");
+
+    if (screen && !document.querySelector(".soft-bubbles-upgrade")) {
+      screen.insertAdjacentHTML(
+        "afterbegin",
+        `
+        <div class="soft-bubbles-upgrade">
+          <span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span>
+        </div>
+        `
+      );
+    }
+
+    const arrows = document.querySelector(".arrows");
+
+    if (arrows) {
+      const leftArrow = document.getElementById("prevQuoteBtn");
+      const rightArrow = document.getElementById("nextQuoteBtn");
+
+      if (leftArrow) {
+        leftArrow.classList.add("left");
+        leftArrow.innerHTML = "";
+      }
+
+      if (rightArrow) {
+        rightArrow.classList.add("right");
+        rightArrow.innerHTML = "";
+      }
+
+      if (!document.getElementById("quoteMiniText")) {
+        arrows.insertAdjacentHTML(
+          "beforeend",
+          '<span class="quote-mini-text" id="quoteMiniText">0 / 10 free quotes</span>'
+        );
+      }
+    }
+
+    document.querySelectorAll("button").forEach(button => {
+      const text = button.innerText.trim().toLowerCase();
+
+      if (text.includes("start") && text.includes("again")) {
+        const newButton = button.cloneNode(true);
+        newButton.textContent = "Back";
+        newButton.classList.add("result-back-fixed");
+
+        button.parentNode.replaceChild(newButton, button);
+
+        newButton.addEventListener("click", () => {
+          if (typeof resultScreen !== "undefined") {
+            resultScreen.style.display = "none";
+          }
+
+          if (typeof quizScreen !== "undefined") {
+            quizScreen.style.display = "block";
+          }
+
+          if (typeof currentQuestion !== "undefined" && typeof questions !== "undefined") {
+            currentQuestion = questions.length - 1;
+          }
+
+          if (typeof loadQuestion === "function") {
+            loadQuestion();
+          }
+
+          window.scrollTo(0, 0);
+        });
+      }
+    });
+
+    if (!window.freeQuoteLimitAdded) {
+      window.freeQuoteLimitAdded = true;
+
+      const originalShowQuote = typeof showQuote === "function" ? showQuote : null;
+
+      if (originalShowQuote) {
+        showQuote = function(index) {
+          if (!canUseQuote()) return;
+          originalShowQuote(index);
+          setTimeout(updateMiniText, 300);
+        };
+      }
+
+      const nextQuoteBtn = document.getElementById("nextQuoteBtn");
+      const prevQuoteBtn = document.getElementById("prevQuoteBtn");
+
+      if (nextQuoteBtn) {
+        const newNextQuoteBtn = nextQuoteBtn.cloneNode(true);
+        nextQuoteBtn.parentNode.replaceChild(newNextQuoteBtn, nextQuoteBtn);
+        newNextQuoteBtn.classList.add("right");
+
+        newNextQuoteBtn.addEventListener("click", () => {
+          if (!canUseQuote()) return;
+
+          if (typeof currentQuote !== "undefined" && typeof quoteResults !== "undefined") {
+            currentQuote++;
+
+            if (currentQuote >= quoteResults.length) {
+              currentQuote = 0;
+            }
+
+            if (originalShowQuote) {
+              originalShowQuote(currentQuote);
+            }
+
+            setTimeout(updateMiniText, 300);
+          }
+        });
+      }
+
+      if (prevQuoteBtn) {
+        const newPrevQuoteBtn = prevQuoteBtn.cloneNode(true);
+        prevQuoteBtn.parentNode.replaceChild(newPrevQuoteBtn, prevQuoteBtn);
+        newPrevQuoteBtn.classList.add("left");
+
+        newPrevQuoteBtn.addEventListener("click", () => {
+          if (!canUseQuote()) return;
+
+          if (typeof currentQuote !== "undefined" && typeof quoteResults !== "undefined") {
+            currentQuote--;
+
+            if (currentQuote < 0) {
+              currentQuote = quoteResults.length - 1;
+            }
+
+            if (originalShowQuote) {
+              originalShowQuote(currentQuote);
+            }
+
+            setTimeout(updateMiniText, 300);
+          }
+        });
+      }
+
+      const closeLimitPopup = document.getElementById("closeLimitPopup");
+
+      if (closeLimitPopup) {
+        closeLimitPopup.addEventListener("click", () => {
+          document.getElementById("quoteLimitPopup").style.display = "none";
+        });
+      }
+
+      const upgradeBtn = document.querySelector(".upgrade-btn");
+
+      if (upgradeBtn) {
+        upgradeBtn.addEventListener("click", () => {
+          alert("Subscription page coming soon.");
+        });
+      }
+    }
+
+    updateMiniText();
+  }
+
+  applyUpgradeChanges();
+  setTimeout(applyUpgradeChanges, 300);
+  setTimeout(applyUpgradeChanges, 1000);
+</script>
 </html>
