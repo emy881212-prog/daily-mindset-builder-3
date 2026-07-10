@@ -1896,6 +1896,101 @@
   addMoreSameBubblesOnly();
   setTimeout(addMoreSameBubblesOnly, 300);
   setTimeout(addMoreSameBubblesOnly, 1000);
+</script><style>
+  /* FLOATING BUBBLES FIX */
+  .screen {
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  .floating-bubbles-layer {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .screen > *:not(.floating-bubbles-layer) {
+    position: relative;
+    z-index: 2;
+  }
+
+  .floating-bubble {
+    position: absolute;
+    bottom: -80px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.95),
+      rgba(255, 255, 255, 0.55) 45%,
+      rgba(255, 255, 255, 0.18) 75%,
+      rgba(255, 255, 255, 0.08) 100%
+    );
+    box-shadow:
+      0 0 10px rgba(255,255,255,0.55),
+      inset 0 0 10px rgba(255,255,255,0.35);
+    animation: floatBubbleUp linear infinite;
+    opacity: 0.75;
+  }
+
+  @keyframes floatBubbleUp {
+    0% {
+      transform: translateY(0) translateX(0) scale(1);
+      opacity: 0;
+    }
+    10% {
+      opacity: 0.75;
+    }
+    50% {
+      transform: translateY(-350px) translateX(14px) scale(1.06);
+      opacity: 0.65;
+    }
+    100% {
+      transform: translateY(-900px) translateX(-18px) scale(1.12);
+      opacity: 0;
+    }
+  }
+</style>
+
+<script>
+  function createFloatingBubbles() {
+    const screen = document.querySelector(".screen");
+    if (!screen) return;
+
+    const oldLayer = document.querySelector(".floating-bubbles-layer");
+    if (oldLayer) oldLayer.remove();
+
+    const layer = document.createElement("div");
+    layer.className = "floating-bubbles-layer";
+    screen.prepend(layer);
+
+    const bubbleCount = 55; // more bubbles
+
+    for (let i = 0; i < bubbleCount; i++) {
+      const bubble = document.createElement("span");
+      bubble.className = "floating-bubble";
+
+      const size = 6 + Math.random() * 14;
+      const left = Math.random() * 100;
+      const duration = 10 + Math.random() * 12;
+      const delay = Math.random() * 12;
+      const opacity = 0.35 + Math.random() * 0.45;
+
+      bubble.style.width = `${size}px`;
+      bubble.style.height = `${size}px`;
+      bubble.style.left = `${left}%`;
+      bubble.style.animationDuration = `${duration}s`;
+      bubble.style.animationDelay = `${delay}s`;
+      bubble.style.opacity = opacity;
+
+      layer.appendChild(bubble);
+    }
+  }
+
+  createFloatingBubbles();
+  setTimeout(createFloatingBubbles, 300);
+  setTimeout(createFloatingBubbles, 1200);
 </script>
 </body>
 
