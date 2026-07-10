@@ -65,15 +65,24 @@ h1{
     <button class="mood-btn" onclick="setMood('💪 Motivated')">💪 Motivated</button>
     <button class="mood-btn" onclick="setMood('😔 Sad')">😔 Sad</button>
     <button class="mood-btn" onclick="setMood('😴 Tired')">😴 Tired</button>
-    <button class="mood-btn" onclick="setMood('😰 Stressed')">😰 Stressed</button>
+    <button class="mood-btn" onclick="setMood('😟 Stressed')">😟Stressed</button>
 <button class="mood-btn" onclick="setMood('😴 Tired')">😴 Tired</button>
-<button class="mood-btn" onclick="setMood('😰 Stressed')">😰 Stressed</button>
 
-<button class="mood-btn" onclick="setMood('😰 Anxious')">😰 Anxious</button>
+
+<button class="mood-btn" onclick="setMood('😔Anxious')">😔Anxious</button>
 <button class="mood-btn" onclick="setMood('😤 Frustrated')">😤 Frustrated</button>
 <button class="mood-btn" onclick="setMood('🤔 Confused')">🤔 Confused</button>
 <button class="mood-btn" onclick="setMood('✨ Inspired')">✨ Inspired</button>
 <button class="mood-btn" onclick="setMood('🎯 Focused')">🎯 Focused</button>
+    <button class="mood-btn" onclick="setMood('🌟 Confident')">🌟 Confident</button>
+
+<button class="mood-btn" onclick="setMood('😊 Optimistic')">😊 Optimistic</button>
+
+<button class="mood-btn" onclick="setMood('❤️ Loved')">❤️ Loved</button>
+
+<button class="mood-btn" onclick="setMood('🏆 Accomplished')">🏆 Accomplished</button>
+
+<button class="mood-btn" onclick="setMood('🎉 Energized')">🎉 Energized</button>
 
 
     <div class="result" id="result"></div>
@@ -85,7 +94,31 @@ function setMood(mood){
 
     let quote = "";
     let prompt = "";
+    
+else if(mood.includes("Confident")){
+    quote = "Believe in your abilities.";
+    prompt = "What strength are you most proud of today?";
+}
 
+else if(mood.includes("Optimistic")){
+    quote = "Every day brings new possibilities.";
+    prompt = "What are you looking forward to?";
+}
+
+else if(mood.includes("Loved")){
+    quote = "You are valued more than you know.";
+    prompt = "Who made you feel appreciated today?";
+}
+
+else if(mood.includes("Accomplished")){
+    quote = "Celebrate your progress.";
+    prompt = "What achievement are you proud of today?";
+}
+
+else if(mood.includes("Energized")){
+    quote = "Your energy can create amazing things.";
+    prompt = "How will you use your energy today?";
+}
     if(mood.includes("Happy")){
         quote = "Happiness grows when it is shared.";
         prompt = "What made you smile today?";
