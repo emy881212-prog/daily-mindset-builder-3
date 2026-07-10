@@ -1,1 +1,3327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Mindset Builder</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      background: #1f1f1f;
+      font-family: Georgia, "Times New Roman", serif;
+      overflow-x: hidden;
+    }
+
+    .screen {
+      width: 412px;
+      min-height: 917px;
+      padding: 18px 10px 66px;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(255,255,255,0.95), transparent 27%),
+        radial-gradient(circle at 88% 32%, rgba(255,221,229,0.55), transparent 30%),
+        linear-gradient(180deg, #f8f6f8 0%, #ded9de 35%, #b9b0ba 68%, #8c8497 100%);
+      color: #000;
+      position: relative;
+      overflow: hidden;
+      animation: pageOpen 0.8s ease forwards;
+    }
+
+    .screen::before {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: rgba(255, 216, 224, 0.38);
+      top: 245px;
+      left: -95px;
+      filter: blur(35px);
+      animation: floatingGlow 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .screen::after {
+      content: "";
+      position: absolute;
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.28);
+      bottom: 150px;
+      right: -115px;
+      filter: blur(35px);
+      animation: floatingGlowTwo 9s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes pageOpen {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes floatingGlow {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(35px, 30px) scale(1.12); }
+    }
+
+    @keyframes floatingGlowTwo {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(-30px, -35px) scale(1.1); }
+    }
+
+    .sparkle {
+      position: absolute;
+      width: 7px;
+      height: 7px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 0 13px rgba(255,255,255,0.95);
+      opacity: 0.6;
+      animation: sparkleFloat 4s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .sparkle.one { top: 125px; right: 42px; }
+    .sparkle.two { top: 445px; left: 24px; animation-delay: 1.2s; }
+    .sparkle.three { bottom: 245px; right: 32px; animation-delay: 2s; }
+
+    @keyframes sparkleFloat {
+      0%, 100% { transform: translateY(0) scale(1); opacity: 0.35; }
+      50% { transform: translateY(-12px) scale(1.45); opacity: 0.95; }
+    }
+
+    .top {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 45px;
+      position: relative;
+      z-index: 3;
+    }
+
+    .logo-wrap {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.75);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-left: 1px;
+      transition: 0.3s ease;
+    }
+
+    .logo-wrap:hover {
+      transform: rotate(-4deg) scale(1.08);
+    }
+
+    .logo {
+      width: 43px;
+      height: 43px;
+      border-radius: 12px;
+      background: #151515;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 25px;
+      animation: logoPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes logoPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.07); }
+    }
+
+    .brand {
+      font-size: 16px;
+      margin-top: -5px;
+    }
+
+    .account-btn {
+      margin-left: auto;
+      border: 1px solid rgba(0,0,0,0.28);
+      background: rgba(255,255,255,0.58);
+      border-radius: 999px;
+      padding: 8px 11px;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: Arial, Helvetica, sans-serif;
+      transition: 0.25s ease;
+    }
+
+    .account-btn:hover {
+      background: #111;
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .main-title {
+      text-align: center;
+      font-size: 31px;
+      font-style: italic;
+      font-weight: 400;
+      margin-bottom: 27px;
+      position: relative;
+      z-index: 3;
+      transition: 0.3s ease;
+    }
+
+    .main-title:hover {
+      transform: translateY(-4px);
+      text-shadow: 0 8px 14px rgba(0,0,0,0.18);
+    }
+
+    .quiz-screen,
+    .result-screen {
+      position: relative;
+      z-index: 3;
+    }
+
+    .question-title {
+      width: 315px;
+      min-height: 118px;
+      margin: 0 auto 22px;
+      background: rgba(255, 255, 255, 0.68);
+      border: 1px solid rgba(0, 0, 0, 0.28);
+      box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.18);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      font-size: 31px;
+      line-height: 1.12;
+      padding: 12px;
+      transition: 0.35s ease;
+    }
+
+    .question-title:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.12),
+        0 15px 25px rgba(0,0,0,0.16);
+    }
+
+    .question-card {
+      width: 315px;
+      min-height: 515px;
+      margin: 0 auto;
+      border-radius: 28px;
+      background: rgba(220, 197, 201, 0.75);
+      box-shadow:
+        0 27px 28px rgba(0, 0, 0, 0.30),
+        0 0 11px rgba(132, 45, 45, 0.58),
+        inset 0 0 22px rgba(255, 255, 255, 0.24);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 15px;
+      padding: 34px 46px;
+      animation: smoothFloat 4s ease-in-out infinite;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      will-change: transform;
+    }
+
+    @keyframes smoothFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    .answer-btn {
+      width: 100%;
+      min-height: 46px;
+      border: 1.5px solid #111;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.78);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 28px;
+      font-style: italic;
+      cursor: pointer;
+      transition: 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: 1.05;
+      padding: 5px 14px;
+      white-space: normal;
+    }
+
+    .answer-btn.long-answer {
+      font-size: 22px;
+      min-height: 62px;
+      line-height: 1.05;
+      padding: 7px 12px;
+    }
+
+    .answer-btn:hover,
+    .answer-btn.selected {
+      background: #111;
+      color: #fff;
+      transform: translateX(6px) scale(1.04);
+      box-shadow: 0 9px 16px rgba(0,0,0,0.25);
+    }
+
+    .quiz-actions {
+      display: flex;
+      justify-content: space-between;
+      width: 315px;
+      margin: 24px auto 0;
+    }
+
+    .small-btn {
+      height: 52px;
+      min-width: 120px;
+      border: 2px solid #111;
+      background: rgba(255, 255, 255, 0.72);
+      color: #111;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 24px;
+      font-style: italic;
+      cursor: pointer;
+      box-shadow: 0 4px 7px rgba(0, 0, 0, 0.28);
+      transition: 0.25s ease;
+    }
+
+    .small-btn:hover:not(:disabled) {
+      background: #111;
+      color: white;
+      transform: translateY(-4px);
+      box-shadow: 0 10px 18px rgba(0,0,0,0.35);
+    }
+
+    .small-btn:disabled {
+      opacity: 0.55;
+      color: rgba(0,0,0,0.45);
+      cursor: not-allowed;
+      background: rgba(255,255,255,0.45);
+    }
+
+    .result-screen {
+      display: none;
+    }
+
+    .result-title {
+      width: 280px;
+      height: 43px;
+      margin: 0 auto 27px;
+      background: rgba(255, 255, 255, 0.82);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 30px;
+      font-style: italic;
+      font-weight: 400;
+      transition: 0.3s ease;
+    }
+
+    .result-title:hover {
+      transform: translateY(-4px) scale(1.03);
+    }
+
+    .quote-card {
+      width: 374px;
+      min-height: 354px;
+      margin: 0 auto;
+      border-radius: 42px;
+      background: rgba(226, 202, 204, 0.78);
+      box-shadow:
+        0 27px 28px rgba(0, 0, 0, 0.30),
+        0 0 11px rgba(132, 45, 45, 0.58),
+        inset 0 0 22px rgba(255, 255, 255, 0.24);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      padding: 34px 28px 62px;
+      animation: smoothFloat 4s ease-in-out infinite;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      will-change: transform;
+    }
+
+    .quote-card::before {
+      content: "";
+      position: absolute;
+      width: 120px;
+      height: 600px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.30), transparent);
+      top: -120px;
+      left: -160px;
+      transform: rotate(18deg);
+      animation: shine 5s ease-in-out infinite;
+    }
+
+    @keyframes shine {
+      0% { left: -170px; }
+      45% { left: 430px; }
+      100% { left: 430px; }
+    }
+
+    .quote {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 39px;
+      line-height: 1.34;
+      font-weight: 400;
+      z-index: 2;
+      transition: 0.35s ease;
+      margin-top: -5px;
+    }
+
+    .quote.fade {
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+    }
+
+    .arrows {
+      position: absolute;
+      bottom: 24px;
+      left: 34px;
+      right: 34px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    .arrow-btn {
+      width: 100px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      position: relative;
+      pointer-events: auto;
+      transition: 0.25s ease;
+    }
+
+    .arrow-btn::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 74px;
+      height: 2px;
+      background: white;
+      box-shadow: 0 0 8px rgba(255,255,255,0.85);
+    }
+
+    .arrow-btn.left::before {
+      left: 22px;
+    }
+
+    .arrow-btn.right::before {
+      right: 22px;
+    }
+
+    .arrow-btn.left::after {
+      content: "←";
+      position: absolute;
+      left: 0;
+      top: -8px;
+      color: white;
+      font-size: 34px;
+      font-family: Arial, Helvetica, sans-serif;
+      text-shadow: 0 0 8px rgba(255,255,255,0.9);
+    }
+
+    .arrow-btn.right::after {
+      content: "→";
+      position: absolute;
+      right: 0;
+      top: -8px;
+      color: white;
+      font-size: 34px;
+      font-family: Arial, Helvetica, sans-serif;
+      text-shadow: 0 0 8px rgba(255,255,255,0.9);
+    }
+
+    .arrow-btn.left:hover {
+      transform: translateX(-8px) scale(1.08);
+    }
+
+    .arrow-btn.right:hover {
+      transform: translateX(8px) scale(1.08);
+    }
+
+    .explanation {
+      width: 300px;
+      min-height: 106px;
+      margin: 22px auto 74px;
+      background: rgba(224, 170, 160, 0.82);
+      box-shadow:
+        0 8px 15px rgba(0, 0, 0, 0.28),
+        inset 0 0 12px rgba(255, 255, 255, 0.20);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      font-size: 24px;
+      font-style: italic;
+      line-height: 1.55;
+      padding: 15px;
+      transition: 0.35s ease;
+    }
+
+    .explanation:hover {
+      transform: translateY(-5px) scale(1.03);
+      box-shadow: 0 14px 22px rgba(0,0,0,0.28);
+    }
+
+    .explanation.fade {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .bottom-buttons {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 18px;
+    }
+
+    .btn {
+      min-height: 59px;
+      border: 2px solid #111;
+      background: rgba(255,255,255,0.70);
+      color: #111;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 24px;
+      font-style: italic;
+      cursor: pointer;
+      box-shadow: 0 4px 7px rgba(0,0,0,0.35);
+      transition: 0.25s ease;
+      padding: 8px 10px;
+    }
+
+    .start-btn {
+      width: 140px;
+    }
+
+    .save-btn {
+      width: 163px;
+    }
+
+    .btn:hover {
+      background: #111;
+      color: white;
+      transform: translateY(-4px) scale(1.03);
+      box-shadow: 0 9px 15px rgba(0,0,0,0.45);
+    }
+
+    .auth-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(20, 18, 22, 0.50);
+      backdrop-filter: blur(14px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      z-index: 1000;
+    }
+
+    .auth-window {
+      width: 360px;
+      max-width: 94vw;
+      border-radius: 34px;
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.92), transparent 35%),
+        linear-gradient(180deg, rgba(250,247,248,0.98), rgba(219,194,199,0.98));
+      box-shadow:
+        0 26px 60px rgba(0,0,0,0.38),
+        inset 0 0 22px rgba(255,255,255,0.35);
+      padding: 30px 24px 24px;
+      text-align: center;
+      position: relative;
+      animation: modalOpen 0.55s ease forwards;
+      border: 1px solid rgba(255,255,255,0.6);
+    }
+
+    @keyframes modalOpen {
+      from { opacity: 0; transform: translateY(24px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .auth-close {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      border: none;
+      background: rgba(255,255,255,0.48);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+      transition: 0.25s ease;
+    }
+
+    .auth-close:hover {
+      background: #111;
+      color: white;
+      transform: rotate(90deg);
+    }
+
+    .auth-logo {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 14px;
+      border-radius: 16px;
+      background: #111;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      box-shadow: 0 0 0 10px rgba(255,255,255,0.45);
+    }
+
+    .auth-window h2 {
+      font-size: 30px;
+      font-style: italic;
+      font-weight: 400;
+      margin-bottom: 8px;
+    }
+
+    .auth-window p {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      opacity: 0.75;
+      margin-bottom: 22px;
+    }
+
+    .auth-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 18px;
+      background: rgba(255,255,255,0.42);
+      padding: 6px;
+      border-radius: 999px;
+    }
+
+    .auth-tab {
+      flex: 1;
+      border: none;
+      border-radius: 999px;
+      padding: 10px 6px;
+      background: transparent;
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.25s ease;
+    }
+
+    .auth-tab.active,
+    .auth-tab:hover {
+      background: #111;
+      color: white;
+    }
+
+    .auth-form {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .auth-form.active {
+      display: flex;
+    }
+
+    .auth-input {
+      width: 100%;
+      border: 1px solid rgba(0,0,0,0.18);
+      border-radius: 16px;
+      padding: 14px 15px;
+      font-size: 15px;
+      background: rgba(255,255,255,0.72);
+      outline: none;
+      transition: 0.25s ease;
+    }
+
+    .auth-input:focus {
+      border-color: #111;
+      box-shadow: 0 0 0 4px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+    }
+
+    .auth-main-btn,
+    .guest-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 14px 16px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.25s ease;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .auth-main-btn {
+      background: #111;
+      color: white;
+    }
+
+    .guest-btn {
+      background: rgba(255,255,255,0.65);
+      color: #111;
+      border: 1px solid rgba(0,0,0,0.16);
+      margin-top: 8px;
+    }
+
+    .auth-main-btn:hover,
+    .guest-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 18px rgba(0,0,0,0.20);
+    }
+
+    .saved-message {
+      position: fixed;
+      left: 50%;
+      bottom: 26px;
+      transform: translateX(-50%) translateY(30px);
+      background: #111;
+      color: white;
+      padding: 12px 22px;
+      border-radius: 999px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.35s ease;
+      z-index: 2000;
+    }
+
+    .saved-message.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 430px) {
+      .screen {
+        width: 100vw;
+      }
+
+      .quote-card {
+        width: calc(100vw - 38px);
+      }
+
+      .quote {
+        font-size: 36px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="screen">
+    <div class="sparkle one"></div>
+    <div class="sparkle two"></div>
+    <div class="sparkle three"></div>
+
+    <header class="top">
+      <div class="logo-wrap">
+        <div class="logo">✦</div>
+      </div>
+
+      <div class="brand">Daily Mindset Builder</div>
+
+      <button class="account-btn" id="accountBtn">Account</button>
+    </header>
+
+    <section class="quiz-screen" id="quizScreen">
+      <h1 class="main-title">Daily Mindset Check-In</h1>
+
+      <div class="question-title" id="questionText">
+        How are you feeling today?
+      </div>
+
+      <div class="question-card moving-card" id="answersCard"></div>
+
+      <div class="quiz-actions">
+        <button class="small-btn" id="backBtn" type="button">Back</button>
+        <button class="small-btn" id="nextBtn" type="button">Next</button>
+      </div>
+    </section>
+
+    <section class="result-screen" id="resultScreen">
+      <h1 class="main-title">Daily Mindset Check-In</h1>
+
+      <div class="result-title">Your Mindset Quote</div>
+
+      <section class="quote-card moving-card">
+        <p class="quote" id="quoteText">
+          “Your peace is<br>
+          not lost<br>
+          It is waiting for<br>
+          you to return<br>
+          to yourself”
+        </p>
+
+        <div class="arrows">
+          <button class="arrow-btn left" id="prevQuoteBtn" type="button" aria-label="Previous quote"></button>
+          <button class="arrow-btn right" id="nextQuoteBtn" type="button" aria-label="Next quote"></button>
+        </div>
+      </section>
+
+      <section class="explanation" id="explanationText">
+        This quote reminds you to slow down and return to your peaceful center.
+      </section>
+
+      <div class="bottom-buttons">
+        <button class="btn start-btn" id="startAgainBtn" type="button">Start Again</button>
+        <button class="btn save-btn" id="saveBtn" type="button">Save My Quote</button>
+      </div>
+    </section>
+  </main>
+
+  <section class="auth-overlay" id="authOverlay">
+    <div class="auth-window">
+      <button class="auth-close" id="authClose" type="button">×</button>
+
+      <div class="auth-logo">✦</div>
+
+      <h2>Welcome</h2>
+      <p>Choose how you want to enter your Daily Mindset Builder.</p>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" type="button" data-tab="guest">Guest</button>
+        <button class="auth-tab" type="button" data-tab="login">Log In</button>
+        <button class="auth-tab" type="button" data-tab="signup">Sign Up</button>
+      </div>
+
+      <div class="auth-form active" id="guestForm">
+        <button class="guest-btn" id="guestBtn" type="button">Enter as Guest</button>
+      </div>
+
+      <div class="auth-form" id="loginForm">
+        <input class="auth-input" type="email" placeholder="Email" />
+        <input class="auth-input" type="password" placeholder="Password" />
+        <button class="auth-main-btn" id="loginBtn" type="button">Log In</button>
+      </div>
+
+      <div class="auth-form" id="signupForm">
+        <input class="auth-input" type="text" placeholder="Your name" />
+        <input class="auth-input" type="email" placeholder="Email" />
+        <input class="auth-input" type="password" placeholder="Create password" />
+        <button class="auth-main-btn" id="signupBtn" type="button">Create Account</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="saved-message" id="savedMessage">Quote saved ✦</div>
+
+  <script>
+    const questions = [
+      {
+        question: "How are you feeling today?",
+        answers: ["Calm", "Tired", "Stressed", "Motivated", "Sad", "Confused"]
+      },
+      {
+        question: "What do you need most right now?",
+        answers: ["Confidence", "Peace", "Energy", "Hope", "Self-love", "Focus"]
+      },
+      {
+        question: "What kind of quote do you prefer?",
+        answers: ["Soft", "Strong", "Deep", "Positive", "Short", "Emotional"]
+      },
+      {
+        question: "What is your main goal today?",
+        answers: ["Feel better", "Stay focused", "Believe in myself", "Let go", "Start again", "Be grateful"]
+      },
+      {
+        question: "What energy do you want today?",
+        answers: ["Gentle", "Powerful", "Peaceful", "Brave", "Creative", "Grounded"]
+      },
+      {
+        question: "What is blocking you right now?",
+        answers: ["Fear", "Stress", "Overthinking", "Low energy", "Doubt", "Distraction"]
+      },
+      {
+        question: "How do you want to speak to yourself?",
+        answers: ["Kindly", "Honestly", "Bravely", "Softly", "Clearly", "Patiently"]
+      },
+      {
+        question: "What reminder do you need?",
+        answers: ["I am enough", "I can continue", "I am safe", "I can grow", "I deserve peace", "I trust myself"]
+      },
+      {
+        question: "What mood color fits you today?",
+        answers: ["Soft pink", "Warm yellow", "Calm blue", "Deep purple", "Clean white", "Natural green"]
+      },
+      {
+        question: "How should your quote feel?",
+        answers: ["Comforting", "Motivating", "Healing", "Powerful", "Simple", "Spiritual"]
+      }
+    ];
+
+    const quoteResults = [
+      {
+        quote: "“Your peace is<br>not lost<br>It is waiting for<br>you to return<br>to yourself”",
+        explanation: "This quote reminds you to slow down and return to your peaceful center."
+      },
+      {
+        quote: "“You do not need<br>to fix everything<br>today<br>One small step<br>is enough”",
+        explanation: "A soft reminder to breathe and move slowly."
+      },
+      {
+        quote: "“Rest is not<br>weakness<br>Rest is how<br>your energy<br>comes back”",
+        explanation: "This quote is for tired days when you need care."
+      },
+      {
+        quote: "“Your future is<br>built by the brave<br>choice you make<br>today”",
+        explanation: "A quote for confidence and motivation."
+      },
+      {
+        quote: "“Soft days are<br>still part of<br>your healing”",
+        explanation: "A gentle reminder that growth can be quiet."
+      }
+    ];
+
+    let currentQuestion = 0;
+    let userAnswers = [];
+    let currentQuote = 0;
+
+    const quizScreen = document.getElementById("quizScreen");
+    const resultScreen = document.getElementById("resultScreen");
+    const questionText = document.getElementById("questionText");
+    const answersCard = document.getElementById("answersCard");
+    const backBtn = document.getElementById("backBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const quoteText = document.getElementById("quoteText");
+    const explanationText = document.getElementById("explanationText");
+    const savedMessage = document.getElementById("savedMessage");
+    const authOverlay = document.getElementById("authOverlay");
+
+    function loadQuestion() {
+      const q = questions[currentQuestion];
+
+      questionText.textContent = q.question;
+      answersCard.innerHTML = "";
+
+      q.answers.forEach(answer => {
+        const btn = document.createElement("button");
+        btn.className = "answer-btn";
+        btn.type = "button";
+
+        if (answer === "Believe in myself") {
+          btn.innerHTML = "Believe in<br>myself";
+          btn.classList.add("long-answer");
+        } else {
+          btn.textContent = answer;
+        }
+
+        if (answer.length > 13) {
+          btn.classList.add("long-answer");
+        }
+
+        if (userAnswers[currentQuestion] === answer) {
+          btn.classList.add("selected");
+        }
+
+        btn.addEventListener("click", () => {
+          userAnswers[currentQuestion] = answer;
+
+          document.querySelectorAll(".answer-btn").forEach(button => {
+            button.classList.remove("selected");
+          });
+
+          btn.classList.add("selected");
+        });
+
+        answersCard.appendChild(btn);
+      });
+
+      backBtn.disabled = currentQuestion === 0;
+      nextBtn.textContent = currentQuestion === questions.length - 1 ? "Finish" : "Next";
+    }
+
+    nextBtn.addEventListener("click", () => {
+      if (!userAnswers[currentQuestion]) {
+        alert("Please choose one answer.");
+        return;
+      }
+
+      if (currentQuestion < questions.length - 1) {
+        currentQuestion = currentQuestion + 1;
+        loadQuestion();
+      } else {
+        showResult();
+      }
+    });
+
+    backBtn.addEventListener("click", () => {
+      if (currentQuestion > 0) {
+        currentQuestion = currentQuestion - 1;
+        loadQuestion();
+      }
+    });
+
+    function showResult() {
+      quizScreen.style.display = "none";
+      resultScreen.style.display = "block";
+      currentQuote = 0;
+      showQuote(currentQuote);
+      window.scrollTo(0, 0);
+    }
+
+    function showQuote(index) {
+      quoteText.classList.add("fade");
+      explanationText.classList.add("fade");
+
+      setTimeout(() => {
+        quoteText.innerHTML = quoteResults[index].quote;
+        explanationText.textContent = quoteResults[index].explanation;
+        quoteText.classList.remove("fade");
+        explanationText.classList.remove("fade");
+      }, 300);
+    }
+
+    document.getElementById("nextQuoteBtn").addEventListener("click", () => {
+      currentQuote = currentQuote + 1;
+
+      if (currentQuote >= quoteResults.length) {
+        currentQuote = 0;
+      }
+
+      showQuote(currentQuote);
+    });
+
+    document.getElementById("prevQuoteBtn").addEventListener("click", () => {
+      currentQuote = currentQuote - 1;
+
+      if (currentQuote < 0) {
+        currentQuote = quoteResults.length - 1;
+      }
+
+      showQuote(currentQuote);
+    });
+
+    document.getElementById("saveBtn").addEventListener("click", () => {
+      const savedQuotes = JSON.parse(localStorage.getItem("savedQuotes")) || [];
+
+      savedQuotes.push({
+        quote: quoteText.innerText,
+        explanation: explanationText.innerText,
+        savedAt: new Date().toISOString()
+      });
+
+      localStorage.setItem("savedQuotes", JSON.stringify(savedQuotes));
+      showMessage("Quote saved ✦");
+    });
+
+    document.getElementById("startAgainBtn").addEventListener("click", () => {
+      currentQuestion = 0;
+      userAnswers = [];
+      resultScreen.style.display = "none";
+      quizScreen.style.display = "block";
+      loadQuestion();
+      window.scrollTo(0, 0);
+    });
+
+    function showMessage(text) {
+      savedMessage.textContent = text;
+      savedMessage.classList.add("show");
+
+      setTimeout(() => {
+        savedMessage.classList.remove("show");
+      }, 1800);
+    }
+
+    document.querySelectorAll(".auth-tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".auth-tab").forEach(t => t.classList.remove("active"));
+        document.querySelectorAll(".auth-form").forEach(form => form.classList.remove("active"));
+
+        tab.classList.add("active");
+
+        const selectedTab = tab.dataset.tab;
+        document.getElementById(selectedTab + "Form").classList.add("active");
+      });
+    });
+
+    function closeAuth(mode) {
+      authOverlay.style.display = "none";
+      showMessage(mode === "guest" ? "Entered as guest ✦" : "Welcome ✦");
+    }
+
+    document.getElementById("guestBtn").addEventListener("click", () => closeAuth("guest"));
+    document.getElementById("loginBtn").addEventListener("click", () => closeAuth("login"));
+    document.getElementById("signupBtn").addEventListener("click", () => closeAuth("signup"));
+    document.getElementById("authClose").addEventListener("click", () => closeAuth("guest"));
+
+    document.getElementById("accountBtn").addEventListener("click", () => {
+      authOverlay.style.display = "flex";
+    });
+
+    document.querySelectorAll(".moving-card").forEach(card => {
+      card.addEventListener("mousemove", event => {
+        const rect = card.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+
+        const rotateX = ((y / rect.height) - 0.5) * -8;
+        const rotateY = ((x / rect.width) - 0.5) * 8;
+
+        card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-6px)`;
+      });
+
+      card.addEventListener("mouseleave", () => {
+        card.style.transform = "";
+      });
+    });
+
+    loadQuestion();
+  </script><style>
+  /* slow white bubbles */
+  .screen {
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  .screen > *:not(.soft-bubbles-upgrade) {
+    position: relative;
+    z-index: 3;
+  }
+
+  .soft-bubbles-upgrade {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .soft-bubbles-upgrade span {
+    position: absolute;
+    bottom: -50px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.42);
+    box-shadow: 0 0 16px rgba(255, 255, 255, 0.75);
+    animation: softBubbleFloat 18s linear infinite;
+  }
+
+  .soft-bubbles-upgrade span:nth-child(1) { left: 7%; width: 6px; height: 6px; animation-delay: 0s; }
+  .soft-bubbles-upgrade span:nth-child(2) { left: 18%; width: 10px; height: 10px; animation-delay: 3s; }
+  .soft-bubbles-upgrade span:nth-child(3) { left: 30%; width: 7px; height: 7px; animation-delay: 6s; }
+  .soft-bubbles-upgrade span:nth-child(4) { left: 43%; width: 12px; height: 12px; animation-delay: 1s; }
+  .soft-bubbles-upgrade span:nth-child(5) { left: 56%; width: 8px; height: 8px; animation-delay: 5s; }
+  .soft-bubbles-upgrade span:nth-child(6) { left: 69%; width: 11px; height: 11px; animation-delay: 2s; }
+  .soft-bubbles-upgrade span:nth-child(7) { left: 81%; width: 6px; height: 6px; animation-delay: 8s; }
+  .soft-bubbles-upgrade span:nth-child(8) { left: 93%; width: 9px; height: 9px; animation-delay: 4s; }
+
+  @keyframes softBubbleFloat {
+    0% {
+      transform: translateY(0) translateX(0) scale(0.7);
+      opacity: 0;
+    }
+
+    15% {
+      opacity: 0.55;
+    }
+
+    50% {
+      transform: translateY(-48vh) translateX(18px) scale(1);
+      opacity: 0.45;
+    }
+
+    100% {
+      transform: translateY(-110vh) translateX(-18px) scale(1.25);
+      opacity: 0;
+    }
+  }
+
+  /* fixed arrows */
+  .arrows {
+    position: absolute !important;
+    bottom: 26px !important;
+    left: 34px !important;
+    right: 34px !important;
+    height: 34px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    z-index: 30 !important;
+    pointer-events: none !important;
+  }
+
+  .arrow-btn {
+    width: 95px !important;
+    height: 34px !important;
+    border: none !important;
+    background: transparent !important;
+    cursor: pointer !important;
+    position: relative !important;
+    pointer-events: auto !important;
+    font-size: 0 !important;
+    color: transparent !important;
+    box-shadow: none !important;
+    transition: 0.25s ease !important;
+  }
+
+  .arrow-btn::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 50% !important;
+    width: 70px !important;
+    height: 2px !important;
+    background: white !important;
+    box-shadow: 0 0 8px rgba(255,255,255,0.95) !important;
+  }
+
+  .arrow-btn.left::before {
+    left: 22px !important;
+  }
+
+  .arrow-btn.right::before {
+    right: 22px !important;
+  }
+
+  .arrow-btn.left::after {
+    content: "←" !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: -8px !important;
+    color: white !important;
+    font-size: 34px !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+    text-shadow: 0 0 8px rgba(255,255,255,0.95) !important;
+  }
+
+  .arrow-btn.right::after {
+    content: "→" !important;
+    position: absolute !important;
+    right: 0 !important;
+    top: -8px !important;
+    color: white !important;
+    font-size: 34px !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+    text-shadow: 0 0 8px rgba(255,255,255,0.95) !important;
+  }
+
+  .arrow-btn.left:hover {
+    transform: translateX(-8px) scale(1.08) !important;
+  }
+
+  .arrow-btn.right:hover {
+    transform: translateX(8px) scale(1.08) !important;
+  }
+
+  .quote-mini-text {
+    position: absolute !important;
+    left: 50% !important;
+    bottom: 6px !important;
+    transform: translateX(-50%) !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+    font-size: 10px !important;
+    letter-spacing: 0.4px !important;
+    color: rgba(255, 255, 255, 0.95) !important;
+    text-shadow: 0 0 8px rgba(255,255,255,0.9) !important;
+    white-space: nowrap !important;
+    pointer-events: none !important;
+  }
+
+  .result-back-fixed {
+    font-size: 28px !important;
+    line-height: 1 !important;
+  }
+
+  /* free quote limit popup */
+  .quote-limit-popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 18, 22, 0.55);
+    backdrop-filter: blur(12px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 5000;
+    padding: 20px;
+  }
+
+  .quote-limit-box {
+    width: 340px;
+    max-width: 92vw;
+    border-radius: 32px;
+    background:
+      radial-gradient(circle at top left, rgba(255,255,255,0.95), transparent 35%),
+      linear-gradient(180deg, rgba(250,247,248,0.98), rgba(219,194,199,0.98));
+    box-shadow:
+      0 28px 60px rgba(0,0,0,0.38),
+      inset 0 0 22px rgba(255,255,255,0.35);
+    padding: 30px 24px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.6);
+  }
+
+  .quote-limit-icon {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 14px;
+    border-radius: 16px;
+    background: #111;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    box-shadow: 0 0 0 10px rgba(255,255,255,0.45);
+  }
+
+  .quote-limit-box h2 {
+    font-size: 29px;
+    font-style: italic;
+    font-weight: 400;
+    margin-bottom: 10px;
+  }
+
+  .quote-limit-box p {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    opacity: 0.78;
+    margin-bottom: 20px;
+  }
+
+  .upgrade-btn,
+  .close-limit-btn {
+    width: 100%;
+    border: none;
+    border-radius: 999px;
+    padding: 14px 16px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.25s ease;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-top: 10px;
+  }
+
+  .upgrade-btn {
+    background: #111;
+    color: white;
+  }
+
+  .close-limit-btn {
+    background: rgba(255,255,255,0.65);
+    color: #111;
+    border: 1px solid rgba(0,0,0,0.16);
+  }
+</style>
+
+<div class="quote-limit-popup" id="quoteLimitPopup">
+  <div class="quote-limit-box">
+    <div class="quote-limit-icon">✦</div>
+
+    <h2>Free Limit Reached</h2>
+
+    <p>
+      You used your 10 free quotes. Upgrade your subscription to unlock unlimited mindset quotes.
+    </p>
+
+    <button class="upgrade-btn" type="button">Upgrade Subscription</button>
+    <button class="close-limit-btn" id="closeLimitPopup" type="button">Maybe Later</button>
+  </div>
+</div>
+
+<script>
+  function applyUpgradeChanges() {
+    const FREE_QUOTE_LIMIT = 10;
+
+    function isPaidUser() {
+      return localStorage.getItem("mindsetSubscription") === "paid";
+    }
+
+    function getUsedQuotes() {
+      return Number(localStorage.getItem("freeQuotesUsed") || "0");
+    }
+
+    function setUsedQuotes(number) {
+      localStorage.setItem("freeQuotesUsed", String(number));
+    }
+
+    function showLimitPopup() {
+      const popup = document.getElementById("quoteLimitPopup");
+
+      if (popup) {
+        popup.style.display = "flex";
+      }
+    }
+
+    function updateMiniText() {
+      const miniText = document.getElementById("quoteMiniText");
+
+      if (!miniText) return;
+
+      if (isPaidUser()) {
+        miniText.textContent = "Unlimited quotes";
+        return;
+      }
+
+      miniText.textContent = `${getUsedQuotes()} / ${FREE_QUOTE_LIMIT} free quotes`;
+    }
+
+    function canUseQuote() {
+      if (isPaidUser()) return true;
+
+      const used = getUsedQuotes();
+
+      if (used >= FREE_QUOTE_LIMIT) {
+        showLimitPopup();
+        updateMiniText();
+        return false;
+      }
+
+      setUsedQuotes(used + 1);
+      updateMiniText();
+      return true;
+    }
+
+    const screen = document.querySelector(".screen");
+
+    if (screen && !document.querySelector(".soft-bubbles-upgrade")) {
+      screen.insertAdjacentHTML(
+        "afterbegin",
+        `
+        <div class="soft-bubbles-upgrade">
+          <span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span>
+        </div>
+        `
+      );
+    }
+
+    const arrows = document.querySelector(".arrows");
+
+    if (arrows) {
+      const leftArrow = document.getElementById("prevQuoteBtn");
+      const rightArrow = document.getElementById("nextQuoteBtn");
+
+      if (leftArrow) {
+        leftArrow.classList.add("left");
+        leftArrow.innerHTML = "";
+      }
+
+      if (rightArrow) {
+        rightArrow.classList.add("right");
+        rightArrow.innerHTML = "";
+      }
+
+      if (!document.getElementById("quoteMiniText")) {
+        arrows.insertAdjacentHTML(
+          "beforeend",
+          '<span class="quote-mini-text" id="quoteMiniText">0 / 10 free quotes</span>'
+        );
+      }
+    }
+
+    document.querySelectorAll("button").forEach(button => {
+      const text = button.innerText.trim().toLowerCase();
+
+      if (text.includes("start") && text.includes("again")) {
+        const newButton = button.cloneNode(true);
+        newButton.textContent = "Back";
+        newButton.classList.add("result-back-fixed");
+
+        button.parentNode.replaceChild(newButton, button);
+
+        newButton.addEventListener("click", () => {
+          if (typeof resultScreen !== "undefined") {
+            resultScreen.style.display = "none";
+          }
+
+          if (typeof quizScreen !== "undefined") {
+            quizScreen.style.display = "block";
+          }
+
+          if (typeof currentQuestion !== "undefined" && typeof questions !== "undefined") {
+            currentQuestion = questions.length - 1;
+          }
+
+          if (typeof loadQuestion === "function") {
+            loadQuestion();
+          }
+
+          window.scrollTo(0, 0);
+        });
+      }
+    });
+
+    if (!window.freeQuoteLimitAdded) {
+      window.freeQuoteLimitAdded = true;
+
+      const originalShowQuote = typeof showQuote === "function" ? showQuote : null;
+
+      if (originalShowQuote) {
+        showQuote = function(index) {
+          if (!canUseQuote()) return;
+          originalShowQuote(index);
+          setTimeout(updateMiniText, 300);
+        };
+      }
+
+      const nextQuoteBtn = document.getElementById("nextQuoteBtn");
+      const prevQuoteBtn = document.getElementById("prevQuoteBtn");
+
+      if (nextQuoteBtn) {
+        const newNextQuoteBtn = nextQuoteBtn.cloneNode(true);
+        nextQuoteBtn.parentNode.replaceChild(newNextQuoteBtn, nextQuoteBtn);
+        newNextQuoteBtn.classList.add("right");
+
+        newNextQuoteBtn.addEventListener("click", () => {
+          if (!canUseQuote()) return;
+
+          if (typeof currentQuote !== "undefined" && typeof quoteResults !== "undefined") {
+            currentQuote++;
+
+            if (currentQuote >= quoteResults.length) {
+              currentQuote = 0;
+            }
+
+            if (originalShowQuote) {
+              originalShowQuote(currentQuote);
+            }
+
+            setTimeout(updateMiniText, 300);
+          }
+        });
+      }
+
+      if (prevQuoteBtn) {
+        const newPrevQuoteBtn = prevQuoteBtn.cloneNode(true);
+        prevQuoteBtn.parentNode.replaceChild(newPrevQuoteBtn, prevQuoteBtn);
+        newPrevQuoteBtn.classList.add("left");
+
+        newPrevQuoteBtn.addEventListener("click", () => {
+          if (!canUseQuote()) return;
+
+          if (typeof currentQuote !== "undefined" && typeof quoteResults !== "undefined") {
+            currentQuote--;
+
+            if (currentQuote < 0) {
+              currentQuote = quoteResults.length - 1;
+            }
+
+            if (originalShowQuote) {
+              originalShowQuote(currentQuote);
+            }
+
+            setTimeout(updateMiniText, 300);
+          }
+        });
+      }
+
+      const closeLimitPopup = document.getElementById("closeLimitPopup");
+
+      if (closeLimitPopup) {
+        closeLimitPopup.addEventListener("click", () => {
+          document.getElementById("quoteLimitPopup").style.display = "none";
+        });
+      }
+
+      const upgradeBtn = document.querySelector(".upgrade-btn");
+
+      if (upgradeBtn) {
+        upgradeBtn.addEventListener("click", () => {
+          alert("Subscription page coming soon.");
+        });
+      }
+    }
+
+    updateMiniText();
+  }
+
+  applyUpgradeChanges();
+  setTimeout(applyUpgradeChanges, 300);
+  setTimeout(applyUpgradeChanges, 1000);
+</script><style>
+  /* EXTRA MORE BUBBLES */
+  .extra-bubbles-bottom {
+    position: absolute !important;
+    inset: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+    z-index: 2 !important;
+  }
+
+  .extra-bubbles-bottom span {
+    position: absolute !important;
+    bottom: -40px !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.48) !important;
+    box-shadow: 0 0 14px rgba(255, 255, 255, 0.85) !important;
+    animation: extraBubbleRise linear infinite !important;
+  }
+
+  @keyframes extraBubbleRise {
+    0% {
+      transform: translateY(0) translateX(0) scale(0.7);
+      opacity: 0;
+    }
+
+    12% {
+      opacity: 0.65;
+    }
+
+    70% {
+      opacity: 0.45;
+    }
+
+    100% {
+      transform: translateY(-105vh) translateX(22px) scale(1.3);
+      opacity: 0;
+    }
+  }
+
+  /* FORCE ARROWS TO SHOW */
+  .quote-card,
+  .result-card,
+  .quote-box {
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  .arrows,
+  .final-arrow-layer {
+    position: absolute !important;
+    left: 26px !important;
+    right: 26px !important;
+    bottom: 20px !important;
+    height: 42px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    z-index: 999 !important;
+    pointer-events: none !important;
+  }
+
+  .arrow-btn,
+  .final-arrow-btn {
+    width: 98px !important;
+    height: 40px !important;
+    border: none !important;
+    background: transparent !important;
+    cursor: pointer !important;
+    position: relative !important;
+    pointer-events: auto !important;
+    font-size: 0 !important;
+    color: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .arrow-btn::before,
+  .final-arrow-btn::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 50% !important;
+    width: 72px !important;
+    height: 2px !important;
+    background: white !important;
+    box-shadow: 0 0 9px rgba(255,255,255,1) !important;
+  }
+
+  .arrow-btn.left::before,
+  .final-arrow-btn.left::before {
+    left: 22px !important;
+  }
+
+  .arrow-btn.right::before,
+  .final-arrow-btn.right::before {
+    right: 22px !important;
+  }
+
+  .arrow-btn.left::after,
+  .final-arrow-btn.left::after {
+    content: "←" !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: -6px !important;
+    color: white !important;
+    font-size: 36px !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+    text-shadow: 0 0 10px rgba(255,255,255,1) !important;
+  }
+
+  .arrow-btn.right::after,
+  .final-arrow-btn.right::after {
+    content: "→" !important;
+    position: absolute !important;
+    right: 0 !important;
+    top: -6px !important;
+    color: white !important;
+    font-size: 36px !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+    text-shadow: 0 0 10px rgba(255,255,255,1) !important;
+  }
+
+  .quote-mini-text,
+  .final-quote-mini-text {
+    position: absolute !important;
+    left: 50% !important;
+    bottom: 2px !important;
+    transform: translateX(-50%) !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+    font-size: 11px !important;
+    letter-spacing: 0.4px !important;
+    color: white !important;
+    text-shadow: 0 0 8px rgba(255,255,255,1) !important;
+    white-space: nowrap !important;
+    pointer-events: none !important;
+    z-index: 1000 !important;
+  }
+</style>
+
+<script>
+  function finalArrowsAndBubblesFix() {
+    const screen = document.querySelector(".screen");
+
+    if (screen && !document.querySelector(".extra-bubbles-bottom")) {
+      const bubbleBox = document.createElement("div");
+      bubbleBox.className = "extra-bubbles-bottom";
+
+      for (let i = 0; i < 32; i++) {
+        const bubble = document.createElement("span");
+
+        const size = 5 + Math.floor(Math.random() * 10);
+        const left = Math.floor(Math.random() * 96);
+        const delay = Math.random() * 14;
+        const duration = 13 + Math.random() * 12;
+
+        bubble.style.width = size + "px";
+        bubble.style.height = size + "px";
+        bubble.style.left = left + "%";
+        bubble.style.animationDelay = delay + "s";
+        bubble.style.animationDuration = duration + "s";
+
+        bubbleBox.appendChild(bubble);
+      }
+
+      screen.insertAdjacentElement("afterbegin", bubbleBox);
+    }
+
+    const quoteCard =
+      document.querySelector(".quote-card") ||
+      document.querySelector(".result-card") ||
+      document.querySelector(".quote-box") ||
+      (document.getElementById("quoteText") ? document.getElementById("quoteText").parentElement : null);
+
+    if (!quoteCard) return;
+
+    let arrows = document.querySelector(".arrows") || document.querySelector(".final-arrow-layer");
+
+    if (!arrows) {
+      arrows = document.createElement("div");
+      arrows.className = "final-arrow-layer";
+
+      arrows.innerHTML = `
+        <button class="final-arrow-btn left" id="finalPrevQuoteBtn" type="button"></button>
+        <span class="final-quote-mini-text" id="finalQuoteMiniText">0 / 10 free quotes</span>
+        <button class="final-arrow-btn right" id="finalNextQuoteBtn" type="button"></button>
+      `;
+
+      quoteCard.appendChild(arrows);
+    }
+
+    const leftArrow =
+      document.getElementById("prevQuoteBtn") ||
+      document.getElementById("finalPrevQuoteBtn") ||
+      arrows.querySelector("button:first-child");
+
+    const rightArrow =
+      document.getElementById("nextQuoteBtn") ||
+      document.getElementById("finalNextQuoteBtn") ||
+      arrows.querySelector("button:last-child");
+
+    if (leftArrow) {
+      leftArrow.classList.add("left", "final-arrow-btn");
+      leftArrow.innerHTML = "";
+    }
+
+    if (rightArrow) {
+      rightArrow.classList.add("right", "final-arrow-btn");
+      rightArrow.innerHTML = "";
+    }
+
+    let miniText =
+      document.getElementById("quoteMiniText") ||
+      document.getElementById("finalQuoteMiniText");
+
+    if (!miniText) {
+      miniText = document.createElement("span");
+      miniText.className = "final-quote-mini-text";
+      miniText.id = "finalQuoteMiniText";
+      miniText.textContent = "0 / 10 free quotes";
+      arrows.appendChild(miniText);
+    }
+
+    miniText.classList.add("quote-mini-text", "final-quote-mini-text");
+  }
+
+  finalArrowsAndBubblesFix();
+  setTimeout(finalArrowsAndBubblesFix, 300);
+  setTimeout(finalArrowsAndBubblesFix, 1000);
+</script><style>
+  /* SHORT MODERN ARROWS ONLY */
+  .arrows,
+  .final-arrow-layer {
+    left: 42px !important;
+    right: 42px !important;
+    bottom: 24px !important;
+    height: 30px !important;
+  }
+
+  .arrow-btn,
+  .final-arrow-btn {
+    width: 52px !important;
+    height: 30px !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .arrow-btn::before,
+  .final-arrow-btn::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 50% !important;
+    width: 30px !important;
+    height: 2px !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-radius: 999px !important;
+    box-shadow: 0 0 6px rgba(255,255,255,0.75) !important;
+  }
+
+  .arrow-btn.left::before,
+  .final-arrow-btn.left::before {
+    left: 13px !important;
+  }
+
+  .arrow-btn.right::before,
+  .final-arrow-btn.right::before {
+    right: 13px !important;
+  }
+
+  .arrow-btn.left::after,
+  .final-arrow-btn.left::after {
+    content: "" !important;
+    position: absolute !important;
+    left: 9px !important;
+    top: 10px !important;
+    width: 9px !important;
+    height: 9px !important;
+    border-left: 2px solid rgba(255,255,255,0.95) !important;
+    border-bottom: 2px solid rgba(255,255,255,0.95) !important;
+    transform: rotate(45deg) !important;
+    box-shadow: none !important;
+  }
+
+  .arrow-btn.right::after,
+  .final-arrow-btn.right::after {
+    content: "" !important;
+    position: absolute !important;
+    right: 9px !important;
+    top: 10px !important;
+    width: 9px !important;
+    height: 9px !important;
+    border-right: 2px solid rgba(255,255,255,0.95) !important;
+    border-top: 2px solid rgba(255,255,255,0.95) !important;
+    transform: rotate(45deg) !important;
+    box-shadow: none !important;
+  }
+
+  .quote-mini-text,
+  .final-quote-mini-text {
+    bottom: 1px !important;
+    font-size: 9px !important;
+    opacity: 0.9 !important;
+  }
+
+  /* MORE OF THE SAME SOFT BUBBLES */
+  .same-extra-bubble {
+    position: absolute !important;
+    bottom: -50px !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.42) !important;
+    box-shadow: 0 0 16px rgba(255, 255, 255, 0.75) !important;
+    animation: softBubbleFloat 18s linear infinite !important;
+  }
+</style>
+
+<script>
+  function addMoreSameBubblesOnly() {
+    const screen = document.querySelector(".screen");
+    if (!screen) return;
+
+    let bubbleLayer =
+      document.querySelector(".soft-bubbles-upgrade") ||
+      document.querySelector(".extra-bubbles-bottom");
+
+    if (!bubbleLayer) {
+      bubbleLayer = document.createElement("div");
+      bubbleLayer.className = "soft-bubbles-upgrade";
+      screen.insertAdjacentElement("afterbegin", bubbleLayer);
+    }
+
+    if (document.querySelectorAll(".same-extra-bubble").length > 0) return;
+
+    for (let i = 0; i < 35; i++) {
+      const bubble = document.createElement("span");
+      bubble.className = "same-extra-bubble";
+
+      const size = 5 + Math.floor(Math.random() * 8);
+      const left = Math.floor(Math.random() * 96);
+      const delay = Math.random() * 18;
+      const duration = 14 + Math.random() * 10;
+
+      bubble.style.width = size + "px";
+      bubble.style.height = size + "px";
+      bubble.style.left = left + "%";
+      bubble.style.animationDelay = delay + "s";
+      bubble.style.animationDuration = duration + "s";
+
+      bubbleLayer.appendChild(bubble);
+    }
+  }
+
+  addMoreSameBubblesOnly();
+  setTimeout(addMoreSameBubblesOnly, 300);
+  setTimeout(addMoreSameBubblesOnly, 1000);
+</script><style>
+  /* FLOATING BUBBLES FIX */
+  .screen {
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  .floating-bubbles-layer {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .screen > *:not(.floating-bubbles-layer) {
+    position: relative;
+    z-index: 2;
+  }
+
+  .floating-bubble {
+    position: absolute;
+    bottom: -80px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.95),
+      rgba(255, 255, 255, 0.55) 45%,
+      rgba(255, 255, 255, 0.18) 75%,
+      rgba(255, 255, 255, 0.08) 100%
+    );
+    box-shadow:
+      0 0 10px rgba(255,255,255,0.55),
+      inset 0 0 10px rgba(255,255,255,0.35);
+    animation: floatBubbleUp linear infinite;
+    opacity: 0.75;
+  }
+
+  @keyframes floatBubbleUp {
+    0% {
+      transform: translateY(0) translateX(0) scale(1);
+      opacity: 0;
+    }
+    10% {
+      opacity: 0.75;
+    }
+    50% {
+      transform: translateY(-350px) translateX(14px) scale(1.06);
+      opacity: 0.65;
+    }
+    100% {
+      transform: translateY(-900px) translateX(-18px) scale(1.12);
+      opacity: 0;
+    }
+  }
+</style>
+
+<script>
+  function createFloatingBubbles() {
+    const screen = document.querySelector(".screen");
+    if (!screen) return;
+
+    const oldLayer = document.querySelector(".floating-bubbles-layer");
+    if (oldLayer) oldLayer.remove();
+
+    const layer = document.createElement("div");
+    layer.className = "floating-bubbles-layer";
+    screen.prepend(layer);
+
+    const bubbleCount = 55; // more bubbles
+
+    for (let i = 0; i < bubbleCount; i++) {
+      const bubble = document.createElement("span");
+      bubble.className = "floating-bubble";
+
+      const size = 6 + Math.random() * 14;
+      const left = Math.random() * 100;
+      const duration = 10 + Math.random() * 12;
+      const delay = Math.random() * 12;
+      const opacity = 0.35 + Math.random() * 0.45;
+
+      bubble.style.width = `${size}px`;
+      bubble.style.height = `${size}px`;
+      bubble.style.left = `${left}%`;
+      bubble.style.animationDuration = `${duration}s`;
+      bubble.style.animationDelay = `${delay}s`;
+      bubble.style.opacity = opacity;
+
+      layer.appendChild(bubble);
+    }
+  }
+
+  createFloatingBubbles();
+  setTimeout(createFloatingBubbles, 300);
+  setTimeout(createFloatingBubbles, 1200);
+</script><style>
+  /* VISIBLE SEPARATE FLOATING BUBBLES ONLY */
+  .visible-bubbles-layer {
+    position: absolute !important;
+    inset: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+    z-index: 2 !important;
+  }
+
+  .visible-bubble {
+    position: absolute !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.42) !important;
+    box-shadow:
+      0 0 14px rgba(255, 255, 255, 0.75),
+      inset 0 0 8px rgba(255, 255, 255, 0.45) !important;
+    animation: visibleBubbleFloat linear infinite !important;
+  }
+
+  @keyframes visibleBubbleFloat {
+    0% {
+      transform: translateY(0) translateX(0) scale(0.85);
+      opacity: 0.25;
+    }
+
+    25% {
+      opacity: 0.65;
+    }
+
+    50% {
+      transform: translateY(-160px) translateX(14px) scale(1);
+      opacity: 0.5;
+    }
+
+    100% {
+      transform: translateY(-360px) translateX(-14px) scale(1.15);
+      opacity: 0;
+    }
+  }
+
+  .screen {
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  .screen > *:not(.visible-bubbles-layer) {
+    position: relative;
+    z-index: 3;
+  }
+</style>
+
+<script>
+  function makeVisibleBubblesNow() {
+    const screen = document.querySelector(".screen");
+    if (!screen) return;
+
+    document.querySelectorAll(
+      ".floating-bubbles-layer, .extra-bubbles-bottom, .soft-bubbles-upgrade, .visible-bubbles-layer"
+    ).forEach(layer => layer.remove());
+
+    const layer = document.createElement("div");
+    layer.className = "visible-bubbles-layer";
+    screen.prepend(layer);
+
+    for (let i = 0; i < 70; i++) {
+      const bubble = document.createElement("span");
+      bubble.className = "visible-bubble";
+
+      const size = 5 + Math.random() * 11;
+      const left = Math.random() * 100;
+      const top = Math.random() * 100;
+      const duration = 12 + Math.random() * 12;
+      const delay = -Math.random() * duration;
+
+      bubble.style.width = size + "px";
+      bubble.style.height = size + "px";
+      bubble.style.left = left + "%";
+      bubble.style.top = top + "%";
+      bubble.style.animationDuration = duration + "s";
+      bubble.style.animationDelay = delay + "s";
+
+      layer.appendChild(bubble);
+    }
+  }
+
+  makeVisibleBubblesNow();
+  setTimeout(makeVisibleBubblesNow, 400);
+</script><style>
+  .visible-bubble {
+    animation-name: bubbleMoveUpLive !important;
+    animation-timing-function: linear !important;
+    animation-iteration-count: infinite !important;
+    will-change: transform, top, opacity !important;
+  }
+
+  @keyframes bubbleMoveUpLive {
+    0% {
+      transform: translateY(0) translateX(0) scale(0.8);
+      opacity: 0.25;
+    }
+
+    25% {
+      transform: translateY(-120px) translateX(10px) scale(1);
+      opacity: 0.7;
+    }
+
+    50% {
+      transform: translateY(-260px) translateX(-8px) scale(1.08);
+      opacity: 0.55;
+    }
+
+    75% {
+      transform: translateY(-420px) translateX(14px) scale(1.15);
+      opacity: 0.4;
+    }
+
+    100% {
+      transform: translateY(-620px) translateX(-12px) scale(1.25);
+      opacity: 0;
+    }
+  }
+</style>
+
+<script>
+  function restartMovingBubbles() {
+    const bubbles = document.querySelectorAll(".visible-bubble");
+
+    bubbles.forEach((bubble, index) => {
+      bubble.style.animationName = "none";
+
+      setTimeout(() => {
+        bubble.style.animationName = "bubbleMoveUpLive";
+        bubble.style.animationDuration = (8 + Math.random() * 8) + "s";
+        bubble.style.animationDelay = (index * 0.12) + "s";
+        bubble.style.animationIterationCount = "infinite";
+        bubble.style.animationTimingFunction = "linear";
+      }, 30);
+    });
+  }
+
+  restartMovingBubbles();
+  setTimeout(restartMovingBubbles, 500);
+</script><style>
+  .live-bubbles-layer {
+    position: absolute !important;
+    inset: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+    z-index: 2 !important;
+  }
+
+  .live-bubble {
+    position: absolute !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.42) !important;
+    box-shadow:
+      0 0 14px rgba(255, 255, 255, 0.75),
+      inset 0 0 8px rgba(255, 255, 255, 0.45) !important;
+    opacity: 0.65 !important;
+  }
+
+  .screen {
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  .screen > *:not(.live-bubbles-layer) {
+    position: relative;
+    z-index: 3;
+  }
+</style>
+
+<script>
+  function startRealMovingBubbles() {
+    const screen = document.querySelector(".screen");
+    if (!screen) return;
+
+    document.querySelectorAll(
+      ".floating-bubbles-layer, .extra-bubbles-bottom, .soft-bubbles-upgrade, .visible-bubbles-layer, .live-bubbles-layer"
+    ).forEach(layer => layer.remove());
+
+    const layer = document.createElement("div");
+    layer.className = "live-bubbles-layer";
+    screen.prepend(layer);
+
+    const bubbles = [];
+
+    for (let i = 0; i < 55; i++) {
+      const bubble = document.createElement("span");
+      bubble.className = "live-bubble";
+
+      const size = 5 + Math.random() * 12;
+
+      const item = {
+        element: bubble,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        size: size,
+        speed: 0.018 + Math.random() * 0.035,
+        drift: -0.018 + Math.random() * 0.036,
+        opacity: 0.28 + Math.random() * 0.42
+      };
+
+      bubble.style.width = item.size + "px";
+      bubble.style.height = item.size + "px";
+      bubble.style.opacity = item.opacity;
+
+      layer.appendChild(bubble);
+      bubbles.push(item);
+    }
+
+    function animateBubbles() {
+      bubbles.forEach(item => {
+        item.y -= item.speed;
+        item.x += item.drift;
+
+        if (item.y < -8) {
+          item.y = 105;
+          item.x = Math.random() * 100;
+        }
+
+        if (item.x < -5) item.x = 105;
+        if (item.x > 105) item.x = -5;
+
+        item.element.style.left = item.x + "%";
+        item.element.style.top = item.y + "%";
+      });
+
+      requestAnimationFrame(animateBubbles);
+    }
+
+    animateBubbles();
+  }
+
+  startRealMovingBubbles();
+</script><style>
+  .super-moving-bubbles-layer {
+    position: absolute !important;
+    inset: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+    z-index: 2 !important;
+  }
+
+  .super-moving-bubble {
+    position: absolute !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.42) !important;
+    box-shadow:
+      0 0 14px rgba(255, 255, 255, 0.75),
+      inset 0 0 8px rgba(255, 255, 255, 0.45) !important;
+    opacity: 0.65 !important;
+    transition: none !important;
+  }
+
+  .screen {
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  .screen > *:not(.super-moving-bubbles-layer) {
+    position: relative !important;
+    z-index: 3 !important;
+  }
+</style>
+
+<script>
+  function forceAllBubblesToMove() {
+    const screen = document.querySelector(".screen");
+    if (!screen) return;
+
+    document.querySelectorAll(
+      ".floating-bubbles-layer, .extra-bubbles-bottom, .soft-bubbles-upgrade, .visible-bubbles-layer, .live-bubbles-layer, .super-moving-bubbles-layer"
+    ).forEach(layer => layer.remove());
+
+    const layer = document.createElement("div");
+    layer.className = "super-moving-bubbles-layer";
+    screen.prepend(layer);
+
+    const bubbles = [];
+
+    for (let i = 0; i < 90; i++) {
+      const bubble = document.createElement("span");
+      bubble.className = "super-moving-bubble";
+
+      const size = 4 + Math.random() * 13;
+
+      const bubbleData = {
+        el: bubble,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        size: size,
+        speed: 0.05 + Math.random() * 0.08,
+        drift: -0.025 + Math.random() * 0.05,
+        opacity: 0.25 + Math.random() * 0.5
+      };
+
+      bubble.style.width = bubbleData.size + "px";
+      bubble.style.height = bubbleData.size + "px";
+      bubble.style.opacity = bubbleData.opacity;
+
+      layer.appendChild(bubble);
+      bubbles.push(bubbleData);
+    }
+
+    function move() {
+      bubbles.forEach(bubble => {
+        bubble.y -= bubble.speed;
+        bubble.x += bubble.drift;
+
+        if (bubble.y < -10) {
+          bubble.y = 110;
+          bubble.x = Math.random() * 100;
+        }
+
+        if (bubble.x < -8) bubble.x = 108;
+        if (bubble.x > 108) bubble.x = -8;
+
+        bubble.el.style.left = bubble.x + "%";
+        bubble.el.style.top = bubble.y + "%";
+      });
+
+      requestAnimationFrame(move);
+    }
+
+    move();
+  }
+
+  forceAllBubblesToMove();
+</script><script>
+  function slowDownBubblesOnly() {
+    const bubbles = document.querySelectorAll(".super-moving-bubble");
+
+    bubbles.forEach(bubble => {
+      bubble.dataset.slow = "true";
+    });
+
+    const oldLayers = document.querySelectorAll(".super-moving-bubbles-layer");
+
+    oldLayers.forEach(layer => {
+      layer.style.opacity = "0.75";
+    });
+  }
+
+  slowDownBubblesOnly();
+</script>
+
+<style>
+  .super-moving-bubble {
+    opacity: 0.5 !important;
+  }
+</style><style>
+  /* QUESTION PROGRESS LINE */
+  .question-progress-wrap {
+    width: 315px;
+    margin: -8px auto 18px;
+    position: relative;
+    z-index: 20;
+  }
+
+  .question-progress-text {
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    color: rgba(0, 0, 0, 0.55);
+    margin-bottom: 7px;
+  }
+
+  .question-progress-track {
+    width: 100%;
+    height: 5px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.55);
+    box-shadow:
+      inset 0 0 8px rgba(0,0,0,0.10),
+      0 0 10px rgba(255,255,255,0.35);
+    overflow: hidden;
+  }
+
+  .question-progress-fill {
+    width: 0%;
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 210, 222, 0.95),
+      rgba(255, 255, 255, 0.98),
+      rgba(220, 170, 190, 0.95)
+    );
+    box-shadow:
+      0 0 12px rgba(255,255,255,0.9),
+      0 0 20px rgba(230,160,190,0.45);
+    transition: width 0.65s ease;
+  }
+</style>
+
+<script>
+  function addQuestionProgressLine() {
+    const questionBox =
+      document.querySelector(".question-title") ||
+      document.getElementById("questionText");
+
+    if (!questionBox) return;
+
+    if (!document.getElementById("questionProgressWrap")) {
+      questionBox.insertAdjacentHTML(
+        "afterend",
+        `
+        <div class="question-progress-wrap" id="questionProgressWrap">
+          <div class="question-progress-text" id="questionProgressText">Question 1 / 10</div>
+          <div class="question-progress-track">
+            <div class="question-progress-fill" id="questionProgressFill"></div>
+          </div>
+        </div>
+        `
+      );
+    }
+
+    updateQuestionProgressLine();
+  }
+
+  function updateQuestionProgressLine() {
+    const progressFill = document.getElementById("questionProgressFill");
+    const progressText = document.getElementById("questionProgressText");
+
+    if (!progressFill || !progressText) return;
+
+    let total = 10;
+    let current = 1;
+
+    if (typeof questions !== "undefined" && Array.isArray(questions)) {
+      total = questions.length;
+    }
+
+    if (typeof currentQuestion !== "undefined") {
+      current = currentQuestion + 1;
+    }
+
+    const percent = (current / total) * 100;
+
+    progressFill.style.width = percent + "%";
+    progressText.textContent = "Question " + current + " / " + total;
+  }
+
+  addQuestionProgressLine();
+
+  const oldLoadQuestionProgress = typeof loadQuestion === "function" ? loadQuestion : null;
+
+  if (oldLoadQuestionProgress && !window.progressLineConnected) {
+    window.progressLineConnected = true;
+
+    loadQuestion = function() {
+      oldLoadQuestionProgress();
+      setTimeout(addQuestionProgressLine, 50);
+      setTimeout(updateQuestionProgressLine, 120);
+    };
+  }
+
+  document.addEventListener("click", () => {
+    setTimeout(updateQuestionProgressLine, 150);
+  });
+
+  setTimeout(addQuestionProgressLine, 300);
+  setTimeout(updateQuestionProgressLine, 700);
+</script><style>
+  /* ANIME INSPIRED MENU - SAME DESIGN */
+  .anime-menu-btn {
+    position: fixed !important;
+    top: 26px !important;
+    right: calc(50% - 185px) !important;
+    width: 46px !important;
+    height: 46px !important;
+    border-radius: 50% !important;
+    border: 1px solid rgba(0,0,0,0.18) !important;
+    background: rgba(255,255,255,0.65) !important;
+    backdrop-filter: blur(12px) !important;
+    box-shadow:
+      0 8px 20px rgba(0,0,0,0.16),
+      inset 0 0 14px rgba(255,255,255,0.55) !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    z-index: 8000 !important;
+    cursor: pointer !important;
+    transition: 0.3s ease !important;
+  }
+
+  .anime-menu-btn:hover {
+    transform: translateY(-3px) scale(1.06) !important;
+    background: rgba(255, 226, 235, 0.85) !important;
+  }
+
+  .anime-menu-btn span {
+    position: absolute !important;
+    width: 20px !important;
+    height: 2px !important;
+    border-radius: 999px !important;
+    background: #111 !important;
+    transition: 0.3s ease !important;
+  }
+
+  .anime-menu-btn span:nth-child(1) {
+    transform: translateY(-7px);
+  }
+
+  .anime-menu-btn span:nth-child(2) {
+    transform: translateY(0);
+  }
+
+  .anime-menu-btn span:nth-child(3) {
+    transform: translateY(7px);
+  }
+
+  .anime-menu-btn.open span:nth-child(1) {
+    transform: rotate(45deg);
+  }
+
+  .anime-menu-btn.open span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .anime-menu-btn.open span:nth-child(3) {
+    transform: rotate(-45deg);
+  }
+
+  .anime-menu-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(20, 18, 22, 0.38) !important;
+    backdrop-filter: blur(10px) !important;
+    z-index: 7990 !important;
+    display: none !important;
+    opacity: 0 !important;
+    transition: 0.3s ease !important;
+  }
+
+  .anime-menu-overlay.show {
+    display: block !important;
+    opacity: 1 !important;
+  }
+
+  .anime-menu-panel {
+    position: fixed !important;
+    top: 0 !important;
+    right: 0 !important;
+    width: 318px !important;
+    max-width: 86vw !important;
+    height: 100vh !important;
+    z-index: 7995 !important;
+    padding: 90px 22px 28px !important;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(255,255,255,0.96), transparent 32%),
+      radial-gradient(circle at 88% 22%, rgba(255,210,225,0.65), transparent 34%),
+      linear-gradient(180deg, rgba(250,245,248,0.96), rgba(220,198,207,0.96)) !important;
+    box-shadow:
+      -18px 0 45px rgba(0,0,0,0.22),
+      inset 0 0 28px rgba(255,255,255,0.32) !important;
+    transform: translateX(105%) !important;
+    transition: transform 0.45s cubic-bezier(.22,1,.36,1) !important;
+    overflow: hidden !important;
+  }
+
+  .anime-menu-panel.show {
+    transform: translateX(0) !important;
+  }
+
+  .anime-menu-panel::before {
+    content: "✦" !important;
+    position: absolute !important;
+    top: 28px !important;
+    left: 24px !important;
+    width: 46px !important;
+    height: 46px !important;
+    border-radius: 14px !important;
+    background: #111 !important;
+    color: white !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    font-size: 26px !important;
+    box-shadow: 0 0 0 10px rgba(255,255,255,0.35) !important;
+  }
+
+  .anime-menu-title {
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 30px !important;
+    font-style: italic !important;
+    font-weight: 400 !important;
+    margin-bottom: 8px !important;
+    color: #111 !important;
+  }
+
+  .anime-menu-subtitle {
+    font-family: Arial, Helvetica, sans-serif !important;
+    font-size: 13px !important;
+    line-height: 1.45 !important;
+    color: rgba(0,0,0,0.58) !important;
+    margin-bottom: 28px !important;
+  }
+
+  .anime-menu-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+  }
+
+  .anime-menu-item {
+    width: 100% !important;
+    min-height: 56px !important;
+    border-radius: 22px !important;
+    border: 1px solid rgba(0,0,0,0.16) !important;
+    background: rgba(255,255,255,0.62) !important;
+    box-shadow:
+      0 8px 18px rgba(0,0,0,0.10),
+      inset 0 0 16px rgba(255,255,255,0.38) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 14px !important;
+    padding: 12px 15px !important;
+    cursor: pointer !important;
+    transition: 0.3s ease !important;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 22px !important;
+    font-style: italic !important;
+    color: #111 !important;
+  }
+
+  .anime-menu-item:hover {
+    background: #111 !important;
+    color: white !important;
+    transform: translateX(-6px) scale(1.02) !important;
+    box-shadow: 0 14px 24px rgba(0,0,0,0.22) !important;
+  }
+
+  .anime-menu-icon {
+    width: 33px !important;
+    height: 33px !important;
+    border-radius: 12px !important;
+    background: rgba(255, 220, 230, 0.9) !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    font-size: 17px !important;
+    flex-shrink: 0 !important;
+    transition: 0.3s ease !important;
+  }
+
+  .anime-menu-item:hover .anime-menu-icon {
+    background: rgba(255,255,255,0.18) !important;
+    color: white !important;
+  }
+
+  .anime-menu-sparkle {
+    position: absolute !important;
+    border-radius: 50% !important;
+    background: rgba(255,255,255,0.72) !important;
+    box-shadow: 0 0 12px rgba(255,255,255,0.85) !important;
+    animation: animeMenuSparkle 5s ease-in-out infinite !important;
+    pointer-events: none !important;
+  }
+
+  .anime-menu-sparkle:nth-child(1) {
+    width: 7px;
+    height: 7px;
+    left: 38px;
+    top: 165px;
+    animation-delay: 0s;
+  }
+
+  .anime-menu-sparkle:nth-child(2) {
+    width: 10px;
+    height: 10px;
+    right: 36px;
+    top: 250px;
+    animation-delay: 1.3s;
+  }
+
+  .anime-menu-sparkle:nth-child(3) {
+    width: 6px;
+    height: 6px;
+    left: 78px;
+    bottom: 150px;
+    animation-delay: 2.4s;
+  }
+
+  @keyframes animeMenuSparkle {
+    0%, 100% {
+      transform: translateY(0) scale(0.7);
+      opacity: 0.25;
+    }
+
+    50% {
+      transform: translateY(-18px) scale(1.2);
+      opacity: 0.85;
+    }
+  }
+
+  @media (max-width: 430px) {
+    .anime-menu-btn {
+      right: 22px !important;
+    }
+  }
+</style>
+
+<div class="anime-menu-overlay" id="animeMenuOverlay"></div>
+
+<button class="anime-menu-btn" id="animeMenuBtn" type="button" aria-label="Open menu">
+  <span></span>
+  <span></span>
+  <span></span>
+</button>
+
+<aside class="anime-menu-panel" id="animeMenuPanel">
+  <span class="anime-menu-sparkle"></span>
+  <span class="anime-menu-sparkle"></span>
+  <span class="anime-menu-sparkle"></span>
+
+  <h2 class="anime-menu-title">Mindset Menu</h2>
+  <p class="anime-menu-subtitle">
+    Your soft space for quotes, saved moments, and daily mindset energy.
+  </p>
+
+  <div class="anime-menu-list">
+    <button class="anime-menu-item" type="button" data-menu-action="home">
+      <span class="anime-menu-icon">✦</span>
+      Home
+    </button>
+
+    <button class="anime-menu-item" type="button" data-menu-action="saved">
+      <span class="anime-menu-icon">♡</span>
+      Saved Quotes
+    </button>
+
+    <button class="anime-menu-item" type="button" data-menu-action="progress">
+      <span class="anime-menu-icon">☽</span>
+      My Progress
+    </button>
+
+    <button class="anime-menu-item" type="button" data-menu-action="subscription">
+      <span class="anime-menu-icon">✧</span>
+      Subscription
+    </button>
+
+    <button class="anime-menu-item" type="button" data-menu-action="settings">
+      <span class="anime-menu-icon">⚙</span>
+      Settings
+    </button>
+  </div>
+</aside>
+
+<script>
+  function addAnimeInspiredMenu() {
+    const menuBtn = document.getElementById("animeMenuBtn");
+    const menuPanel = document.getElementById("animeMenuPanel");
+    const menuOverlay = document.getElementById("animeMenuOverlay");
+
+    if (!menuBtn || !menuPanel || !menuOverlay) return;
+
+    function openMenu() {
+      menuBtn.classList.add("open");
+      menuPanel.classList.add("show");
+      menuOverlay.classList.add("show");
+    }
+
+    function closeMenu() {
+      menuBtn.classList.remove("open");
+      menuPanel.classList.remove("show");
+      menuOverlay.classList.remove("show");
+    }
+
+    menuBtn.addEventListener("click", () => {
+      if (menuPanel.classList.contains("show")) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    });
+
+    menuOverlay.addEventListener("click", closeMenu);
+
+    document.querySelectorAll(".anime-menu-item").forEach(item => {
+      item.addEventListener("click", () => {
+        const action = item.dataset.menuAction;
+
+        if (action === "home") {
+          if (typeof resultScreen !== "undefined") {
+            resultScreen.style.display = "none";
+          }
+
+          if (typeof quizScreen !== "undefined") {
+            quizScreen.style.display = "block";
+          }
+
+          if (typeof currentQuestion !== "undefined") {
+            currentQuestion = 0;
+          }
+
+          if (typeof loadQuestion === "function") {
+            loadQuestion();
+          }
+
+          window.scrollTo(0, 0);
+        }
+
+        if (action === "saved") {
+          alert("Saved Quotes page coming soon.");
+        }
+
+        if (action === "progress") {
+          alert("Progress page coming soon.");
+        }
+
+        if (action === "subscription") {
+          alert("Subscription page coming soon.");
+        }
+
+        if (action === "settings") {
+          alert("Settings page coming soon.");
+        }
+
+        closeMenu();
+      });
+    });
+  }
+
+  addAnimeInspiredMenu();
+</script><script>
+  function updateAnimeMenuWords() {
+    const menuList = document.querySelector(".anime-menu-list");
+
+    if (!menuList) return;
+
+    menuList.innerHTML = `
+      <button class="anime-menu-item" type="button" data-menu-action="home">
+        <span class="anime-menu-icon">✦</span>
+        Main Page
+      </button>
+
+      <button class="anime-menu-item" type="button" data-menu-action="journal">
+        <span class="anime-menu-icon">☾</span>
+        Journal
+      </button>
+
+      <button class="anime-menu-item" type="button" data-menu-action="insights">
+        <span class="anime-menu-icon">✧</span>
+        Insights
+      </button>
+
+      <button class="anime-menu-item" type="button" data-menu-action="saved">
+        <span class="anime-menu-icon">♡</span>
+        Saved Quotes
+      </button>
+
+      <button class="anime-menu-item" type="button" data-menu-action="subscription">
+        <span class="anime-menu-icon">◇</span>
+        Subscription
+      </button>
+
+      <button class="anime-menu-item" type="button" data-menu-action="settings">
+        <span class="anime-menu-icon">⚙</span>
+        Settings
+      </button>
+    `;
+
+    document.querySelectorAll(".anime-menu-item").forEach(item => {
+      item.addEventListener("click", () => {
+        const action = item.dataset.menuAction;
+
+        if (action === "home") {
+          if (typeof resultScreen !== "undefined") {
+            resultScreen.style.display = "none";
+          }
+
+          if (typeof quizScreen !== "undefined") {
+            quizScreen.style.display = "block";
+          }
+
+          if (typeof currentQuestion !== "undefined") {
+            currentQuestion = 0;
+          }
+
+          if (typeof loadQuestion === "function") {
+            loadQuestion();
+          }
+
+          window.scrollTo(0, 0);
+        }
+
+        if (action === "journal") {
+          alert("Journal page coming soon.");
+        }
+
+        if (action === "insights") {
+          alert("Insights page coming soon.");
+        }
+
+        if (action === "saved") {
+          alert("Saved Quotes page coming soon.");
+        }
+
+        if (action === "subscription") {
+          alert("Subscription page coming soon.");
+        }
+
+        if (action === "settings") {
+          alert("Settings page coming soon.");
+        }
+
+        const menuBtn = document.getElementById("animeMenuBtn");
+        const menuPanel = document.getElementById("animeMenuPanel");
+        const menuOverlay = document.getElementById("animeMenuOverlay");
+
+        if (menuBtn) menuBtn.classList.remove("open");
+        if (menuPanel) menuPanel.classList.remove("show");
+        if (menuOverlay) menuOverlay.classList.remove("show");
+      });
+    });
+  }
+
+  updateAnimeMenuWords();
+  setTimeout(updateAnimeMenuWords, 500);
+</script><style>
+  /* FIX MENU NOT COVERING ACCOUNT BUTTON */
+  .anime-menu-btn {
+    top: 82px !important;
+    right: calc(50% - 185px) !important;
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  @media (max-width: 430px) {
+    .anime-menu-btn {
+      top: 82px !important;
+      right: 22px !important;
+    }
+  }
+</style><style>
+  /* MOVE MENU BUTTON A LITTLE DOWN + MIDDLE */
+  .anime-menu-btn {
+    top: 106px !important;
+    right: calc(50% - 178px) !important;
+    width: 42px !important;
+    height: 42px !important;
+    z-index: 9000 !important;
+  }
+
+  @media (max-width: 430px) {
+    .anime-menu-btn {
+      top: 106px !important;
+      right: 34px !important;
+    }
+  }
+</style><style>
+  /* CENTER MENU BUTTON BETTER */
+  .anime-menu-btn {
+    top: 112px !important;
+    right: calc(50% - 98px) !important;
+    width: 42px !important;
+    height: 42px !important;
+    z-index: 9000 !important;
+  }
+
+  @media (max-width: 430px) {
+    .anime-menu-btn {
+      top: 112px !important;
+      right: 112px !important;
+    }
+  }
+</style><style>
+  /* FINAL MENU POSITION FIX */
+  .anime-menu-btn {
+    top: 96px !important;
+    right: calc(50% - 178px) !important;
+    width: 42px !important;
+    height: 42px !important;
+    z-index: 9000 !important;
+  }
+
+  @media (max-width: 430px) {
+    .anime-menu-btn {
+      top: 96px !important;
+      right: 34px !important;
+    }
+  }
+</style><style>
+  /* MAKE MENU BUTTON STAY STILL */
+  .anime-menu-btn {
+    position: fixed !important;
+    top: 96px !important;
+    right: calc(50% - 178px) !important;
+    transform: none !important;
+    animation: none !important;
+    transition: background 0.25s ease, box-shadow 0.25s ease !important;
+    z-index: 99999 !important;
+  }
+
+  .anime-menu-btn:hover {
+    transform: none !important;
+  }
+
+  .anime-menu-btn.open {
+    transform: none !important;
+  }
+
+  @media (max-width: 430px) {
+    .anime-menu-btn {
+      position: fixed !important;
+      top: 96px !important;
+      right: 34px !important;
+      transform: none !important;
+    }
+  }
+</style><style>
+  /* FORCE MENU BUTTON TO STAY FIXED ON PHONE */
+  #animeMenuBtn {
+    position: fixed !important;
+    top: 96px !important;
+    right: 24px !important;
+    left: auto !important;
+    transform: none !important;
+    animation: none !important;
+    z-index: 999999 !important;
+  }
+
+  #animeMenuBtn:hover,
+  #animeMenuBtn.open {
+    transform: none !important;
+  }
+
+  #animeMenuPanel,
+  #animeMenuOverlay {
+    position: fixed !important;
+  }
+</style>
+
+<script>
+  function forceMenuButtonFixedOnPhone() {
+    const menuBtn = document.getElementById("animeMenuBtn");
+    const menuPanel = document.getElementById("animeMenuPanel");
+    const menuOverlay = document.getElementById("animeMenuOverlay");
+
+    if (menuBtn && menuBtn.parentElement !== document.body) {
+      document.body.appendChild(menuBtn);
+    }
+
+    if (menuPanel && menuPanel.parentElement !== document.body) {
+      document.body.appendChild(menuPanel);
+    }
+
+    if (menuOverlay && menuOverlay.parentElement !== document.body) {
+      document.body.appendChild(menuOverlay);
+    }
+
+    if (menuBtn) {
+      menuBtn.style.position = "fixed";
+      menuBtn.style.top = "96px";
+      menuBtn.style.right = "24px";
+      menuBtn.style.left = "auto";
+      menuBtn.style.zIndex = "999999";
+      menuBtn.style.transform = "none";
+    }
+  }
+
+  forceMenuButtonFixedOnPhone();
+  setTimeout(forceMenuButtonFixedOnPhone, 300);
+  setTimeout(forceMenuButtonFixedOnPhone, 1000);
+</script><style>
+  /* TRUE FIXED MENU BUTTON - DOES NOT MOVE WITH APP */
+  #fixedAnimeMenuBtn {
+    position: fixed !important;
+    top: 96px !important;
+    right: 22px !important;
+    left: auto !important;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    border: 1px solid rgba(0,0,0,0.18) !important;
+    background: rgba(255,255,255,0.72) !important;
+    backdrop-filter: blur(12px) !important;
+    box-shadow:
+      0 8px 20px rgba(0,0,0,0.16),
+      inset 0 0 14px rgba(255,255,255,0.55) !important;
+    z-index: 2147483647 !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  #fixedAnimeMenuBtn span {
+    position: absolute !important;
+    width: 20px !important;
+    height: 2px !important;
+    border-radius: 999px !important;
+    background: #111 !important;
+    transition: 0.25s ease !important;
+  }
+
+  #fixedAnimeMenuBtn span:nth-child(1) {
+    transform: translateY(-7px);
+  }
+
+  #fixedAnimeMenuBtn span:nth-child(2) {
+    transform: translateY(0);
+  }
+
+  #fixedAnimeMenuBtn span:nth-child(3) {
+    transform: translateY(7px);
+  }
+
+  #fixedAnimeMenuBtn.open span:nth-child(1) {
+    transform: rotate(45deg);
+  }
+
+  #fixedAnimeMenuBtn.open span:nth-child(2) {
+    opacity: 0;
+  }
+
+  #fixedAnimeMenuBtn.open span:nth-child(3) {
+    transform: rotate(-45deg);
+  }
+
+  #animeMenuPanel,
+  #animeMenuOverlay {
+    position: fixed !important;
+    z-index: 2147483646 !important;
+  }
+</style>
+
+<script>
+  function createRealFixedMenuButton() {
+    const oldMenuBtn = document.getElementById("animeMenuBtn");
+
+    if (oldMenuBtn) {
+      oldMenuBtn.style.display = "none";
+      oldMenuBtn.remove();
+    }
+
+    let fixedBtn = document.getElementById("fixedAnimeMenuBtn");
+
+    if (!fixedBtn) {
+      fixedBtn = document.createElement("button");
+      fixedBtn.id = "fixedAnimeMenuBtn";
+      fixedBtn.type = "button";
+      fixedBtn.setAttribute("aria-label", "Open menu");
+      fixedBtn.innerHTML = "<span></span><span></span><span></span>";
+      document.body.appendChild(fixedBtn);
+    }
+
+    const menuPanel = document.getElementById("animeMenuPanel");
+    const menuOverlay = document.getElementById("animeMenuOverlay");
+
+    if (menuPanel && menuPanel.parentElement !== document.body) {
+      document.body.appendChild(menuPanel);
+    }
+
+    if (menuOverlay && menuOverlay.parentElement !== document.body) {
+      document.body.appendChild(menuOverlay);
+    }
+
+    fixedBtn.onclick = function () {
+      if (!menuPanel || !menuOverlay) return;
+
+      const isOpen = menuPanel.classList.contains("show");
+
+      if (isOpen) {
+        fixedBtn.classList.remove("open");
+        menuPanel.classList.remove("show");
+        menuOverlay.classList.remove("show");
+      } else {
+        fixedBtn.classList.add("open");
+        menuPanel.classList.add("show");
+        menuOverlay.classList.add("show");
+      }
+    };
+
+    if (menuOverlay) {
+      menuOverlay.onclick = function () {
+        fixedBtn.classList.remove("open");
+        menuPanel.classList.remove("show");
+        menuOverlay.classList.remove("show");
+      };
+    }
+  }
+
+  createRealFixedMenuButton();
+  setTimeout(createRealFixedMenuButton, 300);
+  setTimeout(createRealFixedMenuButton, 1000);
+  window.addEventListener("scroll", createRealFixedMenuButton);
+</script><style>
+  /* ABSOLUTE MENU THAT STAYS VISUALLY FIXED */
+  #fixedAnimeMenuBtn {
+    position: absolute !important;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    border: 1px solid rgba(0,0,0,0.18) !important;
+    background: rgba(255,255,255,0.72) !important;
+    backdrop-filter: blur(12px) !important;
+    box-shadow:
+      0 8px 20px rgba(0,0,0,0.16),
+      inset 0 0 14px rgba(255,255,255,0.55) !important;
+    z-index: 2147483647 !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  #fixedAnimeMenuBtn span {
+    position: absolute !important;
+    width: 20px !important;
+    height: 2px !important;
+    border-radius: 999px !important;
+    background: #111 !important;
+  }
+
+  #fixedAnimeMenuBtn span:nth-child(1) {
+    transform: translateY(-7px);
+  }
+
+  #fixedAnimeMenuBtn span:nth-child(2) {
+    transform: translateY(0);
+  }
+
+  #fixedAnimeMenuBtn span:nth-child(3) {
+    transform: translateY(7px);
+  }
+
+  #fixedAnimeMenuBtn.open span:nth-child(1) {
+    transform: rotate(45deg);
+  }
+
+  #fixedAnimeMenuBtn.open span:nth-child(2) {
+    opacity: 0;
+  }
+
+  #fixedAnimeMenuBtn.open span:nth-child(3) {
+    transform: rotate(-45deg);
+  }
+
+  #animeMenuBtn {
+    display: none !important;
+  }
+</style>
+
+<script>
+  function finalMenuNeverMovesFix() {
+    const oldBtn = document.getElementById("animeMenuBtn");
+
+    if (oldBtn) {
+      oldBtn.style.display = "none";
+    }
+
+    let btn = document.getElementById("fixedAnimeMenuBtn");
+
+    if (!btn) {
+      btn = document.createElement("button");
+      btn.id = "fixedAnimeMenuBtn";
+      btn.type = "button";
+      btn.innerHTML = "<span></span><span></span><span></span>";
+      document.body.appendChild(btn);
+    }
+
+    const panel = document.getElementById("animeMenuPanel");
+    const overlay = document.getElementById("animeMenuOverlay");
+
+    function placeButton() {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
+      const screen = document.querySelector(".screen");
+      const screenRect = screen ? screen.getBoundingClientRect() : null;
+
+      const topPosition = scrollTop + 96;
+
+      let leftPosition;
+
+      if (screenRect) {
+        leftPosition = screenRect.left + screenRect.width - 72;
+      } else {
+        leftPosition = window.innerWidth - 72;
+      }
+
+      btn.style.top = topPosition + "px";
+      btn.style.left = leftPosition + "px";
+      btn.style.right = "auto";
+    }
+
+    placeButton();
+
+    window.addEventListener("scroll", placeButton, { passive: true });
+    window.addEventListener("resize", placeButton);
+
+    btn.onclick = function () {
+      if (!panel || !overlay) return;
+
+      const isOpen = panel.classList.contains("show");
+
+      if (isOpen) {
+        btn.classList.remove("open");
+        panel.classList.remove("show");
+        overlay.classList.remove("show");
+      } else {
+        btn.classList.add("open");
+        panel.classList.add("show");
+        overlay.classList.add("show");
+      }
+
+      placeButton();
+    };
+
+    if (overlay) {
+      overlay.onclick = function () {
+        btn.classList.remove("open");
+        panel.classList.remove("show");
+        overlay.classList.remove("show");
+      };
+    }
+  }
+
+  finalMenuNeverMovesFix();
+  setTimeout(finalMenuNeverMovesFix, 300);
+  setTimeout(finalMenuNeverMovesFix, 1000);
+</script>
+</body>
+
+
+</html>
 
