@@ -1,48 +1,43 @@
 <style>
+  /* Slow white bubbles on the whole app */
   .screen {
     position: relative !important;
     overflow: hidden !important;
   }
 
-  .screen > *:not(.soft-bubbles-fixed) {
-    position: relative;
-    z-index: 3;
-  }
-
-  /* slow white bubbles */
-  .soft-bubbles-fixed {
+  .soft-bubbles-upgrade {
     position: absolute;
     inset: 0;
-    z-index: 1;
     pointer-events: none;
     overflow: hidden;
+    z-index: 1;
   }
 
-  .soft-bubbles-fixed span {
+  .soft-bubbles-upgrade span {
     position: absolute;
     bottom: -50px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.45);
+    background: rgba(255, 255, 255, 0.42);
     box-shadow: 0 0 16px rgba(255, 255, 255, 0.75);
-    animation: slowBubbleMove 16s linear infinite;
+    animation: softBubbleFloat 18s linear infinite;
   }
 
-  .soft-bubbles-fixed span:nth-child(1) { left: 7%; width: 7px; height: 7px; animation-delay: 0s; }
-  .soft-bubbles-fixed span:nth-child(2) { left: 18%; width: 11px; height: 11px; animation-delay: 3s; }
-  .soft-bubbles-fixed span:nth-child(3) { left: 30%; width: 6px; height: 6px; animation-delay: 6s; }
-  .soft-bubbles-fixed span:nth-child(4) { left: 45%; width: 13px; height: 13px; animation-delay: 1s; }
-  .soft-bubbles-fixed span:nth-child(5) { left: 58%; width: 8px; height: 8px; animation-delay: 5s; }
-  .soft-bubbles-fixed span:nth-child(6) { left: 72%; width: 10px; height: 10px; animation-delay: 2s; }
-  .soft-bubbles-fixed span:nth-child(7) { left: 84%; width: 6px; height: 6px; animation-delay: 8s; }
-  .soft-bubbles-fixed span:nth-child(8) { left: 94%; width: 12px; height: 12px; animation-delay: 4s; }
+  .soft-bubbles-upgrade span:nth-child(1) { left: 7%; width: 6px; height: 6px; animation-delay: 0s; }
+  .soft-bubbles-upgrade span:nth-child(2) { left: 18%; width: 10px; height: 10px; animation-delay: 3s; }
+  .soft-bubbles-upgrade span:nth-child(3) { left: 30%; width: 7px; height: 7px; animation-delay: 6s; }
+  .soft-bubbles-upgrade span:nth-child(4) { left: 43%; width: 12px; height: 12px; animation-delay: 1s; }
+  .soft-bubbles-upgrade span:nth-child(5) { left: 56%; width: 8px; height: 8px; animation-delay: 5s; }
+  .soft-bubbles-upgrade span:nth-child(6) { left: 69%; width: 11px; height: 11px; animation-delay: 2s; }
+  .soft-bubbles-upgrade span:nth-child(7) { left: 81%; width: 6px; height: 6px; animation-delay: 8s; }
+  .soft-bubbles-upgrade span:nth-child(8) { left: 93%; width: 9px; height: 9px; animation-delay: 4s; }
 
-  @keyframes slowBubbleMove {
+  @keyframes softBubbleFloat {
     0% {
-      transform: translateY(0) translateX(0) scale(0.75);
+      transform: translateY(0) translateX(0) scale(0.7);
       opacity: 0;
     }
 
-    12% {
+    15% {
       opacity: 0.55;
     }
 
@@ -57,7 +52,12 @@
     }
   }
 
-  /* corrected arrows */
+  .screen > *:not(.soft-bubbles-upgrade) {
+    position: relative;
+    z-index: 3;
+  }
+
+  /* Correct arrows */
   .arrows {
     position: absolute !important;
     bottom: 26px !important;
@@ -146,21 +146,194 @@
     pointer-events: none !important;
   }
 
-  .start-btn {
+  /* Back button */
+  .result-back-fixed {
     font-size: 28px !important;
     line-height: 1 !important;
   }
+
+  /* 10 free quotes popup */
+  .quote-limit-popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 18, 22, 0.55);
+    backdrop-filter: blur(12px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 5000;
+    padding: 20px;
+  }
+
+  .quote-limit-box {
+    width: 340px;
+    max-width: 92vw;
+    border-radius: 32px;
+    background:
+      radial-gradient(circle at top left, rgba(255,255,255,0.95), transparent 35%),
+      linear-gradient(180deg, rgba(250,247,248,0.98), rgba(219,194,199,0.98));
+    box-shadow:
+      0 28px 60px rgba(0,0,0,0.38),
+      inset 0 0 22px rgba(255,255,255,0.35);
+    padding: 30px 24px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.6);
+    animation: limitPopupOpen 0.45s ease forwards;
+  }
+
+  @keyframes limitPopupOpen {
+    from {
+      opacity: 0;
+      transform: translateY(22px) scale(0.96);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .quote-limit-icon {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 14px;
+    border-radius: 16px;
+    background: #111;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    box-shadow: 0 0 0 10px rgba(255,255,255,0.45);
+  }
+
+  .quote-limit-box h2 {
+    font-size: 29px;
+    font-style: italic;
+    font-weight: 400;
+    margin-bottom: 10px;
+  }
+
+  .quote-limit-box p {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    opacity: 0.78;
+    margin-bottom: 20px;
+  }
+
+  .upgrade-btn,
+  .close-limit-btn {
+    width: 100%;
+    border: none;
+    border-radius: 999px;
+    padding: 14px 16px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.25s ease;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-top: 10px;
+  }
+
+  .upgrade-btn {
+    background: #111;
+    color: white;
+  }
+
+  .close-limit-btn {
+    background: rgba(255,255,255,0.65);
+    color: #111;
+    border: 1px solid rgba(0,0,0,0.16);
+  }
+
+  .upgrade-btn:hover,
+  .close-limit-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 18px rgba(0,0,0,0.20);
+  }
 </style>
 
+<div class="quote-limit-popup" id="quoteLimitPopup">
+  <div class="quote-limit-box">
+    <div class="quote-limit-icon">✦</div>
+
+    <h2>Free Limit Reached</h2>
+
+    <p>
+      You used your 10 free quotes. Upgrade your subscription to unlock unlimited daily mindset quotes.
+    </p>
+
+    <button class="upgrade-btn" type="button">
+      Upgrade Subscription
+    </button>
+
+    <button class="close-limit-btn" id="closeLimitPopup" type="button">
+      Maybe Later
+    </button>
+  </div>
+</div>
+
 <script>
-  function applyFinalSmallChanges() {
+  function applyResultPageUpgrades() {
+    const FREE_QUOTE_LIMIT = 10;
+
+    function isPaidUser() {
+      return localStorage.getItem("mindsetSubscription") === "paid";
+    }
+
+    function getUsedQuotes() {
+      return Number(localStorage.getItem("freeQuotesUsed") || "0");
+    }
+
+    function setUsedQuotes(count) {
+      localStorage.setItem("freeQuotesUsed", String(count));
+    }
+
+    function showLimitPopup() {
+      const popup = document.getElementById("quoteLimitPopup");
+
+      if (popup) {
+        popup.style.display = "flex";
+      }
+    }
+
+    function updateQuoteMiniText() {
+      const miniText = document.getElementById("quoteMiniText");
+
+      if (!miniText) return;
+
+      if (isPaidUser()) {
+        miniText.textContent = "Unlimited quotes";
+        return;
+      }
+
+      const used = getUsedQuotes();
+      miniText.textContent = `${used} / ${FREE_QUOTE_LIMIT} free quotes`;
+    }
+
+    function canUseQuote() {
+      if (isPaidUser()) return true;
+
+      const used = getUsedQuotes();
+
+      if (used >= FREE_QUOTE_LIMIT) {
+        showLimitPopup();
+        updateQuoteMiniText();
+        return false;
+      }
+
+      setUsedQuotes(used + 1);
+      updateQuoteMiniText();
+      return true;
+    }
+
     const screen = document.querySelector(".screen");
 
-    if (screen && !document.querySelector(".soft-bubbles-fixed")) {
+    if (screen && !document.querySelector(".soft-bubbles-upgrade")) {
       screen.insertAdjacentHTML(
         "afterbegin",
         `
-        <div class="soft-bubbles-fixed">
+        <div class="soft-bubbles-upgrade">
           <span></span><span></span><span></span><span></span>
           <span></span><span></span><span></span><span></span>
         </div>
@@ -187,7 +360,7 @@
       if (!document.getElementById("quoteMiniText")) {
         arrows.insertAdjacentHTML(
           "beforeend",
-          '<span class="quote-mini-text" id="quoteMiniText">1 / 10 free quotes</span>'
+          '<span class="quote-mini-text" id="quoteMiniText">0 / 10 free quotes</span>'
         );
       }
     }
@@ -196,12 +369,13 @@
       const text = button.innerText.trim().toLowerCase();
 
       if (text.includes("start") && text.includes("again")) {
-        const newBackButton = button.cloneNode(true);
-        newBackButton.innerHTML = "Back";
+        const newButton = button.cloneNode(true);
+        newButton.textContent = "Back";
+        newButton.classList.add("result-back-fixed");
 
-        button.parentNode.replaceChild(newBackButton, button);
+        button.parentNode.replaceChild(newButton, button);
 
-        newBackButton.addEventListener("click", () => {
+        newButton.addEventListener("click", () => {
           if (typeof resultScreen !== "undefined") {
             resultScreen.style.display = "none";
           }
@@ -222,9 +396,92 @@
         });
       }
     });
+
+    if (!window.quoteLimitUpgradeAdded) {
+      window.quoteLimitUpgradeAdded = true;
+
+      const originalShowQuote = typeof showQuote === "function" ? showQuote : null;
+
+      if (originalShowQuote) {
+        showQuote = function(index) {
+          if (!canUseQuote()) return;
+          originalShowQuote(index);
+          setTimeout(updateQuoteMiniText, 350);
+        };
+      }
+
+      const oldNextQuoteBtn = document.getElementById("nextQuoteBtn");
+      const oldPrevQuoteBtn = document.getElementById("prevQuoteBtn");
+
+      if (oldNextQuoteBtn) {
+        const newNextQuoteBtn = oldNextQuoteBtn.cloneNode(true);
+        oldNextQuoteBtn.parentNode.replaceChild(newNextQuoteBtn, oldNextQuoteBtn);
+
+        newNextQuoteBtn.classList.add("right");
+        newNextQuoteBtn.addEventListener("click", () => {
+          if (!canUseQuote()) return;
+
+          if (typeof currentQuote !== "undefined" && typeof quoteResults !== "undefined") {
+            currentQuote++;
+
+            if (currentQuote >= quoteResults.length) {
+              currentQuote = 0;
+            }
+
+            if (originalShowQuote) {
+              originalShowQuote(currentQuote);
+            }
+
+            setTimeout(updateQuoteMiniText, 350);
+          }
+        });
+      }
+
+      if (oldPrevQuoteBtn) {
+        const newPrevQuoteBtn = oldPrevQuoteBtn.cloneNode(true);
+        oldPrevQuoteBtn.parentNode.replaceChild(newPrevQuoteBtn, oldPrevQuoteBtn);
+
+        newPrevQuoteBtn.classList.add("left");
+        newPrevQuoteBtn.addEventListener("click", () => {
+          if (!canUseQuote()) return;
+
+          if (typeof currentQuote !== "undefined" && typeof quoteResults !== "undefined") {
+            currentQuote--;
+
+            if (currentQuote < 0) {
+              currentQuote = quoteResults.length - 1;
+            }
+
+            if (originalShowQuote) {
+              originalShowQuote(currentQuote);
+            }
+
+            setTimeout(updateQuoteMiniText, 350);
+          }
+        });
+      }
+
+      const closeLimitPopup = document.getElementById("closeLimitPopup");
+
+      if (closeLimitPopup) {
+        closeLimitPopup.addEventListener("click", () => {
+          document.getElementById("quoteLimitPopup").style.display = "none";
+        });
+      }
+
+      const upgradeButton = document.querySelector(".upgrade-btn");
+
+      if (upgradeButton) {
+        upgradeButton.addEventListener("click", () => {
+          alert("Subscription page coming soon.");
+        });
+      }
+    }
+
+    updateQuoteMiniText();
   }
 
-  applyFinalSmallChanges();
-  setTimeout(applyFinalSmallChanges, 300);
-  setTimeout(applyFinalSmallChanges, 1000);
+  applyResultPageUpgrades();
+  setTimeout(applyResultPageUpgrades, 300);
+  setTimeout(applyResultPageUpgrades, 1000);
 </script>
