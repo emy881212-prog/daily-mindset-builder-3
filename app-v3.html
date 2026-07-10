@@ -1,5 +1,63 @@
 <style>
-  /* Fixed clean arrows */
+  .screen {
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  .screen > *:not(.soft-bubbles-fixed) {
+    position: relative;
+    z-index: 3;
+  }
+
+  /* slow white bubbles */
+  .soft-bubbles-fixed {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .soft-bubbles-fixed span {
+    position: absolute;
+    bottom: -50px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.45);
+    box-shadow: 0 0 16px rgba(255, 255, 255, 0.75);
+    animation: slowBubbleMove 16s linear infinite;
+  }
+
+  .soft-bubbles-fixed span:nth-child(1) { left: 7%; width: 7px; height: 7px; animation-delay: 0s; }
+  .soft-bubbles-fixed span:nth-child(2) { left: 18%; width: 11px; height: 11px; animation-delay: 3s; }
+  .soft-bubbles-fixed span:nth-child(3) { left: 30%; width: 6px; height: 6px; animation-delay: 6s; }
+  .soft-bubbles-fixed span:nth-child(4) { left: 45%; width: 13px; height: 13px; animation-delay: 1s; }
+  .soft-bubbles-fixed span:nth-child(5) { left: 58%; width: 8px; height: 8px; animation-delay: 5s; }
+  .soft-bubbles-fixed span:nth-child(6) { left: 72%; width: 10px; height: 10px; animation-delay: 2s; }
+  .soft-bubbles-fixed span:nth-child(7) { left: 84%; width: 6px; height: 6px; animation-delay: 8s; }
+  .soft-bubbles-fixed span:nth-child(8) { left: 94%; width: 12px; height: 12px; animation-delay: 4s; }
+
+  @keyframes slowBubbleMove {
+    0% {
+      transform: translateY(0) translateX(0) scale(0.75);
+      opacity: 0;
+    }
+
+    12% {
+      opacity: 0.55;
+    }
+
+    50% {
+      transform: translateY(-48vh) translateX(18px) scale(1);
+      opacity: 0.45;
+    }
+
+    100% {
+      transform: translateY(-110vh) translateX(-18px) scale(1.25);
+      opacity: 0;
+    }
+  }
+
+  /* corrected arrows */
   .arrows {
     position: absolute !important;
     bottom: 26px !important;
@@ -9,12 +67,12 @@
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
-    z-index: 20 !important;
+    z-index: 30 !important;
     pointer-events: none !important;
   }
 
   .arrow-btn {
-    width: 94px !important;
+    width: 95px !important;
     height: 34px !important;
     border: none !important;
     background: transparent !important;
@@ -23,13 +81,14 @@
     pointer-events: auto !important;
     font-size: 0 !important;
     color: transparent !important;
+    box-shadow: none !important;
   }
 
   .arrow-btn::before {
     content: "" !important;
     position: absolute !important;
     top: 50% !important;
-    width: 72px !important;
+    width: 70px !important;
     height: 2px !important;
     background: white !important;
     box-shadow: 0 0 8px rgba(255,255,255,0.95) !important;
@@ -47,7 +106,7 @@
     content: "←" !important;
     position: absolute !important;
     left: 0 !important;
-    top: -7px !important;
+    top: -8px !important;
     color: white !important;
     font-size: 34px !important;
     font-family: Arial, Helvetica, sans-serif !important;
@@ -58,135 +117,114 @@
     content: "→" !important;
     position: absolute !important;
     right: 0 !important;
-    top: -7px !important;
+    top: -8px !important;
     color: white !important;
     font-size: 34px !important;
     font-family: Arial, Helvetica, sans-serif !important;
     text-shadow: 0 0 8px rgba(255,255,255,0.95) !important;
   }
 
+  .arrow-btn.left:hover {
+    transform: translateX(-8px) scale(1.08) !important;
+  }
+
+  .arrow-btn.right:hover {
+    transform: translateX(8px) scale(1.08) !important;
+  }
+
   .quote-mini-text {
     position: absolute !important;
     left: 50% !important;
-    top: 50% !important;
-    transform: translate(-50%, -50%) !important;
+    bottom: 6px !important;
+    transform: translateX(-50%) !important;
     font-family: Arial, Helvetica, sans-serif !important;
     font-size: 10px !important;
     letter-spacing: 0.4px !important;
-    color: rgba(255,255,255,0.95) !important;
+    color: rgba(255, 255, 255, 0.95) !important;
     text-shadow: 0 0 8px rgba(255,255,255,0.9) !important;
     white-space: nowrap !important;
     pointer-events: none !important;
   }
 
-  /* Back button text size fix */
   .start-btn {
     font-size: 28px !important;
     line-height: 1 !important;
   }
-
-  /* Small soft bubbles animation on all pages */
-  .soft-bubbles {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    overflow: hidden;
-    z-index: 2;
-  }
-
-  .soft-bubble {
-    position: absolute;
-    bottom: -40px;
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.42);
-    box-shadow: 0 0 13px rgba(255,255,255,0.65);
-    animation: bubbleFloat 13s linear infinite;
-  }
-
-  .soft-bubble:nth-child(1) { left: 8%; animation-delay: 0s; width: 6px; height: 6px; }
-  .soft-bubble:nth-child(2) { left: 18%; animation-delay: 2s; width: 10px; height: 10px; }
-  .soft-bubble:nth-child(3) { left: 31%; animation-delay: 4s; width: 7px; height: 7px; }
-  .soft-bubble:nth-child(4) { left: 44%; animation-delay: 1s; width: 12px; height: 12px; }
-  .soft-bubble:nth-child(5) { left: 57%; animation-delay: 5s; width: 8px; height: 8px; }
-  .soft-bubble:nth-child(6) { left: 70%; animation-delay: 3s; width: 11px; height: 11px; }
-  .soft-bubble:nth-child(7) { left: 82%; animation-delay: 6s; width: 6px; height: 6px; }
-  .soft-bubble:nth-child(8) { left: 92%; animation-delay: 8s; width: 9px; height: 9px; }
-
-  @keyframes bubbleFloat {
-    0% {
-      transform: translateY(0) translateX(0) scale(0.8);
-      opacity: 0;
-    }
-
-    15% {
-      opacity: 0.55;
-    }
-
-    50% {
-      transform: translateY(-48vh) translateX(18px) scale(1);
-      opacity: 0.45;
-    }
-
-    100% {
-      transform: translateY(-105vh) translateX(-18px) scale(1.25);
-      opacity: 0;
-    }
-  }
 </style>
 
-<div class="soft-bubbles">
-  <span class="soft-bubble"></span>
-  <span class="soft-bubble"></span>
-  <span class="soft-bubble"></span>
-  <span class="soft-bubble"></span>
-  <span class="soft-bubble"></span>
-  <span class="soft-bubble"></span>
-  <span class="soft-bubble"></span>
-  <span class="soft-bubble"></span>
-</div>
-
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const arrows = document.querySelector(".arrows");
+  function applyFinalSmallChanges() {
+    const screen = document.querySelector(".screen");
 
-    if (arrows && !document.getElementById("quoteMiniText")) {
-      arrows.insertAdjacentHTML(
-        "beforeend",
-        '<span class="quote-mini-text" id="quoteMiniText">1 / 10 free quotes</span>'
+    if (screen && !document.querySelector(".soft-bubbles-fixed")) {
+      screen.insertAdjacentHTML(
+        "afterbegin",
+        `
+        <div class="soft-bubbles-fixed">
+          <span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span>
+        </div>
+        `
       );
     }
 
-    const leftArrow = document.getElementById("prevQuoteBtn");
-    const rightArrow = document.getElementById("nextQuoteBtn");
+    const arrows = document.querySelector(".arrows");
 
-    if (leftArrow) {
-      leftArrow.classList.add("left");
-      leftArrow.textContent = "";
+    if (arrows) {
+      const leftArrow = document.getElementById("prevQuoteBtn");
+      const rightArrow = document.getElementById("nextQuoteBtn");
+
+      if (leftArrow) {
+        leftArrow.classList.add("left");
+        leftArrow.innerHTML = "";
+      }
+
+      if (rightArrow) {
+        rightArrow.classList.add("right");
+        rightArrow.innerHTML = "";
+      }
+
+      if (!document.getElementById("quoteMiniText")) {
+        arrows.insertAdjacentHTML(
+          "beforeend",
+          '<span class="quote-mini-text" id="quoteMiniText">1 / 10 free quotes</span>'
+        );
+      }
     }
 
-    if (rightArrow) {
-      rightArrow.classList.add("right");
-      rightArrow.textContent = "";
-    }
+    document.querySelectorAll("button").forEach(button => {
+      const text = button.innerText.trim().toLowerCase();
 
-    const resultBackBtn = document.getElementById("startAgainBtn");
+      if (text.includes("start") && text.includes("again")) {
+        const newBackButton = button.cloneNode(true);
+        newBackButton.innerHTML = "Back";
 
-    if (resultBackBtn) {
-      const cleanBackBtn = resultBackBtn.cloneNode(true);
-      cleanBackBtn.textContent = "Back";
-      resultBackBtn.parentNode.replaceChild(cleanBackBtn, resultBackBtn);
+        button.parentNode.replaceChild(newBackButton, button);
 
-      cleanBackBtn.addEventListener("click", () => {
-        resultScreen.style.display = "none";
-        quizScreen.style.display = "block";
+        newBackButton.addEventListener("click", () => {
+          if (typeof resultScreen !== "undefined") {
+            resultScreen.style.display = "none";
+          }
 
-        currentQuestion = questions.length - 1;
+          if (typeof quizScreen !== "undefined") {
+            quizScreen.style.display = "block";
+          }
 
-        loadQuestion();
-        window.scrollTo(0, 0);
-      });
-    }
-  });
+          if (typeof currentQuestion !== "undefined" && typeof questions !== "undefined") {
+            currentQuestion = questions.length - 1;
+          }
+
+          if (typeof loadQuestion === "function") {
+            loadQuestion();
+          }
+
+          window.scrollTo(0, 0);
+        });
+      }
+    });
+  }
+
+  applyFinalSmallChanges();
+  setTimeout(applyFinalSmallChanges, 300);
+  setTimeout(applyFinalSmallChanges, 1000);
 </script>
