@@ -72,11 +72,74 @@ h1{
 
 <script>
 function setMood(mood){
-    document.getElementById("result").innerHTML =
-    "Today's mood: <strong>" + mood + "</strong>";
+    
 
-    localStorage.setItem("todayMood", mood);
+let quote = "";
+
+if(mood === "😊 Happy"){
+quote = "Happiness grows when it is shared.";
 }
+
+else if(mood === "😌 Calm"){
+quote = "Peace begins with a quiet mind.";
+}
+
+else if(mood === "💪 Motivated"){
+quote = "Small daily actions create big results.";
+}
+else if(mood === "🤩 Excited"){
+quote = "Great things are coming your way.";
+}
+
+else if(mood === "🥰 Grateful"){
+quote = "Gratitude turns what we have into enough.";
+}
+
+else if(mood === "🌸 Peaceful"){
+quote = "Allow yourself to simply be.";
+}
+
+else if(mood === "😔 Sad"){
+quote = "Even difficult days eventually pass.";
+}
+
+else if(mood === "😴 Tired"){
+quote = "Rest is part of progress.";
+}
+
+else if(mood === "😰 Stressed"){
+quote = "Take one step, then the next.";
+}
+
+else if(mood === "😟 Anxious"){
+quote = "You do not need to solve everything today.";
+}
+
+else if(mood === "😡 Frustrated"){
+quote = "Growth often hides inside challenges.";
+}
+
+else if(mood === "😕 Confused"){
+quote = "Clarity comes through action.";
+}
+
+else if(mood === "🤔 Reflective"){
+quote = "Every reflection teaches something valuable.";
+}
+
+else if(mood === "✨ Inspired"){
+quote = "Your ideas matter. Keep creating.";
+}
+
+else if(mood === "🎯 Focused"){
+quote = "Stay consistent. You're building momentum.";
+}
+    
+document.getElementById("result").innerHTML =
+"<h3>" + mood + "</h3><p>" + quote + "</p>";
+
+localStorage.setItem("todayMood", mood);
+}  
 </script>
 
 </body>
