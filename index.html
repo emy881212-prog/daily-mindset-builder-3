@@ -1991,6 +1991,94 @@
   createFloatingBubbles();
   setTimeout(createFloatingBubbles, 300);
   setTimeout(createFloatingBubbles, 1200);
+</script><style>
+  /* VISIBLE SEPARATE FLOATING BUBBLES ONLY */
+  .visible-bubbles-layer {
+    position: absolute !important;
+    inset: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+    z-index: 2 !important;
+  }
+
+  .visible-bubble {
+    position: absolute !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.42) !important;
+    box-shadow:
+      0 0 14px rgba(255, 255, 255, 0.75),
+      inset 0 0 8px rgba(255, 255, 255, 0.45) !important;
+    animation: visibleBubbleFloat linear infinite !important;
+  }
+
+  @keyframes visibleBubbleFloat {
+    0% {
+      transform: translateY(0) translateX(0) scale(0.85);
+      opacity: 0.25;
+    }
+
+    25% {
+      opacity: 0.65;
+    }
+
+    50% {
+      transform: translateY(-160px) translateX(14px) scale(1);
+      opacity: 0.5;
+    }
+
+    100% {
+      transform: translateY(-360px) translateX(-14px) scale(1.15);
+      opacity: 0;
+    }
+  }
+
+  .screen {
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  .screen > *:not(.visible-bubbles-layer) {
+    position: relative;
+    z-index: 3;
+  }
+</style>
+
+<script>
+  function makeVisibleBubblesNow() {
+    const screen = document.querySelector(".screen");
+    if (!screen) return;
+
+    document.querySelectorAll(
+      ".floating-bubbles-layer, .extra-bubbles-bottom, .soft-bubbles-upgrade, .visible-bubbles-layer"
+    ).forEach(layer => layer.remove());
+
+    const layer = document.createElement("div");
+    layer.className = "visible-bubbles-layer";
+    screen.prepend(layer);
+
+    for (let i = 0; i < 70; i++) {
+      const bubble = document.createElement("span");
+      bubble.className = "visible-bubble";
+
+      const size = 5 + Math.random() * 11;
+      const left = Math.random() * 100;
+      const top = Math.random() * 100;
+      const duration = 12 + Math.random() * 12;
+      const delay = -Math.random() * duration;
+
+      bubble.style.width = size + "px";
+      bubble.style.height = size + "px";
+      bubble.style.left = left + "%";
+      bubble.style.top = top + "%";
+      bubble.style.animationDuration = duration + "s";
+      bubble.style.animationDelay = delay + "s";
+
+      layer.appendChild(bubble);
+    }
+  }
+
+  makeVisibleBubblesNow();
+  setTimeout(makeVisibleBubblesNow, 400);
 </script>
 </body>
 
