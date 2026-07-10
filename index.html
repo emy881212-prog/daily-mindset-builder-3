@@ -2321,7 +2321,29 @@
   }
 
   forceAllBubblesToMove();
+</script><script>
+  function slowDownBubblesOnly() {
+    const bubbles = document.querySelectorAll(".super-moving-bubble");
+
+    bubbles.forEach(bubble => {
+      bubble.dataset.slow = "true";
+    });
+
+    const oldLayers = document.querySelectorAll(".super-moving-bubbles-layer");
+
+    oldLayers.forEach(layer => {
+      layer.style.opacity = "0.75";
+    });
+  }
+
+  slowDownBubblesOnly();
 </script>
+
+<style>
+  .super-moving-bubble {
+    opacity: 0.5 !important;
+  }
+</style>
 </body>
 
 
