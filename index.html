@@ -2914,7 +2914,22 @@
 
   updateAnimeMenuWords();
   setTimeout(updateAnimeMenuWords, 500);
-</script>
+</script><style>
+  /* FIX MENU NOT COVERING ACCOUNT BUTTON */
+  .anime-menu-btn {
+    top: 82px !important;
+    right: calc(50% - 185px) !important;
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  @media (max-width: 430px) {
+    .anime-menu-btn {
+      top: 82px !important;
+      right: 22px !important;
+    }
+  }
+</style>
 </body>
 
 
