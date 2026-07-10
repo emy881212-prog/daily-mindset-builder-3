@@ -72,127 +72,45 @@ h1{
 
 <script>
 function setMood(mood){
-    
+   <script>
+function setMood(mood){
 
 let quote = "";
 let prompt = "";
-    
-if(mood === "😊 Happy"){
-quote = "Happiness grows when it is shared.";
-}
-
-else if(mood === "😌 Calm"){
-quote = "Peace begins with a quiet mind.";
-}
-
-else if(mood === "💪 Motivated"){
-quote = "Small daily actions create big results.";
-}
-else if(mood === "🤩 Excited"){
-quote = "Great things are coming your way.";
-}
-
-else if(mood === "🥰 Grateful"){
-quote = "Gratitude turns what we have into enough.";
-}
-
-else if(mood === "🌸 Peaceful"){
-quote = "Allow yourself to simply be.";
-}
-
-else if(mood === "😔 Sad"){
-quote = "Even difficult days eventually pass.";
-}
-
-else if(mood === "😴 Tired"){
-quote = "Rest is part of progress.";
-}
-
-else if(mood === "😰 Stressed"){
-quote = "Take one step, then the next.";
-}
-
-else if(mood === "😟 Anxious"){
-quote = "You do not need to solve everything today.";
-}
-
-else if(mood === "😡 Frustrated"){
-quote = "Growth often hides inside challenges.";
-}
-
-else if(mood === "😕 Confused"){
-quote = "Clarity comes through action.";
-}
-
-else if(mood === "🤔 Reflective"){
-quote = "Every reflection teaches something valuable.";
-}
-
-else if(mood === "✨ Inspired"){
-quote = "Your ideas matter. Keep creating.";
-}
-
-else if(mood === "🎯 Focused"){
-quote = "Stay consistent. You're building momentum.";
-}
-    
-document.getElementById("result").innerHTML =
-"<h3>" + mood + "</h3><p>" + quote + "</p>";
-
-localStorage.setItem("todayMood", mood);
- let prompt = "";
 
 if(mood.includes("Happy")){
+    quote = "Happiness grows when it is shared.";
     prompt = "What made you smile today?";
 }
 else if(mood.includes("Calm")){
+    quote = "Peace begins with a quiet mind.";
     prompt = "What helped you feel peaceful today?";
 }
 else if(mood.includes("Motivated")){
+    quote = "Small daily actions create big results.";
     prompt = "What goal are you excited to achieve?";
 }
-else if(mood.includes("Excited")){
-    prompt = "What are you looking forward to most?";
-}
-else if(mood.includes("Grateful")){
-    prompt = "What are three things you're grateful for today?";
-}
 else if(mood.includes("Sad")){
+    quote = "It's okay to feel your emotions.";
     prompt = "What would help you feel supported right now?";
 }
 else if(mood.includes("Tired")){
+    quote = "Rest is productive too.";
     prompt = "What can you do today to recharge?";
 }
 else if(mood.includes("Stressed")){
+    quote = "Take one breath at a time.";
     prompt = "What is one thing you can let go of today?";
 }
-else if(mood.includes("Anxious")){
-    prompt = "What is one thing that is actually going well right now?";
-}
-else if(mood.includes("Frustrated")){
-    prompt = "What challenge is teaching you something valuable?";
-}
-else if(mood.includes("Confused")){
-    prompt = "What small step could bring more clarity?";
-}
-else if(mood.includes("Reflective")){
-    prompt = "What lesson did today teach you?";
-}
-else if(mood.includes("Inspired")){
-    prompt = "What idea excites you most?";
-}
-else if(mood.includes("Focused")){
-    prompt = "What is your most important priority today?";
-}
+
 document.getElementById("result").innerHTML =
 "<h3>" + mood + "</h3>" +
 "<p>" + quote + "</p>" +
 "<br><strong>Journal Prompt:</strong>" +
 "<p>" + prompt + "</p>";
-
-console.log("Mood selected:", mood);
-
 }
+
+
 </script>
 
 </body>
