@@ -2457,6 +2457,463 @@
 
   setTimeout(addQuestionProgressLine, 300);
   setTimeout(updateQuestionProgressLine, 700);
+</script><style>
+  /* ANIME INSPIRED MENU - SAME DESIGN */
+  .anime-menu-btn {
+    position: fixed !important;
+    top: 26px !important;
+    right: calc(50% - 185px) !important;
+    width: 46px !important;
+    height: 46px !important;
+    border-radius: 50% !important;
+    border: 1px solid rgba(0,0,0,0.18) !important;
+    background: rgba(255,255,255,0.65) !important;
+    backdrop-filter: blur(12px) !important;
+    box-shadow:
+      0 8px 20px rgba(0,0,0,0.16),
+      inset 0 0 14px rgba(255,255,255,0.55) !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    z-index: 8000 !important;
+    cursor: pointer !important;
+    transition: 0.3s ease !important;
+  }
+
+  .anime-menu-btn:hover {
+    transform: translateY(-3px) scale(1.06) !important;
+    background: rgba(255, 226, 235, 0.85) !important;
+  }
+
+  .anime-menu-btn span {
+    position: absolute !important;
+    width: 20px !important;
+    height: 2px !important;
+    border-radius: 999px !important;
+    background: #111 !important;
+    transition: 0.3s ease !important;
+  }
+
+  .anime-menu-btn span:nth-child(1) {
+    transform: translateY(-7px);
+  }
+
+  .anime-menu-btn span:nth-child(2) {
+    transform: translateY(0);
+  }
+
+  .anime-menu-btn span:nth-child(3) {
+    transform: translateY(7px);
+  }
+
+  .anime-menu-btn.open span:nth-child(1) {
+    transform: rotate(45deg);
+  }
+
+  .anime-menu-btn.open span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .anime-menu-btn.open span:nth-child(3) {
+    transform: rotate(-45deg);
+  }
+
+  .anime-menu-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(20, 18, 22, 0.38) !important;
+    backdrop-filter: blur(10px) !important;
+    z-index: 7990 !important;
+    display: none !important;
+    opacity: 0 !important;
+    transition: 0.3s ease !important;
+  }
+
+  .anime-menu-overlay.show {
+    display: block !important;
+    opacity: 1 !important;
+  }
+
+  .anime-menu-panel {
+    position: fixed !important;
+    top: 0 !important;
+    right: 0 !important;
+    width: 318px !important;
+    max-width: 86vw !important;
+    height: 100vh !important;
+    z-index: 7995 !important;
+    padding: 90px 22px 28px !important;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(255,255,255,0.96), transparent 32%),
+      radial-gradient(circle at 88% 22%, rgba(255,210,225,0.65), transparent 34%),
+      linear-gradient(180deg, rgba(250,245,248,0.96), rgba(220,198,207,0.96)) !important;
+    box-shadow:
+      -18px 0 45px rgba(0,0,0,0.22),
+      inset 0 0 28px rgba(255,255,255,0.32) !important;
+    transform: translateX(105%) !important;
+    transition: transform 0.45s cubic-bezier(.22,1,.36,1) !important;
+    overflow: hidden !important;
+  }
+
+  .anime-menu-panel.show {
+    transform: translateX(0) !important;
+  }
+
+  .anime-menu-panel::before {
+    content: "✦" !important;
+    position: absolute !important;
+    top: 28px !important;
+    left: 24px !important;
+    width: 46px !important;
+    height: 46px !important;
+    border-radius: 14px !important;
+    background: #111 !important;
+    color: white !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    font-size: 26px !important;
+    box-shadow: 0 0 0 10px rgba(255,255,255,0.35) !important;
+  }
+
+  .anime-menu-title {
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 30px !important;
+    font-style: italic !important;
+    font-weight: 400 !important;
+    margin-bottom: 8px !important;
+    color: #111 !important;
+  }
+
+  .anime-menu-subtitle {
+    font-family: Arial, Helvetica, sans-serif !important;
+    font-size: 13px !important;
+    line-height: 1.45 !important;
+    color: rgba(0,0,0,0.58) !important;
+    margin-bottom: 28px !important;
+  }
+
+  .anime-menu-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+  }
+
+  .anime-menu-item {
+    width: 100% !important;
+    min-height: 56px !important;
+    border-radius: 22px !important;
+    border: 1px solid rgba(0,0,0,0.16) !important;
+    background: rgba(255,255,255,0.62) !important;
+    box-shadow:
+      0 8px 18px rgba(0,0,0,0.10),
+      inset 0 0 16px rgba(255,255,255,0.38) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 14px !important;
+    padding: 12px 15px !important;
+    cursor: pointer !important;
+    transition: 0.3s ease !important;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 22px !important;
+    font-style: italic !important;
+    color: #111 !important;
+  }
+
+  .anime-menu-item:hover {
+    background: #111 !important;
+    color: white !important;
+    transform: translateX(-6px) scale(1.02) !important;
+    box-shadow: 0 14px 24px rgba(0,0,0,0.22) !important;
+  }
+
+  .anime-menu-icon {
+    width: 33px !important;
+    height: 33px !important;
+    border-radius: 12px !important;
+    background: rgba(255, 220, 230, 0.9) !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    font-size: 17px !important;
+    flex-shrink: 0 !important;
+    transition: 0.3s ease !important;
+  }
+
+  .anime-menu-item:hover .anime-menu-icon {
+    background: rgba(255,255,255,0.18) !important;
+    color: white !important;
+  }
+
+  .anime-menu-sparkle {
+    position: absolute !important;
+    border-radius: 50% !important;
+    background: rgba(255,255,255,0.72) !important;
+    box-shadow: 0 0 12px rgba(255,255,255,0.85) !important;
+    animation: animeMenuSparkle 5s ease-in-out infinite !important;
+    pointer-events: none !important;
+  }
+
+  .anime-menu-sparkle:nth-child(1) {
+    width: 7px;
+    height: 7px;
+    left: 38px;
+    top: 165px;
+    animation-delay: 0s;
+  }
+
+  .anime-menu-sparkle:nth-child(2) {
+    width: 10px;
+    height: 10px;
+    right: 36px;
+    top: 250px;
+    animation-delay: 1.3s;
+  }
+
+  .anime-menu-sparkle:nth-child(3) {
+    width: 6px;
+    height: 6px;
+    left: 78px;
+    bottom: 150px;
+    animation-delay: 2.4s;
+  }
+
+  @keyframes animeMenuSparkle {
+    0%, 100% {
+      transform: translateY(0) scale(0.7);
+      opacity: 0.25;
+    }
+
+    50% {
+      transform: translateY(-18px) scale(1.2);
+      opacity: 0.85;
+    }
+  }
+
+  @media (max-width: 430px) {
+    .anime-menu-btn {
+      right: 22px !important;
+    }
+  }
+</style>
+
+<div class="anime-menu-overlay" id="animeMenuOverlay"></div>
+
+<button class="anime-menu-btn" id="animeMenuBtn" type="button" aria-label="Open menu">
+  <span></span>
+  <span></span>
+  <span></span>
+</button>
+
+<aside class="anime-menu-panel" id="animeMenuPanel">
+  <span class="anime-menu-sparkle"></span>
+  <span class="anime-menu-sparkle"></span>
+  <span class="anime-menu-sparkle"></span>
+
+  <h2 class="anime-menu-title">Mindset Menu</h2>
+  <p class="anime-menu-subtitle">
+    Your soft space for quotes, saved moments, and daily mindset energy.
+  </p>
+
+  <div class="anime-menu-list">
+    <button class="anime-menu-item" type="button" data-menu-action="home">
+      <span class="anime-menu-icon">✦</span>
+      Home
+    </button>
+
+    <button class="anime-menu-item" type="button" data-menu-action="saved">
+      <span class="anime-menu-icon">♡</span>
+      Saved Quotes
+    </button>
+
+    <button class="anime-menu-item" type="button" data-menu-action="progress">
+      <span class="anime-menu-icon">☽</span>
+      My Progress
+    </button>
+
+    <button class="anime-menu-item" type="button" data-menu-action="subscription">
+      <span class="anime-menu-icon">✧</span>
+      Subscription
+    </button>
+
+    <button class="anime-menu-item" type="button" data-menu-action="settings">
+      <span class="anime-menu-icon">⚙</span>
+      Settings
+    </button>
+  </div>
+</aside>
+
+<script>
+  function addAnimeInspiredMenu() {
+    const menuBtn = document.getElementById("animeMenuBtn");
+    const menuPanel = document.getElementById("animeMenuPanel");
+    const menuOverlay = document.getElementById("animeMenuOverlay");
+
+    if (!menuBtn || !menuPanel || !menuOverlay) return;
+
+    function openMenu() {
+      menuBtn.classList.add("open");
+      menuPanel.classList.add("show");
+      menuOverlay.classList.add("show");
+    }
+
+    function closeMenu() {
+      menuBtn.classList.remove("open");
+      menuPanel.classList.remove("show");
+      menuOverlay.classList.remove("show");
+    }
+
+    menuBtn.addEventListener("click", () => {
+      if (menuPanel.classList.contains("show")) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    });
+
+    menuOverlay.addEventListener("click", closeMenu);
+
+    document.querySelectorAll(".anime-menu-item").forEach(item => {
+      item.addEventListener("click", () => {
+        const action = item.dataset.menuAction;
+
+        if (action === "home") {
+          if (typeof resultScreen !== "undefined") {
+            resultScreen.style.display = "none";
+          }
+
+          if (typeof quizScreen !== "undefined") {
+            quizScreen.style.display = "block";
+          }
+
+          if (typeof currentQuestion !== "undefined") {
+            currentQuestion = 0;
+          }
+
+          if (typeof loadQuestion === "function") {
+            loadQuestion();
+          }
+
+          window.scrollTo(0, 0);
+        }
+
+        if (action === "saved") {
+          alert("Saved Quotes page coming soon.");
+        }
+
+        if (action === "progress") {
+          alert("Progress page coming soon.");
+        }
+
+        if (action === "subscription") {
+          alert("Subscription page coming soon.");
+        }
+
+        if (action === "settings") {
+          alert("Settings page coming soon.");
+        }
+
+        closeMenu();
+      });
+    });
+  }
+
+  addAnimeInspiredMenu();
+</script><script>
+  function updateAnimeMenuWords() {
+    const menuList = document.querySelector(".anime-menu-list");
+
+    if (!menuList) return;
+
+    menuList.innerHTML = `
+      <button class="anime-menu-item" type="button" data-menu-action="home">
+        <span class="anime-menu-icon">✦</span>
+        Main Page
+      </button>
+
+      <button class="anime-menu-item" type="button" data-menu-action="journal">
+        <span class="anime-menu-icon">☾</span>
+        Journal
+      </button>
+
+      <button class="anime-menu-item" type="button" data-menu-action="insights">
+        <span class="anime-menu-icon">✧</span>
+        Insights
+      </button>
+
+      <button class="anime-menu-item" type="button" data-menu-action="saved">
+        <span class="anime-menu-icon">♡</span>
+        Saved Quotes
+      </button>
+
+      <button class="anime-menu-item" type="button" data-menu-action="subscription">
+        <span class="anime-menu-icon">◇</span>
+        Subscription
+      </button>
+
+      <button class="anime-menu-item" type="button" data-menu-action="settings">
+        <span class="anime-menu-icon">⚙</span>
+        Settings
+      </button>
+    `;
+
+    document.querySelectorAll(".anime-menu-item").forEach(item => {
+      item.addEventListener("click", () => {
+        const action = item.dataset.menuAction;
+
+        if (action === "home") {
+          if (typeof resultScreen !== "undefined") {
+            resultScreen.style.display = "none";
+          }
+
+          if (typeof quizScreen !== "undefined") {
+            quizScreen.style.display = "block";
+          }
+
+          if (typeof currentQuestion !== "undefined") {
+            currentQuestion = 0;
+          }
+
+          if (typeof loadQuestion === "function") {
+            loadQuestion();
+          }
+
+          window.scrollTo(0, 0);
+        }
+
+        if (action === "journal") {
+          alert("Journal page coming soon.");
+        }
+
+        if (action === "insights") {
+          alert("Insights page coming soon.");
+        }
+
+        if (action === "saved") {
+          alert("Saved Quotes page coming soon.");
+        }
+
+        if (action === "subscription") {
+          alert("Subscription page coming soon.");
+        }
+
+        if (action === "settings") {
+          alert("Settings page coming soon.");
+        }
+
+        const menuBtn = document.getElementById("animeMenuBtn");
+        const menuPanel = document.getElementById("animeMenuPanel");
+        const menuOverlay = document.getElementById("animeMenuOverlay");
+
+        if (menuBtn) menuBtn.classList.remove("open");
+        if (menuPanel) menuPanel.classList.remove("show");
+        if (menuOverlay) menuOverlay.classList.remove("show");
+      });
+    });
+  }
+
+  updateAnimeMenuWords();
+  setTimeout(updateAnimeMenuWords, 500);
 </script>
 </body>
 
