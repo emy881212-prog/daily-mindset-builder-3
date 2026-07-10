@@ -1,1 +1,447 @@
+<style>
+  .account-btn {
+    margin-left: auto;
+    border: 1px solid rgba(0,0,0,0.28);
+    background: rgba(255,255,255,0.58);
+    border-radius: 999px;
+    padding: 8px 11px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: Arial, Helvetica, sans-serif;
+    transition: 0.25s ease;
+  }
 
+  .account-btn:hover {
+    background: #111;
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  .arrows {
+    position: absolute;
+    bottom: 26px;
+    left: 34px;
+    right: 34px;
+    height: 34px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 4;
+    pointer-events: none;
+  }
+
+  .quote-mini-text {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.4px;
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 0 8px rgba(255,255,255,0.9);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .arrow-btn {
+    width: 92px;
+    height: 34px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+    pointer-events: auto;
+    transition: 0.25s ease;
+  }
+
+  .arrow-btn.left::before,
+  .arrow-btn.right::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 72px;
+    height: 2px;
+    background: white;
+    box-shadow: 0 0 8px rgba(255,255,255,0.9);
+  }
+
+  .arrow-btn.left::before {
+    left: 20px;
+  }
+
+  .arrow-btn.right::before {
+    right: 20px;
+  }
+
+  .arrow-btn.left::after {
+    content: "←";
+    position: absolute;
+    left: 0;
+    top: -6px;
+    color: white;
+    font-size: 34px;
+    font-family: Arial, Helvetica, sans-serif;
+    text-shadow: 0 0 8px rgba(255,255,255,0.9);
+  }
+
+  .arrow-btn.right::after {
+    content: "→";
+    position: absolute;
+    right: 0;
+    top: -6px;
+    color: white;
+    font-size: 34px;
+    font-family: Arial, Helvetica, sans-serif;
+    text-shadow: 0 0 8px rgba(255,255,255,0.9);
+  }
+
+  .arrow-btn.left:hover {
+    transform: translateX(-8px) scale(1.08);
+  }
+
+  .arrow-btn.right:hover {
+    transform: translateX(8px) scale(1.08);
+  }
+
+  .answer-btn.believe-answer {
+    min-height: 70px;
+    font-size: 22px;
+    line-height: 1.05;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .auth-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 18, 22, 0.50);
+    backdrop-filter: blur(14px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    z-index: 1000;
+  }
+
+  .auth-window {
+    width: 360px;
+    max-width: 94vw;
+    border-radius: 34px;
+    background:
+      radial-gradient(circle at top left, rgba(255,255,255,0.92), transparent 35%),
+      linear-gradient(180deg, rgba(250,247,248,0.98), rgba(219,194,199,0.98));
+    box-shadow:
+      0 26px 60px rgba(0,0,0,0.38),
+      inset 0 0 22px rgba(255,255,255,0.35);
+    padding: 30px 24px 24px;
+    text-align: center;
+    position: relative;
+    animation: modalOpen 0.55s ease forwards;
+    border: 1px solid rgba(255,255,255,0.6);
+  }
+
+  @keyframes modalOpen {
+    from {
+      opacity: 0;
+      transform: translateY(24px) scale(0.95);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .auth-close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    border: none;
+    background: rgba(255,255,255,0.48);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.25s ease;
+  }
+
+  .auth-close:hover {
+    background: #111;
+    color: white;
+    transform: rotate(90deg);
+  }
+
+  .auth-logo {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 14px;
+    border-radius: 16px;
+    background: #111;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    box-shadow: 0 0 0 10px rgba(255,255,255,0.45);
+  }
+
+  .auth-window h2 {
+    font-size: 30px;
+    font-style: italic;
+    font-weight: 400;
+    margin-bottom: 8px;
+  }
+
+  .auth-window p {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    opacity: 0.75;
+    margin-bottom: 22px;
+  }
+
+  .auth-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 18px;
+    background: rgba(255,255,255,0.42);
+    padding: 6px;
+    border-radius: 999px;
+  }
+
+  .auth-tab {
+    flex: 1;
+    border: none;
+    border-radius: 999px;
+    padding: 10px 6px;
+    background: transparent;
+    font-family: Georgia, "Times New Roman", serif;
+    font-style: italic;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.25s ease;
+  }
+
+  .auth-tab.active,
+  .auth-tab:hover {
+    background: #111;
+    color: white;
+  }
+
+  .auth-form {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .auth-form.active {
+    display: flex;
+  }
+
+  .auth-input {
+    width: 100%;
+    border: 1px solid rgba(0,0,0,0.18);
+    border-radius: 16px;
+    padding: 14px 15px;
+    font-size: 15px;
+    background: rgba(255,255,255,0.72);
+    outline: none;
+    transition: 0.25s ease;
+  }
+
+  .auth-input:focus {
+    border-color: #111;
+    box-shadow: 0 0 0 4px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+  }
+
+  .auth-main-btn,
+  .guest-btn {
+    border: none;
+    border-radius: 999px;
+    padding: 14px 16px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.25s ease;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  .auth-main-btn {
+    background: #111;
+    color: white;
+  }
+
+  .guest-btn {
+    background: rgba(255,255,255,0.65);
+    color: #111;
+    border: 1px solid rgba(0,0,0,0.16);
+    margin-top: 8px;
+  }
+
+  .auth-main-btn:hover,
+  .guest-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 18px rgba(0,0,0,0.20);
+  }
+</style>
+
+<section class="auth-overlay" id="authOverlay">
+  <div class="auth-window">
+    <button class="auth-close" id="authClose" type="button">×</button>
+
+    <div class="auth-logo">✦</div>
+
+    <h2>Welcome</h2>
+    <p>Choose how you want to enter your Daily Mindset Builder.</p>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" type="button" data-tab="guest">Guest</button>
+      <button class="auth-tab" type="button" data-tab="login">Log In</button>
+      <button class="auth-tab" type="button" data-tab="signup">Sign Up</button>
+    </div>
+
+    <div class="auth-form active" id="guestForm">
+      <button class="guest-btn" id="guestBtn" type="button">Enter as Guest</button>
+    </div>
+
+    <div class="auth-form" id="loginForm">
+      <input class="auth-input" type="email" placeholder="Email" />
+      <input class="auth-input" type="password" placeholder="Password" />
+      <button class="auth-main-btn" id="loginBtn" type="button">Log In</button>
+    </div>
+
+    <div class="auth-form" id="signupForm">
+      <input class="auth-input" type="text" placeholder="Your name" />
+      <input class="auth-input" type="email" placeholder="Email" />
+      <input class="auth-input" type="password" placeholder="Create password" />
+      <button class="auth-main-btn" id="signupBtn" type="button">Create Account</button>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const brand = document.querySelector(".brand");
+
+    if (brand && !document.getElementById("accountBtn")) {
+      brand.insertAdjacentHTML(
+        "afterend",
+        '<button class="account-btn" id="accountBtn" type="button">Account</button>'
+      );
+    }
+
+    const arrows = document.querySelector(".arrows");
+
+    if (arrows) {
+      arrows.innerHTML = `
+        <button class="arrow-btn left" id="prevQuoteBtn" type="button" aria-label="Previous quote"></button>
+        <span class="quote-mini-text" id="quoteMiniText">1 / 10 free quotes</span>
+        <button class="arrow-btn right" id="nextQuoteBtn" type="button" aria-label="Next quote"></button>
+      `;
+    }
+
+    const startAgainBtn = document.getElementById("startAgainBtn");
+
+    if (startAgainBtn) {
+      startAgainBtn.textContent = "Back";
+
+      startAgainBtn.onclick = () => {
+        if (typeof resultScreen !== "undefined" && typeof quizScreen !== "undefined") {
+          resultScreen.style.display = "none";
+          quizScreen.style.display = "block";
+        }
+
+        if (typeof currentQuestion !== "undefined" && typeof questions !== "undefined") {
+          currentQuestion = questions.length - 1;
+        }
+
+        if (typeof loadQuestion === "function") {
+          loadQuestion();
+        }
+
+        window.scrollTo(0, 0);
+      };
+    }
+
+    const oldShowQuote = window.showQuote;
+
+    window.showQuote = function(index) {
+      if (typeof oldShowQuote === "function") {
+        oldShowQuote(index);
+      }
+
+      setTimeout(() => {
+        const miniText = document.getElementById("quoteMiniText");
+
+        if (miniText) {
+          miniText.textContent = `${index + 1} / 10 free quotes`;
+        }
+      }, 320);
+    };
+
+    const oldLoadQuestion = window.loadQuestion;
+
+    window.loadQuestion = function() {
+      if (typeof oldLoadQuestion === "function") {
+        oldLoadQuestion();
+      }
+
+      setTimeout(() => {
+        document.querySelectorAll(".answer-btn").forEach(btn => {
+          if (btn.textContent.trim() === "Believe in myself") {
+            btn.innerHTML = "Believe in<br>myself";
+            btn.classList.add("long-answer", "believe-answer");
+          }
+        });
+      }, 50);
+    };
+
+    if (typeof window.loadQuestion === "function") {
+      window.loadQuestion();
+    }
+
+    document.querySelectorAll(".auth-tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".auth-tab").forEach(t => t.classList.remove("active"));
+        document.querySelectorAll(".auth-form").forEach(form => form.classList.remove("active"));
+
+        tab.classList.add("active");
+
+        const selectedTab = tab.dataset.tab;
+        document.getElementById(selectedTab + "Form").classList.add("active");
+      });
+    });
+
+    function closeAuth(mode) {
+      document.getElementById("authOverlay").style.display = "none";
+
+      const savedMessage = document.getElementById("savedMessage");
+
+      if (savedMessage) {
+        savedMessage.textContent = mode === "guest" ? "Entered as guest ✦" : "Welcome ✦";
+        savedMessage.classList.add("show");
+
+        setTimeout(() => {
+          savedMessage.classList.remove("show");
+        }, 1800);
+      }
+    }
+
+    document.getElementById("guestBtn").addEventListener("click", () => closeAuth("guest"));
+    document.getElementById("loginBtn").addEventListener("click", () => closeAuth("login"));
+    document.getElementById("signupBtn").addEventListener("click", () => closeAuth("signup"));
+    document.getElementById("authClose").addEventListener("click", () => closeAuth("guest"));
+
+    setTimeout(() => {
+      const accountBtn = document.getElementById("accountBtn");
+
+      if (accountBtn) {
+        accountBtn.addEventListener("click", () => {
+          document.getElementById("authOverlay").style.display = "flex";
+        });
+      }
+    }, 100);
+  });
+</script>
