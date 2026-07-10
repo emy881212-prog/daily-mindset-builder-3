@@ -1,1 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<title>Journal</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+min-height:100vh;
+background:linear-gradient(to bottom,#fff7fa,#fdeef4);
+font-family:Georgia,serif;
+display:flex;
+justify-content:center;
+align-items:center;
+overflow:hidden;
+}
+
+.journal-card{
+width:360px;
+padding:30px;
+background:rgba(255,255,255,0.55);
+backdrop-filter:blur(14px);
+border-radius:32px;
+box-shadow:0 15px 40px rgba(0,0,0,0.08);
+animation:fadeIn 0.8s ease;
+position:relative;
+z-index:2;
+}
+
+.title{
+font-size:38px;
+font-style:italic;
+text-align:center;
+margin-bottom:10px;
+}
+
+.subtitle{
+text-align:center;
+color:#777;
+margin-bottom:25px;
+}
+
+.menu-btn{
+width:100%;
+padding:14px;
+margin-bottom:12px;
+border-radius:999px;
+border:1px solid #d8c5ce;
+background:white;
+font-size:20px;
+font-style:italic;
+cursor:pointer;
+transition:0.3s;
+}
+
+.menu-btn:hover{
+transform:translateY(-2px);
+box-shadow:0 8px 20px rgba(255,182,193,0.25);
+}
+
+.logout{
+margin-top:18px;
+background:#111;
+color:white;
+}
+
+.sparkle{
+position:absolute;
+width:8px;
+height:8px;
+background:white;
+border-radius:50%;
+opacity:0.6;
+animation:float 14s linear infinite;
+}
+
+.sparkle:nth-child(1){
+left:10%;
+animation-delay:0s;
+}
+
+.sparkle:nth-child(2){
+left:35%;
+animation-delay:4s;
+}
+
+.sparkle:nth-child(3){
+left:65%;
+animation-delay:8s;
+}
+
+.sparkle:nth-child(4){
+left:85%;
+animation-delay:12s;
+}
+
+@keyframes float{
+from{
+transform:translateY(100vh);
+}
+to{
+transform:translateY(-100px);
+}
+}
+
+@keyframes fadeIn{
+from{
+opacity:0;
+transform:translateY(20px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="sparkle"></div>
+<div class="sparkle"></div>
+<div class="sparkle"></div>
+<div class="sparkle"></div>
+
+<div class="journal-card">
+
+<div class="title">Journal</div>
+
+<div class="subtitle">
+Your personal reflection space
+</div>
+
+<button class="menu-btn">Mood Tracker</button>
+
+<button class="menu-btn">Gratitude Journal</button>
+
+<button class="menu-btn">Goals & Dreams</button>
+
+<button class="menu-btn">Daily Reflection</button>
+
+<button class="menu-btn">Journal History</button>
+
+<button class="menu-btn">Saved Notes</button>
+
+<button class="menu-btn">Export Journal</button>
+
+<button class="menu-btn logout">Log Out</button>
+
+</div>
+
+</body>
+</html>
