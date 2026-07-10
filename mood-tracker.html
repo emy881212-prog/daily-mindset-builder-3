@@ -1,1 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mood Tracker</title>
 
+<style>
+body{
+    margin:0;
+    background:#fdf7f9;
+    font-family:Georgia, serif;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+}
+
+.card{
+    width:340px;
+    background:white;
+    padding:30px;
+    border-radius:30px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+    text-align:center;
+}
+
+h1{
+    font-style:italic;
+    margin-bottom:10px;
+}
+
+.subtitle{
+    color:#777;
+    margin-bottom:25px;
+}
+
+.mood-btn{
+    width:100%;
+    padding:14px;
+    margin:8px 0;
+    border-radius:999px;
+    border:1px solid #ddd;
+    background:white;
+    cursor:pointer;
+    font-size:18px;
+}
+
+.result{
+    margin-top:20px;
+    font-size:18px;
+    color:#444;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+    <h1>Mood Tracker</h1>
+    <div class="subtitle">How are you feeling today?</div>
+
+    <button class="mood-btn" onclick="setMood('😊 Happy')">😊 Happy</button>
+    <button class="mood-btn" onclick="setMood('😌 Calm')">😌 Calm</button>
+    <button class="mood-btn" onclick="setMood('💪 Motivated')">💪 Motivated</button>
+    <button class="mood-btn" onclick="setMood('😔 Sad')">😔 Sad</button>
+    <button class="mood-btn" onclick="setMood('😴 Tired')">😴 Tired</button>
+    <button class="mood-btn" onclick="setMood('😰 Stressed')">😰 Stressed</button>
+
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+function setMood(mood){
+    document.getElementById("result").innerHTML =
+    "Today's mood: <strong>" + mood + "</strong>";
+
+    localStorage.setItem("todayMood", mood);
+}
+</script>
+
+</body>
+</html>
