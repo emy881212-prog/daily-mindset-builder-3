@@ -1,9 +1,88 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Menu</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Journal</title>
+
+<style>
+
+body{
+    margin:0;
+    min-height:100vh;
+    background:#fdf3f7;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-family:Georgia, serif;
+}
+
+.journal-card{
+    width:340px;
+    padding:30px;
+    border-radius:35px;
+    background:rgba(255,255,255,0.45);
+    backdrop-filter:blur(10px);
+    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+}
+
+.title{
+    text-align:center;
+    font-size:36px;
+    font-style:italic;
+    margin-bottom:25px;
+}
+
+.menu-btn{
+    width:100%;
+    padding:14px;
+    margin:10px 0;
+    border-radius:999px;
+    border:1px solid #777;
+    background:white;
+    font-size:22px;
+    font-style:italic;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.menu-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+.logout{
+    margin-top:25px;
+    border:1px solid #d68ea6;
+}
+
+</style>
 </head>
 <body>
+
+<div class="journal-card">
+
+<div class="title">Journal</div>
+
+<button class="menu-btn">New Entry</button>
+
+<button class="menu-btn">Mood Tracker</button>
+
+<button class="menu-btn">Gratitude Journal</button>
+
+<button class="menu-btn">Goals & Dreams</button>
+
+<button class="menu-btn">Daily Reflection</button>
+
+<button class="menu-btn">Journal History</button>
+
+<button class="menu-btn">Saved Notes</button>
+
+<button class="menu-btn">Export Journal</button>
+
+<button class="menu-btn logout">Log Out</button>
+
+</div>
 
 </body>
 </html>
