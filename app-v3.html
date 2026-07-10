@@ -1,1 +1,192 @@
+<style>
+  /* Fixed clean arrows */
+  .arrows {
+    position: absolute !important;
+    bottom: 26px !important;
+    left: 34px !important;
+    right: 34px !important;
+    height: 34px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    z-index: 20 !important;
+    pointer-events: none !important;
+  }
 
+  .arrow-btn {
+    width: 94px !important;
+    height: 34px !important;
+    border: none !important;
+    background: transparent !important;
+    cursor: pointer !important;
+    position: relative !important;
+    pointer-events: auto !important;
+    font-size: 0 !important;
+    color: transparent !important;
+  }
+
+  .arrow-btn::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 50% !important;
+    width: 72px !important;
+    height: 2px !important;
+    background: white !important;
+    box-shadow: 0 0 8px rgba(255,255,255,0.95) !important;
+  }
+
+  .arrow-btn.left::before {
+    left: 22px !important;
+  }
+
+  .arrow-btn.right::before {
+    right: 22px !important;
+  }
+
+  .arrow-btn.left::after {
+    content: "←" !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: -7px !important;
+    color: white !important;
+    font-size: 34px !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+    text-shadow: 0 0 8px rgba(255,255,255,0.95) !important;
+  }
+
+  .arrow-btn.right::after {
+    content: "→" !important;
+    position: absolute !important;
+    right: 0 !important;
+    top: -7px !important;
+    color: white !important;
+    font-size: 34px !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+    text-shadow: 0 0 8px rgba(255,255,255,0.95) !important;
+  }
+
+  .quote-mini-text {
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+    font-size: 10px !important;
+    letter-spacing: 0.4px !important;
+    color: rgba(255,255,255,0.95) !important;
+    text-shadow: 0 0 8px rgba(255,255,255,0.9) !important;
+    white-space: nowrap !important;
+    pointer-events: none !important;
+  }
+
+  /* Back button text size fix */
+  .start-btn {
+    font-size: 28px !important;
+    line-height: 1 !important;
+  }
+
+  /* Small soft bubbles animation on all pages */
+  .soft-bubbles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 2;
+  }
+
+  .soft-bubble {
+    position: absolute;
+    bottom: -40px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.42);
+    box-shadow: 0 0 13px rgba(255,255,255,0.65);
+    animation: bubbleFloat 13s linear infinite;
+  }
+
+  .soft-bubble:nth-child(1) { left: 8%; animation-delay: 0s; width: 6px; height: 6px; }
+  .soft-bubble:nth-child(2) { left: 18%; animation-delay: 2s; width: 10px; height: 10px; }
+  .soft-bubble:nth-child(3) { left: 31%; animation-delay: 4s; width: 7px; height: 7px; }
+  .soft-bubble:nth-child(4) { left: 44%; animation-delay: 1s; width: 12px; height: 12px; }
+  .soft-bubble:nth-child(5) { left: 57%; animation-delay: 5s; width: 8px; height: 8px; }
+  .soft-bubble:nth-child(6) { left: 70%; animation-delay: 3s; width: 11px; height: 11px; }
+  .soft-bubble:nth-child(7) { left: 82%; animation-delay: 6s; width: 6px; height: 6px; }
+  .soft-bubble:nth-child(8) { left: 92%; animation-delay: 8s; width: 9px; height: 9px; }
+
+  @keyframes bubbleFloat {
+    0% {
+      transform: translateY(0) translateX(0) scale(0.8);
+      opacity: 0;
+    }
+
+    15% {
+      opacity: 0.55;
+    }
+
+    50% {
+      transform: translateY(-48vh) translateX(18px) scale(1);
+      opacity: 0.45;
+    }
+
+    100% {
+      transform: translateY(-105vh) translateX(-18px) scale(1.25);
+      opacity: 0;
+    }
+  }
+</style>
+
+<div class="soft-bubbles">
+  <span class="soft-bubble"></span>
+  <span class="soft-bubble"></span>
+  <span class="soft-bubble"></span>
+  <span class="soft-bubble"></span>
+  <span class="soft-bubble"></span>
+  <span class="soft-bubble"></span>
+  <span class="soft-bubble"></span>
+  <span class="soft-bubble"></span>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const arrows = document.querySelector(".arrows");
+
+    if (arrows && !document.getElementById("quoteMiniText")) {
+      arrows.insertAdjacentHTML(
+        "beforeend",
+        '<span class="quote-mini-text" id="quoteMiniText">1 / 10 free quotes</span>'
+      );
+    }
+
+    const leftArrow = document.getElementById("prevQuoteBtn");
+    const rightArrow = document.getElementById("nextQuoteBtn");
+
+    if (leftArrow) {
+      leftArrow.classList.add("left");
+      leftArrow.textContent = "";
+    }
+
+    if (rightArrow) {
+      rightArrow.classList.add("right");
+      rightArrow.textContent = "";
+    }
+
+    const resultBackBtn = document.getElementById("startAgainBtn");
+
+    if (resultBackBtn) {
+      const cleanBackBtn = resultBackBtn.cloneNode(true);
+      cleanBackBtn.textContent = "Back";
+      resultBackBtn.parentNode.replaceChild(cleanBackBtn, resultBackBtn);
+
+      cleanBackBtn.addEventListener("click", () => {
+        resultScreen.style.display = "none";
+        quizScreen.style.display = "block";
+
+        currentQuestion = questions.length - 1;
+
+        loadQuestion();
+        window.scrollTo(0, 0);
+      });
+    }
+  });
+</script>
