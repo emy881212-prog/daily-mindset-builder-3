@@ -1,180 +1,220 @@
-from pathlib import Path
-
-html = """<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Daily Mindset Builder - Journal</title>
+<title>Daily Journal</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-body{
-    background:linear-gradient(
-        135deg,
-        #FF7EB3,
-        #FF758C,
-        #B16CEA
-    );
-    color:white;
-    border:none;
-    border-radius:18px;
-    padding:14px 28px;
-}
-    background:white;
-    border-radius:32px;
-    padding:30px;
-    animation:popup .25s ease;
-    box-shadow:0 30px 80px rgba(0,0,0,.15);
-}
-    background:white;
-    border:none;
-    border-radius:24px;
-    padding:18px;
-    font-size:18px;
-    transition:all .25s ease;
-    box-shadow:0 8px 20px rgba(0,0,0,0.05);
-}
 
-.mood-btn:hover{
-    transform:translateY(-4px);
-}
-
-.mood-btn:active{
-    transform:scale(.97);
-}
-    background:linear-gradient(
-        135deg,
-        #FFF1F7,
-        #F8EDFF,
-        #EEF4FF
-    );
-}
+*{
     margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
     font-family:'Poppins',sans-serif;
+
+    min-height:100vh;
+
     background:linear-gradient(
         135deg,
-        #FFF8FB 0%,
-        #FFE4EC 20%,
-        #F7E8FF 45%,
-        #EDE9FF 70%,
-        #E8F4FF 100%
+        #FFF1F8 0%,
+        #FBEAFF 30%,
+        #F3EEFF 60%,
+        #EEF4FF 100%
     );
-    min-height:100vh;
+
     display:flex;
     justify-content:center;
     align-items:center;
-    padding:20px;
+
+    padding:25px;
 }
-margin:0;
-font-family:Arial,sans-serif;
-background:linear-gradient(135deg,#FFF5F7,#FDF2F8,#F5F3FF,#EEF2FF);
-min-height:100vh;
-display:flex;
-justify-content:center;
-align-items:center;
-padding:20px;
-}
+
 .card{
-    background:rgba(255,255,255,0.75);
-    backdrop-filter:blur(20px);
-    border-radius:32px;
-    box-shadow:0 20px 60px rgba(0,0,0,0.08);
-}
     width:100%;
     max-width:700px;
-    background:rgba(255,255,255,0.92);
-    backdrop-filter:blur(12px);
-    padding:30px;
+
+    background:rgba(255,255,255,.88);
+
+    backdrop-filter:blur(18px);
+
     border-radius:32px;
-    box-shadow:0 25px 60px rgba(149,157,165,0.15);
+
+    padding:35px;
+
+    box-shadow:
+    0 25px 60px rgba(0,0,0,.12);
+
+    animation:fadeIn .5s ease;
 }
-width:100%;
-max-width:700px;
-background:rgba(255,255,255,.95);
-padding:30px;
-border-radius:30px;
-box-shadow:0 20px 60px rgba(0,0,0,.12);
-}
+
 h1{
+    text-align:center;
+    font-size:40px;
+
     background:linear-gradient(
         135deg,
         #FF6FA5,
         #A855F7
     );
+
     -webkit-background-clip:text;
     -webkit-text-fill-color:transparent;
-    font-size:36px;
+
+    margin-bottom:10px;
+}
+
+.subtitle{
     text-align:center;
-}text-align:center;margin:0}
-.subtitle{text-align:center;color:#666;margin-bottom:20px}
-select,textarea,button{
-width:100%;
-box-sizing:border-box;
-border-radius:16px;
-padding:14px;
-font-size:16px;
+    color:#777;
+    margin-bottom:25px;
 }
-select,textarea{border:1px solid #ddd}
-textarea{height:240px;resize:vertical}
+
+.date{
+    text-align:center;
+    color:#888;
+    margin-bottom:25px;
+}
+
+label{
+    font-weight:600;
+    color:#444;
+}
+
+select{
+    width:100%;
+
+    margin-top:10px;
+    margin-bottom:20px;
+
+    padding:16px;
+
+    border:none;
+
+    border-radius:20px;
+
+    background:white;
+
+    font-size:16px;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.05);
+}
+
 .prompt{
-background:#faf5ff;
-padding:14px;
-border-radius:16px;
-margin:15px 0;
+    background:white;
+
+    padding:18px;
+
+    border-radius:20px;
+
+    margin-bottom:20px;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.05);
 }
+
+textarea{
+    width:100%;
+    height:250px;
+
+    border:none;
+
+    border-radius:24px;
+
+    padding:20px;
+
+    font-size:16px;
+
+    resize:none;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.05);
+}
+
+.counter{
+    text-align:right;
+    color:#888;
+    margin-top:8px;
+    margin-bottom:20px;
+}
+
 .save-btn{
+    width:100%;
+
+    border:none;
+
+    border-radius:20px;
+
+    padding:18px;
+
+    font-size:17px;
+    font-weight:600;
+
+    cursor:pointer;
+
+    color:white;
+
     background:linear-gradient(
         135deg,
         #FF7EB3,
         #FF758C,
         #B16CEA
     );
-    color:white;
-    border:none;
-    border-radius:18px;
-    padding:14px 28px;
-}
-    background:linear-gradient(
-        135deg,
-        #FF8FB1,
-        #FF6FA5,
-        #C084FC
-    );
-    color:white;
-    border:none;
-    border-radius:18px;
-    padding:14px 24px;
-    cursor:pointer;
-    transition:all .3s ease;
+
+    transition:.3s;
 }
 
 .save-btn:hover{
     transform:translateY(-3px);
+
+    box-shadow:
+    0 12px 30px rgba(255,118,172,.35);
 }
-border:none;
-color:white;
-cursor:pointer;
-background:linear-gradient(135deg,#FF7EB3,#FF758C);
+
+.saved{
+    margin-top:15px;
+    text-align:center;
+    color:#16A34A;
+    font-weight:600;
 }
-.topbar{
-display:flex;
-justify-content:space-between;
-margin-bottom:15px;
-color:#666;
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
 }
+
 </style>
 </head>
+
 <body>
+
 <div class="card">
-<div class="topbar">
-<span id="date"></span>
-<span id="count">0 characters</span>
-</div>
 
 <h1>Daily Journal</h1>
-<p class="subtitle">Reflect. Grow. Thrive.</p>
 
-<label><strong>Today's Mood</strong></label>
+<p class="subtitle">
+Reflect • Grow • Thrive
+</p>
+
+<div class="date" id="todayDate"></div>
+
+<label>Today's Mood</label>
+
 <select id="mood">
+
 <option>😊 Happy</option>
 <option>😌 Calm</option>
 <option>💪 Motivated</option>
@@ -190,66 +230,153 @@ color:#666;
 <option>🌈 Optimistic</option>
 <option>❤️ Loved</option>
 <option>🏆 Accomplished</option>
-<option>🎉 Energized</option>
+<option>⚡ Energized</option>
+<option>🧘 Peaceful</option>
+<option>🙏 Grateful</option>
+<option>💖 Hopeful</option>
+<option>🚀 Excited</option>
+
 </select>
 
 <div class="prompt" id="prompt"></div>
 
-<textarea id="journal" placeholder="Write your thoughts here..."></textarea>
+<textarea
+id="journal"
+placeholder="Write your thoughts here..."
+></textarea>
+
+<div class="counter">
+<span id="count">0</span> characters
+</div>
+
+<br>
+
+<label>❤️ What are you grateful for today?</label>
+
+<textarea
+id="gratitude"
+placeholder="Write 3 things you're grateful for..."
+></textarea>
 
 <br><br>
-<button class="save-btn" onclick="saveEntry()">💾 Save Entry</button>
+
+<label>🌟 Today's Win</label>
+
+<textarea
+id="win"
+placeholder="What was your biggest win today?"
+></textarea>
+
+<br><br>
+
+<label>🎯 Tomorrow's Focus</label>
+
+<textarea
+id="focus"
+placeholder="What will you focus on tomorrow?"
+></textarea>
+
+<br><br>
+
+<label>💭 Additional Thoughts</label>
+
+<textarea
+id="thoughts"
+placeholder="Anything else on your mind?"
+></textarea>
+
+<br><br>
+
+<button
+class="save-btn"
+onclick="saveEntry()">
+💾 Save My Reflection
+</button>
+
+<div class="saved" id="saved"></div>
+
 </div>
 
 <script>
-const prompts={
+
+const prompts = {
+
 "😊 Happy":"What made you smile today?",
 "😌 Calm":"What helped you feel peaceful today?",
-"💪 Motivated":"What goal excites you today?",
-"😔 Sad":"What would help you feel supported?",
-"😴 Tired":"How can you recharge today?",
-"😰 Stressed":"What can you let go of?",
-"😟 Anxious":"What is going okay right now?",
-"😤 Frustrated":"What challenge taught you something today?",
+"💪 Motivated":"What goal excites you most right now?",
+"😔 Sad":"What would help you feel supported today?",
+"😴 Tired":"How can you recharge yourself?",
+"😰 Stressed":"What can you let go of today?",
+"😟 Anxious":"What is going well right now?",
+"😤 Frustrated":"What challenge taught you something?",
 "🤔 Confused":"What small step could bring clarity?",
 "✨ Inspired":"What idea excites you most?",
-"🎯 Focused":"What is your top priority today?",
+"🎯 Focused":"What is your main priority today?",
 "🌟 Confident":"What strength are you proud of?",
 "🌈 Optimistic":"What are you looking forward to?",
 "❤️ Loved":"Who made you feel appreciated?",
 "🏆 Accomplished":"What achievement are you proud of?",
-"🎉 Energized":"How will you use your energy today?"
+"⚡ Energized":"How will you use your energy?",
+"🧘 Peaceful":"What brought you inner peace?",
+"🙏 Grateful":"What are you grateful for today?",
+"💖 Hopeful":"What gives you hope today?",
+"🚀 Excited":"What are you excited about?"
+
 };
 
-const mood=document.getElementById("mood");
-const journal=document.getElementById("journal");
-const promptBox=document.getElementById("prompt");
+const mood =
+document.getElementById("mood");
+
+const prompt =
+document.getElementById("prompt");
+
+const journal =
+document.getElementById("journal");
 
 function updatePrompt(){
-promptBox.innerHTML="<strong>Prompt:</strong> "+prompts[mood.value];
-localStorage.setItem("journalMood",mood.value);
+prompt.innerHTML =
+"<strong>Prompt:</strong><br>" +
+prompts[mood.value];
 }
+
+mood.addEventListener(
+"change",
+updatePrompt
+);
+
+journal.addEventListener(
+"input",
+function(){
+document.getElementById("count").innerText =
+journal.value.length;
+}
+);
 
 function saveEntry(){
-localStorage.setItem("journalEntry",journal.value);
-alert("Journal entry saved!");
+
+localStorage.setItem(
+"journalMood",
+mood.value
+);
+
+localStorage.setItem(
+"journalText",
+journal.value
+);
+
+document.getElementById("saved")
+.innerText =
+"✓ Journal entry saved";
 }
 
-mood.addEventListener("change",updatePrompt);
+document.getElementById(
+"todayDate"
+).innerText =
+new Date().toLocaleDateString();
 
-journal.addEventListener("input",()=>{
-document.getElementById("count").innerText=journal.value.length+" characters";
-localStorage.setItem("journalDraft",journal.value);
-});
-
-document.getElementById("date").innerText=new Date().toLocaleDateString();
-
-journal.value=localStorage.getItem("journalDraft")||"";
-mood.value=localStorage.getItem("journalMood")||"😊 Happy";
 updatePrompt();
-document.getElementById("count").innerText=journal.value.length+" characters";
+
 </script>
+
 </body>
 </html>
-"""
-
