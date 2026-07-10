@@ -1,285 +1,202 @@
-<!DOCTYPE html>
-<html>
+from pathlib import Path
+
+html = """<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mood Tracker</title>
-
+<title>Daily Mindset Builder - Journal</title>
 <style>
 body{
     margin:0;
-    background:#fdf7f9;
-    font-family:Georgia, serif;
+    font-family:'Poppins',sans-serif;
+    background:linear-gradient(
+        135deg,
+        #FFF8FB 0%,
+        #FFE4EC 20%,
+        #F7E8FF 45%,
+        #EDE9FF 70%,
+        #E8F4FF 100%
+    );
+    min-height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
-    min-height:100vh;
+    padding:20px;
 }
-
+margin:0;
+font-family:Arial,sans-serif;
+background:linear-gradient(135deg,#FFF5F7,#FDF2F8,#F5F3FF,#EEF2FF);
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:20px;
+}
 .card{
-    width:340px;
-    background:white;
+    width:100%;
+    max-width:700px;
+    background:rgba(255,255,255,0.92);
+    backdrop-filter:blur(12px);
     padding:30px;
-    border-radius:30px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.08);
-    text-align:center;
+    border-radius:32px;
+    box-shadow:0 25px 60px rgba(149,157,165,0.15);
 }
-
+width:100%;
+max-width:700px;
+background:rgba(255,255,255,.95);
+padding:30px;
+border-radius:30px;
+box-shadow:0 20px 60px rgba(0,0,0,.12);
+}
 h1{
-    font-style:italic;
-    margin-bottom:10px;
-}
-
-.subtitle{
-    color:#777;
-    margin-bottom:25px;
-}
-
-.mood-btn{
-    width:100%;
-    padding:14px;
-    margin:8px 0;
-    border-radius:999px;
-    border:1px solid #ddd;
-    background:white;
-    cursor:pointer;
-    font-size:18px;
-}
-
-.result{
-    margin-top:20px;
-    font-size:18px;
-    color:#444;
-}.modal{
-    display:none;
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:rgba(0,0,0,0.5);
-    justify-content:center;
-    align-items:center;
-    z-index:1000;
-}
-
-.modal-content{
-    background:white;
-    padding:25px;
-    border-radius:20px;
-    width:90%;
-    max-width:400px;
+    background:linear-gradient(
+        135deg,
+        #FF6FA5,
+        #A855F7
+    );
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    font-size:36px;
     text-align:center;
-    box-shadow:0 10px 30px rgba(0,0,0,0.2);
+}text-align:center;margin:0}
+.subtitle{text-align:center;color:#666;margin-bottom:20px}
+select,textarea,button{
+width:100%;
+box-sizing:border-box;
+border-radius:16px;
+padding:14px;
+font-size:16px;
 }
-
-.modal-content h3{
-    margin-bottom:15px;
+select,textarea{border:1px solid #ddd}
+textarea{height:240px;resize:vertical}
+.prompt{
+background:#faf5ff;
+padding:14px;
+border-radius:16px;
+margin:15px 0;
 }
-
-.modal-content textarea{
-    width:100%;
-    height:120px;
-    padding:10px;
-    border-radius:12px;
-    border:1px solid #ddd;
-    resize:none;
-    font-size:16px;
-}
-
-.modal-content button{
-    margin-top:12px;
-    padding:12px 20px;
+.save-btn{
+    background:linear-gradient(
+        135deg,
+        #FF8FB1,
+        #FF6FA5,
+        #C084FC
+    );
+    color:white;
     border:none;
-    border-radius:12px;
+    border-radius:18px;
+    padding:14px 24px;
     cursor:pointer;
-    font-size:16px;
+    transition:all .3s ease;
+}
+
+.save-btn:hover{
+    transform:translateY(-3px);
+}
+border:none;
+color:white;
+cursor:pointer;
+background:linear-gradient(135deg,#FF7EB3,#FF758C);
+}
+.topbar{
+display:flex;
+justify-content:space-between;
+margin-bottom:15px;
+color:#666;
 }
 </style>
 </head>
-
 <body>
-
 <div class="card">
-    <h1>Mood Tracker</h1>
-    <div class="subtitle">How are you feeling today?</div>
-
-  <button class="mood-btn" onclick="openMoodModal('😊 Happy')">😊 Happy</button>
-
-<button class="mood-btn" onclick="openMoodModal('😌 Calm')">😌 Calm</button>
-
-<button class="mood-btn" onclick="openMoodModal('💪 Motivated')">💪 Motivated</button>
-
-<button class="mood-btn" onclick="openMoodModal('😔 Sad')">😔 Sad</button>
-
-<button class="mood-btn" onclick="openMoodModal('😴 Tired')">😴 Tired</button>
-
-<button class="mood-btn" onclick="openMoodModal('😰 Stressed')">😰 Stressed</button>
-
-<button class="mood-btn" onclick="openMoodModal('😟 Anxious')">😟 Anxious</button>
-
-<button class="mood-btn" onclick="openMoodModal('😤 Frustrated')">😤 Frustrated</button>
-
-<button class="mood-btn" onclick="openMoodModal('🤔 Confused')">🤔 Confused</button>
-
-<button class="mood-btn" onclick="openMoodModal('✨ Inspired')">✨ Inspired</button>
-
-<button class="mood-btn" onclick="openMoodModal('🎯 Focused')">🎯 Focused</button>
-
-<button class="mood-btn" onclick="openMoodModal('🌟 Confident')">🌟 Confident</button>
-
-<button class="mood-btn" onclick="openMoodModal('🌈 Optimistic')">🌈 Optimistic</button>
-
-<button class="mood-btn" onclick="openMoodModal('❤️ Loved')">❤️ Loved</button>
-
-<button class="mood-btn" onclick="openMoodModal('🏆 Accomplished')">🏆 Accomplished</button>
-
-<button class="mood-btn" onclick="openMoodModal('🎉 Energized')">🎉 Energized</button>
-<div id="moodModal" class="modal">
-  <div class="modal-content">
-
-    <h2 id="modalTitle">Mood Reflection</h2>
-
-    <p>Why are you feeling this way today?</p>
-
-    <textarea
-      id="moodNote"
-      placeholder="Write your thoughts here..."
-    ></textarea>
-
-    <div class="modal-buttons">
-
-      <button onclick="saveMoodReflection()">
-        Save Reflection
-      </button>
-
-      <button onclick="closeMoodModal()">
-        Skip
-      </button>
-
-    </div>
-
-  </div>
+<div class="topbar">
+<span id="date"></span>
+<span id="count">0 characters</span>
 </div>
 
-   <div class="modal" id="moodModal">
-    <div class="modal-content">
-        <h3 id="modalMoodTitle">Mood Reflection</h3>
+<h1>Daily Journal</h1>
+<p class="subtitle">Reflect. Grow. Thrive.</p>
 
-        <textarea
-            id="moodReflection"
-            placeholder="Why did you choose this mood today?"
-        ></textarea>
+<label><strong>Today's Mood</strong></label>
+<select id="mood">
+<option>😊 Happy</option>
+<option>😌 Calm</option>
+<option>💪 Motivated</option>
+<option>😔 Sad</option>
+<option>😴 Tired</option>
+<option>😰 Stressed</option>
+<option>😟 Anxious</option>
+<option>😤 Frustrated</option>
+<option>🤔 Confused</option>
+<option>✨ Inspired</option>
+<option>🎯 Focused</option>
+<option>🌟 Confident</option>
+<option>🌈 Optimistic</option>
+<option>❤️ Loved</option>
+<option>🏆 Accomplished</option>
+<option>🎉 Energized</option>
+</select>
 
-        <br>
+<div class="prompt" id="prompt"></div>
 
-        <button onclick="saveMoodReflection()">
-            Save Reflection
-        </button>
+<textarea id="journal" placeholder="Write your thoughts here..."></textarea>
 
-        <button onclick="closeMoodModal()">
-            Skip
-        </button>
-    </div> 
-   </div>
-            <div class="result" id="result"></div>
-
-
+<br><br>
+<button class="save-btn" onclick="saveEntry()">💾 Save Entry</button>
+</div>
 
 <script>
-function setMood(mood){
-
-    let quote = "";
-    let prompt = "";
-    
-if(mood.includes("Confident")){
-    quote = "Believe in your abilities.";
-    prompt = "What strength are you most proud of today?";
-}
-
-else if(mood.includes("Optimistic")){
-    quote = "Every day brings new possibilities.";
-    prompt = "What are you looking forward to?";
-}
-
-else if(mood.includes("Loved")){
-    quote = "You are valued more than you know.";
-    prompt = "Who made you feel appreciated today?";
-}
-
-else if(mood.includes("Accomplished")){
-    quote = "Celebrate your progress.";
-    prompt = "What achievement are you proud of today?";
-}
-
-else if(mood.includes("Energized")){
-    quote = "Your energy can create amazing things.";
-    prompt = "How will you use your energy today?";
-}
-    if(mood.includes("Happy")){
-        quote = "Happiness grows when it is shared.";
-        prompt = "What made you smile today?";
-    }
-    else if(mood.includes("Calm")){
-        quote = "Peace begins with a quiet mind.";
-        prompt = "What helped you feel peaceful today?";
-    }
-    else if(mood.includes("Motivated")){
-        quote = "Small daily actions create big results.";
-        prompt = "What goal are you excited to achieve?";
-    }
-    else if(mood.includes("Sad")){
-        quote = "It's okay to feel your emotions.";
-        prompt = "What would help you feel supported right now?";
-    }
-    else if(mood.includes("Tired")){
-        quote = "Rest is productive too.";
-        prompt = "What can you do today to recharge?";
-    }
-    else if(mood.includes("Stressed")){
-        quote = "Take one breath at a time.";
-        prompt = "What is one thing you can let go of today?";
-    }
-
-    document.getElementById("result").innerHTML =
-        "<h3>" + mood + "</h3>" +
-        "<p>" + quote + "</p>" +
-        "<br><strong>Journal Prompt:</strong>" +
-        "<p>" + prompt + "</p>";
-
-    localStorage.setItem("todayMood", mood);
-}
-
-window.onload = function() {
-    let savedMood = localStorage.getItem("todayMood");
-
-    if(savedMood){
-        setMood(savedMood);
-    }
-
+const prompts={
+"😊 Happy":"What made you smile today?",
+"😌 Calm":"What helped you feel peaceful today?",
+"💪 Motivated":"What goal excites you today?",
+"😔 Sad":"What would help you feel supported?",
+"😴 Tired":"How can you recharge today?",
+"😰 Stressed":"What can you let go of?",
+"😟 Anxious":"What is going okay right now?",
+"😤 Frustrated":"What challenge taught you something today?",
+"🤔 Confused":"What small step could bring clarity?",
+"✨ Inspired":"What idea excites you most?",
+"🎯 Focused":"What is your top priority today?",
+"🌟 Confident":"What strength are you proud of?",
+"🌈 Optimistic":"What are you looking forward to?",
+"❤️ Loved":"Who made you feel appreciated?",
+"🏆 Accomplished":"What achievement are you proud of?",
+"🎉 Energized":"How will you use your energy today?"
 };
 
-function openMoodModal(mood){
-    document.getElementById("moodModal").style.display = "flex";
-    document.getElementById("modalTitle").innerText = mood;
-    localStorage.setItem("selectedMood", mood);
+const mood=document.getElementById("mood");
+const journal=document.getElementById("journal");
+const promptBox=document.getElementById("prompt");
+
+function updatePrompt(){
+promptBox.innerHTML="<strong>Prompt:</strong> "+prompts[mood.value];
+localStorage.setItem("journalMood",mood.value);
 }
 
-function closeMoodModal(){
-    document.getElementById("moodModal").style.display = "none";
+function saveEntry(){
+localStorage.setItem("journalEntry",journal.value);
+alert("Journal entry saved!");
 }
 
-function saveMoodReflection(){
-    let note = document.getElementById("moodNote").value;
-    let mood = localStorage.getItem("selectedMood");
+mood.addEventListener("change",updatePrompt);
 
-    localStorage.setItem("reflection_" + mood, note);
+journal.addEventListener("input",()=>{
+document.getElementById("count").innerText=journal.value.length+" characters";
+localStorage.setItem("journalDraft",journal.value);
+});
 
-    setMood(mood);
-    closeMoodModal();
-}
+document.getElementById("date").innerText=new Date().toLocaleDateString();
 
+journal.value=localStorage.getItem("journalDraft")||"";
+mood.value=localStorage.getItem("journalMood")||"😊 Happy";
+updatePrompt();
+document.getElementById("count").innerText=journal.value.length+" characters";
 </script>
-
 </body>
 </html>
+"""
+
+path = "/mnt/data/journal.html"
+Path(path).write_text(html, encoding="utf-8")
+print(path)
