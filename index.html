@@ -26,8 +26,8 @@
       min-height: 917px;
       padding: 18px 10px 66px;
       background:
-        radial-gradient(circle at 20% 10%, rgba(255,255,255,0.95), transparent 26%),
-        radial-gradient(circle at 85% 28%, rgba(255,226,232,0.55), transparent 28%),
+        radial-gradient(circle at 20% 10%, rgba(255,255,255,0.95), transparent 27%),
+        radial-gradient(circle at 88% 32%, rgba(255,221,229,0.55), transparent 30%),
         linear-gradient(180deg, #f8f6f8 0%, #ded9de 35%, #b9b0ba 68%, #8c8497 100%);
       color: #000;
       position: relative;
@@ -38,12 +38,12 @@
     .screen::before {
       content: "";
       position: absolute;
-      width: 250px;
-      height: 250px;
+      width: 260px;
+      height: 260px;
       border-radius: 50%;
-      background: rgba(255, 216, 224, 0.35);
-      top: 240px;
-      left: -90px;
+      background: rgba(255, 216, 224, 0.38);
+      top: 245px;
+      left: -95px;
       filter: blur(35px);
       animation: floatingGlow 8s ease-in-out infinite;
       pointer-events: none;
@@ -52,47 +52,30 @@
     .screen::after {
       content: "";
       position: absolute;
-      width: 240px;
-      height: 240px;
+      width: 250px;
+      height: 250px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.25);
-      bottom: 160px;
-      right: -110px;
+      background: rgba(255, 255, 255, 0.28);
+      bottom: 150px;
+      right: -115px;
       filter: blur(35px);
       animation: floatingGlowTwo 9s ease-in-out infinite;
       pointer-events: none;
     }
 
     @keyframes pageOpen {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     @keyframes floatingGlow {
-      0%, 100% {
-        transform: translate(0, 0) scale(1);
-      }
-
-      50% {
-        transform: translate(35px, 30px) scale(1.12);
-      }
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(35px, 30px) scale(1.12); }
     }
 
     @keyframes floatingGlowTwo {
-      0%, 100% {
-        transform: translate(0, 0) scale(1);
-      }
-
-      50% {
-        transform: translate(-30px, -35px) scale(1.1);
-      }
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(-30px, -35px) scale(1.1); }
     }
 
     .sparkle {
@@ -101,40 +84,20 @@
       height: 7px;
       background: white;
       border-radius: 50%;
-      box-shadow: 0 0 12px rgba(255,255,255,0.9);
-      opacity: 0.65;
+      box-shadow: 0 0 13px rgba(255,255,255,0.95);
+      opacity: 0.6;
       animation: sparkleFloat 4s ease-in-out infinite;
       pointer-events: none;
       z-index: 1;
     }
 
-    .sparkle.one {
-      top: 120px;
-      right: 42px;
-    }
-
-    .sparkle.two {
-      top: 440px;
-      left: 24px;
-      animation-delay: 1.2s;
-    }
-
-    .sparkle.three {
-      bottom: 240px;
-      right: 32px;
-      animation-delay: 2s;
-    }
+    .sparkle.one { top: 125px; right: 42px; }
+    .sparkle.two { top: 445px; left: 24px; animation-delay: 1.2s; }
+    .sparkle.three { bottom: 245px; right: 32px; animation-delay: 2s; }
 
     @keyframes sparkleFloat {
-      0%, 100% {
-        transform: translateY(0) scale(1);
-        opacity: 0.35;
-      }
-
-      50% {
-        transform: translateY(-12px) scale(1.45);
-        opacity: 0.9;
-      }
+      0%, 100% { transform: translateY(0) scale(1); opacity: 0.35; }
+      50% { transform: translateY(-12px) scale(1.45); opacity: 0.95; }
     }
 
     .top {
@@ -176,13 +139,8 @@
     }
 
     @keyframes logoPulse {
-      0%, 100% {
-        transform: scale(1);
-      }
-
-      50% {
-        transform: scale(1.07);
-      }
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.07); }
     }
 
     .brand {
@@ -192,10 +150,10 @@
 
     .account-btn {
       margin-left: auto;
-      border: 1px solid rgba(0,0,0,0.3);
-      background: rgba(255,255,255,0.5);
+      border: 1px solid rgba(0,0,0,0.28);
+      background: rgba(255,255,255,0.58);
       border-radius: 999px;
-      padding: 7px 10px;
+      padding: 8px 11px;
       font-size: 12px;
       cursor: pointer;
       font-family: Arial, Helvetica, sans-serif;
@@ -256,7 +214,7 @@
 
     .question-card {
       width: 315px;
-      min-height: 500px;
+      min-height: 515px;
       margin: 0 auto;
       border-radius: 28px;
       background: rgba(220, 197, 201, 0.75);
@@ -267,7 +225,7 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 16px;
+      gap: 15px;
       padding: 34px 46px;
       animation: smoothFloat 4s ease-in-out infinite;
       transition: transform 0.25s ease, box-shadow 0.25s ease;
@@ -275,18 +233,13 @@
     }
 
     @keyframes smoothFloat {
-      0%, 100% {
-        transform: translateY(0);
-      }
-
-      50% {
-        transform: translateY(-5px);
-      }
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
     }
 
     .answer-btn {
       width: 100%;
-      min-height: 44px;
+      min-height: 46px;
       border: 1.5px solid #111;
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.78);
@@ -300,13 +253,15 @@
       justify-content: center;
       text-align: center;
       line-height: 1.05;
-      padding: 5px 12px;
+      padding: 5px 14px;
       white-space: normal;
     }
 
     .answer-btn.long-answer {
-      font-size: 23px;
-      padding: 6px 12px;
+      font-size: 22px;
+      min-height: 62px;
+      line-height: 1.05;
+      padding: 7px 12px;
     }
 
     .answer-btn:hover,
@@ -401,12 +356,7 @@
       position: absolute;
       width: 120px;
       height: 600px;
-      background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.30),
-        transparent
-      );
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.30), transparent);
       top: -120px;
       left: -160px;
       transform: rotate(18deg);
@@ -414,17 +364,9 @@
     }
 
     @keyframes shine {
-      0% {
-        left: -170px;
-      }
-
-      45% {
-        left: 430px;
-      }
-
-      100% {
-        left: 430px;
-      }
+      0% { left: -170px; }
+      45% { left: 430px; }
+      100% { left: 430px; }
     }
 
     .quote {
@@ -551,13 +493,13 @@
     .btn {
       min-height: 59px;
       border: 2px solid #111;
-      background: rgba(255, 255, 255, 0.70);
+      background: rgba(255,255,255,0.70);
       color: #111;
       font-family: Georgia, "Times New Roman", serif;
       font-size: 24px;
       font-style: italic;
       cursor: pointer;
-      box-shadow: 0 4px 7px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 4px 7px rgba(0,0,0,0.35);
       transition: 0.25s ease;
       padding: 8px 10px;
     }
@@ -574,36 +516,30 @@
       background: #111;
       color: white;
       transform: translateY(-4px) scale(1.03);
-      box-shadow: 0 9px 15px rgba(0, 0, 0, 0.45);
-    }
-
-    .btn:active,
-    .small-btn:active,
-    .answer-btn:active {
-      transform: scale(0.96);
+      box-shadow: 0 9px 15px rgba(0,0,0,0.45);
     }
 
     .auth-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(20, 18, 22, 0.48);
-      backdrop-filter: blur(13px);
+      background: rgba(20, 18, 22, 0.50);
+      backdrop-filter: blur(14px);
       display: flex;
       justify-content: center;
       align-items: center;
       padding: 20px;
-      z-index: 100;
+      z-index: 1000;
     }
 
     .auth-window {
       width: 360px;
       max-width: 94vw;
-      border-radius: 32px;
+      border-radius: 34px;
       background:
-        radial-gradient(circle at top left, rgba(255,255,255,0.9), transparent 35%),
-        linear-gradient(180deg, rgba(250,247,248,0.96), rgba(219,194,199,0.96));
+        radial-gradient(circle at top left, rgba(255,255,255,0.92), transparent 35%),
+        linear-gradient(180deg, rgba(250,247,248,0.98), rgba(219,194,199,0.98));
       box-shadow:
-        0 26px 60px rgba(0,0,0,0.34),
+        0 26px 60px rgba(0,0,0,0.38),
         inset 0 0 22px rgba(255,255,255,0.35);
       padding: 30px 24px 24px;
       text-align: center;
@@ -613,15 +549,8 @@
     }
 
     @keyframes modalOpen {
-      from {
-        opacity: 0;
-        transform: translateY(24px) scale(0.95);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
+      from { opacity: 0; transform: translateY(24px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     .auth-close {
@@ -629,7 +558,7 @@
       top: 14px;
       right: 16px;
       border: none;
-      background: rgba(255,255,255,0.45);
+      background: rgba(255,255,255,0.48);
       width: 32px;
       height: 32px;
       border-radius: 50%;
@@ -771,7 +700,7 @@
       opacity: 0;
       pointer-events: none;
       transition: 0.35s ease;
-      z-index: 200;
+      z-index: 2000;
     }
 
     .saved-message.show {
@@ -821,8 +750,8 @@
       <div class="question-card moving-card" id="answersCard"></div>
 
       <div class="quiz-actions">
-        <button class="small-btn" id="backBtn">Back</button>
-        <button class="small-btn" id="nextBtn">Next</button>
+        <button class="small-btn" id="backBtn" type="button">Back</button>
+        <button class="small-btn" id="nextBtn" type="button">Next</button>
       </div>
     </section>
 
@@ -841,8 +770,8 @@
         </p>
 
         <div class="arrows">
-          <button class="arrow-btn left" id="prevQuoteBtn" aria-label="Previous quote"></button>
-          <button class="arrow-btn right" id="nextQuoteBtn" aria-label="Next quote"></button>
+          <button class="arrow-btn left" id="prevQuoteBtn" type="button" aria-label="Previous quote"></button>
+          <button class="arrow-btn right" id="nextQuoteBtn" type="button" aria-label="Next quote"></button>
         </div>
       </section>
 
@@ -851,15 +780,15 @@
       </section>
 
       <div class="bottom-buttons">
-        <button class="btn start-btn" id="startAgainBtn">Start Again</button>
-        <button class="btn save-btn" id="saveBtn">Save My Quote</button>
+        <button class="btn start-btn" id="startAgainBtn" type="button">Start Again</button>
+        <button class="btn save-btn" id="saveBtn" type="button">Save My Quote</button>
       </div>
     </section>
   </main>
 
   <section class="auth-overlay" id="authOverlay">
     <div class="auth-window">
-      <button class="auth-close" id="authClose">×</button>
+      <button class="auth-close" id="authClose" type="button">×</button>
 
       <div class="auth-logo">✦</div>
 
@@ -867,26 +796,26 @@
       <p>Choose how you want to enter your Daily Mindset Builder.</p>
 
       <div class="auth-tabs">
-        <button class="auth-tab active" data-tab="guest">Guest</button>
-        <button class="auth-tab" data-tab="login">Log In</button>
-        <button class="auth-tab" data-tab="signup">Sign Up</button>
+        <button class="auth-tab active" type="button" data-tab="guest">Guest</button>
+        <button class="auth-tab" type="button" data-tab="login">Log In</button>
+        <button class="auth-tab" type="button" data-tab="signup">Sign Up</button>
       </div>
 
       <div class="auth-form active" id="guestForm">
-        <button class="guest-btn" id="guestBtn">Enter as Guest</button>
+        <button class="guest-btn" id="guestBtn" type="button">Enter as Guest</button>
       </div>
 
       <div class="auth-form" id="loginForm">
         <input class="auth-input" type="email" placeholder="Email" />
         <input class="auth-input" type="password" placeholder="Password" />
-        <button class="auth-main-btn" id="loginBtn">Log In</button>
+        <button class="auth-main-btn" id="loginBtn" type="button">Log In</button>
       </div>
 
       <div class="auth-form" id="signupForm">
         <input class="auth-input" type="text" placeholder="Your name" />
         <input class="auth-input" type="email" placeholder="Email" />
         <input class="auth-input" type="password" placeholder="Create password" />
-        <button class="auth-main-btn" id="signupBtn">Create Account</button>
+        <button class="auth-main-btn" id="signupBtn" type="button">Create Account</button>
       </div>
     </div>
   </section>
@@ -984,7 +913,14 @@
       q.answers.forEach(answer => {
         const btn = document.createElement("button");
         btn.className = "answer-btn";
-        btn.textContent = answer;
+        btn.type = "button";
+
+        if (answer === "Believe in myself") {
+          btn.innerHTML = "Believe in<br>myself";
+          btn.classList.add("long-answer");
+        } else {
+          btn.textContent = answer;
+        }
 
         if (answer.length > 13) {
           btn.classList.add("long-answer");
@@ -994,7 +930,7 @@
           btn.classList.add("selected");
         }
 
-        btn.onclick = () => {
+        btn.addEventListener("click", () => {
           userAnswers[currentQuestion] = answer;
 
           document.querySelectorAll(".answer-btn").forEach(button => {
@@ -1002,7 +938,7 @@
           });
 
           btn.classList.add("selected");
-        };
+        });
 
         answersCard.appendChild(btn);
       });
@@ -1018,7 +954,7 @@
       }
 
       if (currentQuestion < questions.length - 1) {
-        currentQuestion++;
+        currentQuestion = currentQuestion + 1;
         loadQuestion();
       } else {
         showResult();
@@ -1027,7 +963,7 @@
 
     backBtn.addEventListener("click", () => {
       if (currentQuestion > 0) {
-        currentQuestion--;
+        currentQuestion = currentQuestion - 1;
         loadQuestion();
       }
     });
@@ -1035,7 +971,6 @@
     function showResult() {
       quizScreen.style.display = "none";
       resultScreen.style.display = "block";
-
       currentQuote = 0;
       showQuote(currentQuote);
       window.scrollTo(0, 0);
@@ -1048,14 +983,13 @@
       setTimeout(() => {
         quoteText.innerHTML = quoteResults[index].quote;
         explanationText.textContent = quoteResults[index].explanation;
-
         quoteText.classList.remove("fade");
         explanationText.classList.remove("fade");
       }, 300);
     }
 
     document.getElementById("nextQuoteBtn").addEventListener("click", () => {
-      currentQuote++;
+      currentQuote = currentQuote + 1;
 
       if (currentQuote >= quoteResults.length) {
         currentQuote = 0;
@@ -1065,7 +999,7 @@
     });
 
     document.getElementById("prevQuoteBtn").addEventListener("click", () => {
-      currentQuote--;
+      currentQuote = currentQuote - 1;
 
       if (currentQuote < 0) {
         currentQuote = quoteResults.length - 1;
@@ -1084,7 +1018,6 @@
       });
 
       localStorage.setItem("savedQuotes", JSON.stringify(savedQuotes));
-
       showMessage("Quote saved ✦");
     });
 
@@ -1119,7 +1052,6 @@
     });
 
     function closeAuth(mode) {
-      localStorage.setItem("mindsetUserMode", mode);
       authOverlay.style.display = "none";
       showMessage(mode === "guest" ? "Entered as guest ✦" : "Welcome ✦");
     }
@@ -1127,10 +1059,7 @@
     document.getElementById("guestBtn").addEventListener("click", () => closeAuth("guest"));
     document.getElementById("loginBtn").addEventListener("click", () => closeAuth("login"));
     document.getElementById("signupBtn").addEventListener("click", () => closeAuth("signup"));
-
-    document.getElementById("authClose").addEventListener("click", () => {
-      closeAuth("guest");
-    });
+    document.getElementById("authClose").addEventListener("click", () => closeAuth("guest"));
 
     document.getElementById("accountBtn").addEventListener("click", () => {
       authOverlay.style.display = "flex";
