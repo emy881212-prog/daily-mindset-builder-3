@@ -1,480 +1,1913 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Daily Journal</title>
+  <meta charset="UTF-8">
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
 
-<style>
+  <title>Daily Journal — Daily Mindset Builder</title>
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
+  <style>
+    /* ================================
+       GLOBAL SETTINGS
+    ================================= */
 
-body{.bubble{
-    position:fixed;
-    border-radius:50%;
-    background:rgba(255,255,255,.35);
-    backdrop-filter:blur(10px);
-    z-index:0;
-
-    animation:float 18s infinite ease-in-out;
-}
-
-.bubble1{
-    width:80px;
-    height:80px;
-    left:10%;
-    top:20%;
-}
-
-.bubble2{
-    width:120px;
-    height:120px;
-    right:10%;
-    top:30%;
-    animation-delay:2s;
-}
-
-.bubble3{
-    width:60px;
-    height:60px;
-    left:20%;
-    bottom:15%;
-    animation-delay:4s;
-}
-
-.bubble4{
-    width:100px;
-    height:100px;
-    right:15%;
-    bottom:20%;
-    animation-delay:6s;
-}
-
-.bubble5{
-    width:70px;
-    height:70px;
-    left:50%;
-    top:10%;
-    animation-delay:8s;
-}
-
-@keyframes float{
-    0%{
-        transform:translateY(0px);
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    50%{
-        transform:translateY(-25px);
+    :root {
+      --background-top: #f4f2f4;
+      --background-bottom: #817e8c;
+
+      --panel-light: #ead8da;
+      --panel-dark: #c7aeb1;
+
+      --button-light: #efb7ac;
+      --button-dark: #af8c88;
+
+      --black: #121214;
+      --soft-black: #252126;
+      --white: #ffffff;
+
+      --shadow-dark: rgba(45, 37, 44, 0.38);
+      --shadow-light: rgba(255, 255, 255, 0.65);
+
+      --modal-background: rgba(255, 247, 247, 0.96);
+      --accent: #c98782;
+      --accent-dark: #936966;
     }
 
-    100%{
-        transform:translateY(0px);
-    }
-}
-    <div class="bubble bubble1"></div>
-<div class="bubble bubble2"></div>
-<div class="bubble bubble3"></div>
-<div class="bubble bubble4"></div>
-<div class="bubble bubble5"></div>
-    font-family:'Poppins',sans-serif;
-
-    min-height:100vh;
-
-    background:linear-gradient(
-        135deg,
-        #FFF1F8 0%,
-        #FBEAFF 30%,
-        #F3EEFF 60%,
-        #EEF4FF 100%
-    );
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    padding:25px;
-}
-
-.card{
-    position:relative;
-    z-index:10;
-}
-    width:100%;
-    max-width:700px;
-
-    background:rgba(255,255,255,.88);
-
-    backdrop-filter:blur(18px);
-
-    border-radius:32px;
-
-    padding:35px;
-
-    box-shadow:
-    0 25px 60px rgba(0,0,0,.12);
-
-    animation:fadeIn .5s ease;
-}
-
-h1{
-    font-family:'Poppins',sans-serif;
-    font-size:56px;
-    font-weight:800;
-    line-height:1.1;
-    text-align:center;
-
-    background:linear-gradient(
-        135deg,
-        #FF7EB3,
-        #D16BFF,
-        #8B5CF6
-    );
-
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
-
-    margin-bottom:12px;
-}
-    text-align:center;
-    font-size:40px;
-
-    background:linear-gradient(
-        135deg,
-        #FF6FA5,
-        #A855F7
-    );
-
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
-
-    margin-bottom:10px;
-}
-
-.subtitle{
-    text-align:center;
-
-    font-size:18px;
-    font-weight:500;
-
-    color:#7C7C8A;
-
-    letter-spacing:0.5px;
-
-    margin-bottom:30px;
-}
-    text-align:center;
-    color:#777;
-    margin-bottom:25px;
-}
-
-.date{
-    text-align:center;
-    color:#888;
-    margin-bottom:25px;
-}
-
-label{
-    font-weight:600;
-    color:#444;
-}
-
-select{
-    width:100%;
-
-    margin-top:10px;
-    margin-bottom:20px;
-
-    padding:16px;
-
-    border:none;
-
-    border-radius:20px;
-
-    background:white;
-
-    font-size:16px;
-
-    box-shadow:
-    0 8px 20px rgba(0,0,0,.05);
-}
-
-.prompt{
-    background:white;
-
-    padding:18px;
-
-    border-radius:20px;
-
-    margin-bottom:20px;
-
-    box-shadow:
-    0 8px 20px rgba(0,0,0,.05);
-}
-
-textarea{
-    width:100%;
-    height:250px;
-
-    border:none;
-
-    border-radius:24px;
-
-    padding:20px;
-
-    font-size:16px;
-
-    resize:none;
-
-    box-shadow:
-    0 8px 20px rgba(0,0,0,.05);
-}
-
-.counter{
-    text-align:right;
-    color:#888;
-    margin-top:8px;
-    margin-bottom:20px;
-}
-
-.save-btn{
-    width:100%;
-
-    border:none;
-
-    border-radius:20px;
-
-    padding:18px;
-
-    font-size:17px;
-    font-weight:600;
-
-    cursor:pointer;
-
-    color:white;
-
-    background:linear-gradient(
-        135deg,
-        #FF7EB3,
-        #FF758C,
-        #B16CEA
-    );
-
-    transition:.3s;
-}
-
-.save-btn:hover{
-    transform:translateY(-3px);
-
-    box-shadow:
-    0 12px 30px rgba(255,118,172,.35);
-}
-
-.saved{
-    margin-top:15px;
-    text-align:center;
-    color:#16A34A;
-    font-weight:600;
-}
-
-@keyframes fadeIn{
-    from{
-        opacity:0;
-        transform:translateY(20px);
+    html {
+      min-height: 100%;
+      background: var(--background-bottom);
     }
 
-    to{
-        opacity:1;
-        transform:translateY(0);
-    }
-}
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: hidden;
 
-</style>
+      font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      color: var(--black);
+
+      background:
+        radial-gradient(
+          circle at 20% 12%,
+          rgba(255, 255, 255, 0.82),
+          transparent 27%
+        ),
+        linear-gradient(
+          180deg,
+          var(--background-top) 0%,
+          #ddd9df 37%,
+          var(--background-bottom) 100%
+        );
+    }
+
+    button,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      border: none;
+    }
+
+    /* ================================
+       ANIMATED BACKGROUND BUBBLES
+    ================================= */
+
+    .background-bubbles {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .bubble {
+      position: absolute;
+      bottom: -70px;
+
+      width: var(--bubble-size);
+      height: var(--bubble-size);
+
+      border: 1px solid rgba(255, 255, 255, 0.43);
+      border-radius: 50%;
+
+      background: rgba(255, 255, 255, 0.11);
+      box-shadow:
+        inset 0 0 15px rgba(255, 255, 255, 0.25),
+        0 5px 25px rgba(255, 255, 255, 0.08);
+
+      animation:
+        bubble-rise var(--bubble-duration) linear infinite,
+        bubble-sway 5s ease-in-out infinite alternate;
+
+      animation-delay: var(--bubble-delay);
+    }
+
+    .bubble:nth-child(1) {
+      left: 6%;
+      --bubble-size: 20px;
+      --bubble-duration: 17s;
+      --bubble-delay: -3s;
+    }
+
+    .bubble:nth-child(2) {
+      left: 19%;
+      --bubble-size: 12px;
+      --bubble-duration: 13s;
+      --bubble-delay: -8s;
+    }
+
+    .bubble:nth-child(3) {
+      left: 34%;
+      --bubble-size: 26px;
+      --bubble-duration: 20s;
+      --bubble-delay: -12s;
+    }
+
+    .bubble:nth-child(4) {
+      left: 53%;
+      --bubble-size: 15px;
+      --bubble-duration: 16s;
+      --bubble-delay: -6s;
+    }
+
+    .bubble:nth-child(5) {
+      left: 67%;
+      --bubble-size: 22px;
+      --bubble-duration: 19s;
+      --bubble-delay: -15s;
+    }
+
+    .bubble:nth-child(6) {
+      left: 81%;
+      --bubble-size: 13px;
+      --bubble-duration: 14s;
+      --bubble-delay: -4s;
+    }
+
+    .bubble:nth-child(7) {
+      left: 92%;
+      --bubble-size: 29px;
+      --bubble-duration: 22s;
+      --bubble-delay: -10s;
+    }
+
+    @keyframes bubble-rise {
+      from {
+        transform: translateY(0);
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 0.75;
+      }
+
+      85% {
+        opacity: 0.45;
+      }
+
+      to {
+        transform: translateY(-115vh);
+        opacity: 0;
+      }
+    }
+
+    @keyframes bubble-sway {
+      from {
+        margin-left: -8px;
+      }
+
+      to {
+        margin-left: 10px;
+      }
+    }
+
+    /* ================================
+       MAIN MOBILE APP
+    ================================= */
+
+    .app-shell {
+      position: relative;
+      z-index: 1;
+
+      width: 100%;
+      max-width: 430px;
+      min-height: 100vh;
+      min-height: 100dvh;
+
+      margin: 0 auto;
+      padding:
+        max(12px, env(safe-area-inset-top))
+        20px
+        max(22px, env(safe-area-inset-bottom));
+    }
+
+    /* ================================
+       HEADER
+    ================================= */
+
+    .app-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      margin-bottom: 9px;
+    }
+
+    .logo-button {
+      position: relative;
+
+      display: grid;
+      place-items: center;
+
+      width: 56px;
+      min-width: 56px;
+      height: 56px;
+
+      border: 10px solid rgba(255, 255, 255, 0.92);
+      border-radius: 50%;
+
+      color: var(--white);
+      background: #15161a;
+
+      box-shadow:
+        0 2px 5px rgba(0, 0, 0, 0.18),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+
+      cursor: pointer;
+    }
+
+    .logo-star {
+      font-size: 25px;
+      line-height: 1;
+      transform: translateY(-1px);
+    }
+
+    .brand-name {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(15px, 4vw, 18px);
+      font-weight: 500;
+      letter-spacing: -0.35px;
+    }
+
+    /* ================================
+       PAGE TITLE
+    ================================= */
+
+    .journal-title-wrap {
+      width: calc(100% - 52px);
+      margin: 0 0 10px 52px;
+    }
+
+    .journal-title {
+      display: grid;
+      place-items: center;
+
+      min-height: 53px;
+      padding: 5px 12px;
+
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(31px, 9vw, 40px);
+      font-weight: 500;
+      line-height: 1;
+      letter-spacing: -1.5px;
+      text-align: center;
+
+      background: rgba(255, 255, 255, 0.65);
+      box-shadow: 0 5px 18px rgba(75, 69, 76, 0.06);
+    }
+
+    /* ================================
+       JOURNAL PANEL
+    ================================= */
+
+    .journal-panel {
+      position: relative;
+
+      min-height: 650px;
+      padding: 43px 14px 34px;
+
+      border: 2px solid rgba(176, 112, 111, 0.42);
+      border-radius: 69px;
+
+      background:
+        radial-gradient(
+          circle at 48% 8%,
+          rgba(255, 255, 255, 0.24),
+          transparent 35%
+        ),
+        linear-gradient(
+          145deg,
+          var(--panel-light),
+          var(--panel-dark)
+        );
+
+      box-shadow:
+        0 12px 22px rgba(46, 39, 49, 0.28),
+        inset 4px 4px 13px rgba(255, 255, 255, 0.25),
+        inset -7px -7px 16px rgba(110, 81, 89, 0.16);
+    }
+
+    .mood-title {
+      margin-bottom: 53px;
+
+      font-size: clamp(28px, 7.5vw, 35px);
+      font-weight: 500;
+      letter-spacing: -1.3px;
+      text-align: center;
+    }
+
+    .journal-options {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .journal-option {
+      position: relative;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      width: 100%;
+      min-height: 82px;
+      padding: 13px 20px;
+
+      border: 1.5px solid #191719;
+      border-radius: 999px;
+
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(20px, 5.3vw, 25px);
+      line-height: 1.17;
+      text-align: center;
+
+      color: var(--black);
+
+      background:
+        linear-gradient(
+          100deg,
+          var(--button-light) 0%,
+          #d9a29a 49%,
+          var(--button-dark) 100%
+        );
+
+      box-shadow:
+        0 11px 8px rgba(64, 51, 60, 0.35),
+        inset 2px 2px 3px rgba(255, 255, 255, 0.33),
+        inset -4px -3px 8px rgba(88, 57, 58, 0.18);
+
+      cursor: pointer;
+
+      transition:
+        transform 180ms ease,
+        box-shadow 180ms ease,
+        filter 180ms ease;
+    }
+
+    .journal-option:first-child {
+      min-height: 57px;
+      margin-bottom: 0;
+    }
+
+    .journal-option:nth-child(4) {
+      margin-top: 17px;
+    }
+
+    .journal-option:nth-child(5) {
+      margin-top: 32px;
+    }
+
+    .journal-option:hover {
+      filter: brightness(1.035);
+    }
+
+    .journal-option:active {
+      transform: translateY(4px) scale(0.985);
+
+      box-shadow:
+        0 5px 5px rgba(64, 51, 60, 0.3),
+        inset 2px 2px 5px rgba(92, 59, 61, 0.15);
+    }
+
+    .journal-option:focus-visible,
+    .save-main-button:focus-visible,
+    .emoji-button:focus-visible,
+    .modal-action:focus-visible,
+    .close-modal-button:focus-visible {
+      outline: 3px solid rgba(255, 255, 255, 0.92);
+      outline-offset: 3px;
+    }
+
+    .option-label {
+      max-width: 100%;
+    }
+
+    .option-status {
+      position: absolute;
+      right: 20px;
+
+      display: none;
+      align-items: center;
+      justify-content: center;
+
+      width: 23px;
+      height: 23px;
+
+      border-radius: 50%;
+
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+
+      color: var(--white);
+      background: rgba(55, 42, 46, 0.65);
+    }
+
+    .journal-option.completed .option-status {
+      display: flex;
+    }
+
+    /* ================================
+       MAIN SAVE BUTTON
+    ================================= */
+
+    .save-main-button {
+      display: block;
+
+      width: 72%;
+      min-height: 56px;
+      margin: 17px auto 0;
+
+      border: 1.5px solid #121214;
+      border-radius: 999px;
+
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -1px;
+
+      color: var(--black);
+      background: #e0e0e0;
+
+      box-shadow:
+        0 7px 8px rgba(35, 31, 39, 0.35),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.75);
+
+      cursor: pointer;
+
+      transition:
+        transform 180ms ease,
+        box-shadow 180ms ease;
+    }
+
+    .save-main-button:active {
+      transform: translateY(3px);
+
+      box-shadow:
+        0 3px 5px rgba(35, 31, 39, 0.28),
+        inset 2px 2px 4px rgba(100, 100, 100, 0.13);
+    }
+
+    /* ================================
+       MODAL BACKGROUND
+    ================================= */
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+
+      padding: 13px;
+
+      visibility: hidden;
+      opacity: 0;
+
+      background: rgba(28, 24, 31, 0.53);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+
+      transition:
+        opacity 250ms ease,
+        visibility 250ms ease;
+    }
+
+    .modal-overlay.open {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* ================================
+       MODAL WINDOW
+    ================================= */
+
+    .journal-modal {
+      position: relative;
+
+      width: 100%;
+      max-width: 430px;
+      max-height: calc(100vh - 25px);
+      max-height: calc(100dvh - 25px);
+
+      overflow-y: auto;
+      overscroll-behavior: contain;
+
+      padding:
+        19px
+        17px
+        max(24px, env(safe-area-inset-bottom));
+
+      border: 1px solid rgba(255, 255, 255, 0.76);
+      border-radius: 34px 34px 27px 27px;
+
+      background:
+        radial-gradient(
+          circle at 12% 4%,
+          rgba(255, 255, 255, 0.96),
+          transparent 25%
+        ),
+        linear-gradient(
+          155deg,
+          rgba(255, 249, 249, 0.98),
+          rgba(232, 207, 209, 0.98)
+        );
+
+      box-shadow:
+        0 -10px 45px rgba(27, 22, 28, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.93);
+
+      transform: translateY(105%);
+
+      transition: transform 340ms cubic-bezier(0.2, 0.9, 0.3, 1);
+    }
+
+    .modal-overlay.open .journal-modal {
+      transform: translateY(0);
+    }
+
+    .modal-handle {
+      width: 54px;
+      height: 5px;
+      margin: 0 auto 18px;
+
+      border-radius: 999px;
+
+      background: rgba(58, 45, 52, 0.25);
+    }
+
+    .modal-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 15px;
+
+      margin-bottom: 8px;
+    }
+
+    .modal-heading-area {
+      padding-left: 3px;
+    }
+
+    .modal-small-label {
+      margin-bottom: 4px;
+
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.7px;
+      text-transform: uppercase;
+
+      color: var(--accent-dark);
+    }
+
+    .modal-title {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 31px;
+      font-weight: 500;
+      letter-spacing: -1px;
+    }
+
+    .modal-date {
+      margin-top: 4px;
+
+      font-size: 13px;
+      color: rgba(42, 35, 39, 0.63);
+    }
+
+    .close-modal-button {
+      display: grid;
+      place-items: center;
+
+      width: 42px;
+      min-width: 42px;
+      height: 42px;
+
+      border: 1px solid rgba(75, 54, 61, 0.2);
+      border-radius: 50%;
+
+      font-size: 23px;
+      line-height: 1;
+
+      color: var(--soft-black);
+      background: rgba(255, 255, 255, 0.64);
+
+      box-shadow:
+        0 5px 13px rgba(73, 52, 61, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+      cursor: pointer;
+    }
+
+    /* ================================
+       MODAL SECTIONS
+    ================================= */
+
+    .modal-section {
+      scroll-margin-top: 15px;
+
+      margin-top: 17px;
+      padding: 17px;
+
+      border: 1px solid rgba(122, 85, 91, 0.13);
+      border-radius: 25px;
+
+      background: rgba(255, 255, 255, 0.52);
+
+      box-shadow:
+        0 8px 23px rgba(111, 74, 84, 0.09),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+
+      margin-bottom: 13px;
+    }
+
+    .section-number {
+      display: grid;
+      place-items: center;
+
+      width: 27px;
+      min-width: 27px;
+      height: 27px;
+
+      border-radius: 50%;
+
+      font-size: 12px;
+      font-weight: 800;
+
+      color: var(--white);
+      background:
+        linear-gradient(
+          145deg,
+          var(--accent),
+          var(--accent-dark)
+        );
+
+      box-shadow: 0 4px 9px rgba(109, 70, 76, 0.2);
+    }
+
+    .section-title {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 19px;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .section-description {
+      margin: -5px 0 13px 36px;
+
+      font-size: 12px;
+      line-height: 1.4;
+
+      color: rgba(48, 39, 43, 0.59);
+    }
+
+    /* ================================
+       EMOJI MOOD SELECTOR
+    ================================= */
+
+    .emoji-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+
+    .emoji-button {
+      position: relative;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      min-height: 69px;
+      padding: 7px 3px;
+
+      border: 1px solid rgba(74, 52, 58, 0.12);
+      border-radius: 18px;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.91),
+          rgba(234, 211, 212, 0.83)
+        );
+
+      box-shadow:
+        0 5px 12px rgba(75, 54, 62, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.96);
+
+      cursor: pointer;
+
+      transition:
+        transform 170ms ease,
+        border-color 170ms ease,
+        box-shadow 170ms ease,
+        background 170ms ease;
+    }
+
+    .emoji-button:hover {
+      transform: translateY(-2px);
+    }
+
+    .emoji-button:active {
+      transform: scale(0.95);
+    }
+
+    .emoji-button.selected {
+      border-color: rgba(104, 67, 72, 0.55);
+
+      background:
+        linear-gradient(
+          145deg,
+          #f7c4bc,
+          #c89591
+        );
+
+      box-shadow:
+        0 7px 16px rgba(101, 66, 74, 0.2),
+        inset 0 0 0 2px rgba(255, 255, 255, 0.54);
+
+      transform: translateY(-3px);
+    }
+
+    .emoji {
+      font-size: 30px;
+      line-height: 1;
+    }
+
+    .emoji-name {
+      margin-top: 5px;
+
+      overflow: hidden;
+
+      width: 100%;
+
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: -0.1px;
+      text-align: center;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      color: rgba(40, 31, 35, 0.75);
+    }
+
+    /* ================================
+       WRITING QUESTIONS
+    ================================= */
+
+    .writing-question {
+      position: relative;
+
+      margin-top: 13px;
+      padding: 14px;
+
+      border: 1px solid rgba(119, 82, 88, 0.13);
+      border-radius: 20px;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.76),
+          rgba(246, 228, 229, 0.67)
+        );
+
+      transition:
+        border-color 180ms ease,
+        box-shadow 180ms ease,
+        transform 180ms ease;
+    }
+
+    .writing-question:focus-within {
+      border-color: rgba(164, 104, 103, 0.53);
+
+      box-shadow:
+        0 8px 20px rgba(124, 76, 86, 0.12),
+        0 0 0 3px rgba(214, 157, 152, 0.13);
+
+      transform: translateY(-1px);
+    }
+
+    .question-label {
+      display: block;
+
+      margin-bottom: 9px;
+
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 1.25;
+    }
+
+    .question-icon {
+      margin-right: 5px;
+    }
+
+    .journal-textarea {
+      display: block;
+
+      width: 100%;
+      min-height: 98px;
+      resize: vertical;
+
+      padding: 13px 14px;
+
+      border: 1px solid rgba(99, 69, 76, 0.14);
+      border-radius: 15px;
+      outline: none;
+
+      font-size: 15px;
+      line-height: 1.52;
+
+      color: #282226;
+      background: rgba(255, 255, 255, 0.75);
+
+      box-shadow:
+        inset 0 2px 8px rgba(98, 69, 76, 0.05),
+        0 1px 0 rgba(255, 255, 255, 0.8);
+
+      transition:
+        border-color 180ms ease,
+        background 180ms ease;
+    }
+
+    .journal-textarea:focus {
+      border-color: rgba(163, 102, 101, 0.48);
+      background: rgba(255, 255, 255, 0.96);
+    }
+
+    .journal-textarea::placeholder {
+      color: rgba(74, 59, 65, 0.42);
+    }
+
+    .character-count {
+      display: block;
+
+      margin-top: 6px;
+
+      font-size: 10px;
+      text-align: right;
+
+      color: rgba(53, 43, 48, 0.46);
+    }
+
+    /* ================================
+       MODAL ACTIONS
+    ================================= */
+
+    .modal-actions {
+      display: grid;
+      grid-template-columns: 0.82fr 1.18fr;
+      gap: 10px;
+
+      margin-top: 19px;
+    }
+
+    .modal-action {
+      min-height: 53px;
+      padding: 11px 14px;
+
+      border-radius: 999px;
+
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.1px;
+
+      cursor: pointer;
+
+      transition:
+        transform 170ms ease,
+        box-shadow 170ms ease;
+    }
+
+    .modal-action:active {
+      transform: translateY(2px) scale(0.985);
+    }
+
+    .exit-button {
+      border: 1px solid rgba(66, 49, 55, 0.24);
+
+      color: #45373c;
+      background: rgba(255, 255, 255, 0.62);
+
+      box-shadow:
+        0 5px 12px rgba(63, 45, 52, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    }
+
+    .save-modal-button {
+      color: var(--white);
+
+      background:
+        linear-gradient(
+          110deg,
+          #c98b85,
+          #926a69
+        );
+
+      box-shadow:
+        0 7px 16px rgba(100, 65, 71, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    .saved-note {
+      margin-top: 12px;
+
+      font-size: 11px;
+      line-height: 1.4;
+      text-align: center;
+
+      color: rgba(54, 43, 48, 0.52);
+    }
+
+    /* ================================
+       TOAST MESSAGE
+    ================================= */
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: max(25px, env(safe-area-inset-bottom));
+      z-index: 2000;
+
+      width: max-content;
+      max-width: calc(100% - 34px);
+      padding: 13px 20px;
+
+      border: 1px solid rgba(255, 255, 255, 0.23);
+      border-radius: 999px;
+
+      font-size: 14px;
+      font-weight: 700;
+      text-align: center;
+
+      color: var(--white);
+      background: rgba(33, 28, 34, 0.91);
+
+      box-shadow: 0 10px 30px rgba(21, 17, 22, 0.3);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+
+      opacity: 0;
+      pointer-events: none;
+
+      transform: translate(-50%, 25px);
+
+      transition:
+        opacity 220ms ease,
+        transform 220ms ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    /* ================================
+       MOBILE ADJUSTMENTS
+    ================================= */
+
+    @media (max-width: 370px) {
+      .app-shell {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .journal-panel {
+        padding-left: 11px;
+        padding-right: 11px;
+        border-radius: 58px;
+      }
+
+      .journal-option {
+        padding-left: 15px;
+        padding-right: 15px;
+        font-size: 19px;
+      }
+
+      .emoji-grid {
+        gap: 7px;
+      }
+
+      .emoji-button {
+        min-height: 64px;
+        border-radius: 15px;
+      }
+
+      .emoji {
+        font-size: 27px;
+      }
+
+      .emoji-name {
+        font-size: 8px;
+      }
+    }
+
+    @media (min-width: 600px) {
+      .modal-overlay {
+        align-items: center;
+      }
+
+      .journal-modal {
+        border-radius: 34px;
+        transform: translateY(30px) scale(0.96);
+      }
+
+      .modal-overlay.open .journal-modal {
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="card">
+  <!-- Moving background bubbles -->
+  <div class="background-bubbles" aria-hidden="true">
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+  </div>
 
-<h1>Daily Journal</h1>
+  <!-- Main application -->
+  <main class="app-shell">
 
-<p class="subtitle">
-❤️ Build confidence • Reflect daily • Grow intentionally ❤️
-</p>
+    <header class="app-header">
+      <button
+        class="logo-button"
+        type="button"
+        aria-label="Daily Mindset Builder home"
+      >
+        <span class="logo-star">✦</span>
+      </button>
 
-<div class="date" id="todayDate"></div>
+      <p class="brand-name">Daily Mindset Builder</p>
+    </header>
 
-<label>Today's Mood</label>
+    <div class="journal-title-wrap">
+      <h1 class="journal-title">Daily Journal</h1>
+    </div>
 
-<select id="mood">
+    <section class="journal-panel">
 
-<option>😊 Happy</option>
-<option>😌 Calm</option>
-<option>💪 Motivated</option>
-<option>😔 Sad</option>
-<option>😴 Tired</option>
-<option>😰 Stressed</option>
-<option>😟 Anxious</option>
-<option>😤 Frustrated</option>
-<option>🤔 Confused</option>
-<option>✨ Inspired</option>
-<option>🎯 Focused</option>
-<option>🌟 Confident</option>
-<option>🌈 Optimistic</option>
-<option>❤️ Loved</option>
-<option>🏆 Accomplished</option>
-<option>⚡ Energized</option>
-<option>🧘 Peaceful</option>
-<option>🙏 Grateful</option>
-<option>💖 Hopeful</option>
-<option>🚀 Excited</option>
+      <h2 class="mood-title">Today's Mood</h2>
 
-</select>
+      <div class="journal-options">
 
-<div class="prompt" id="prompt"></div>
+        <!-- Mood button -->
+        <button
+          class="journal-option"
+          id="moodMainButton"
+          type="button"
+          data-target="moodSection"
+        >
+          <span class="option-label" id="selectedMoodText">
+            🚀 Excited
+          </span>
 
-<textarea
-id="journal"
-placeholder="Write your thoughts here..."
-></textarea>
+          <span class="option-status">✓</span>
+        </button>
 
-<div class="counter">
-<span id="count">0</span> characters
-</div>
+        <!-- Question 1 -->
+        <button
+          class="journal-option"
+          id="peacefulMainButton"
+          type="button"
+          data-target="questionOne"
+        >
+          <span class="option-label">
+            What helped you feel peaceful today?
+          </span>
 
-<br>
+          <span class="option-status">✓</span>
+        </button>
 
-<label>❤️ What are you grateful for today?</label>
+        <!-- Question 2 -->
+        <button
+          class="journal-option"
+          id="gratefulMainButton"
+          type="button"
+          data-target="questionTwo"
+        >
+          <span class="option-label">
+            What are you grateful for today?
+          </span>
 
-<textarea
-id="gratitude"
-placeholder="Write 3 things you're grateful for..."
-></textarea>
+          <span class="option-status">✓</span>
+        </button>
 
-<br><br>
+        <!-- Question 3 -->
+        <button
+          class="journal-option"
+          id="focusMainButton"
+          type="button"
+          data-target="questionThree"
+        >
+          <span class="option-label">
+            Tomorrow’s Focus
+          </span>
 
-<label>🌟 Today's Win</label>
+          <span class="option-status">✓</span>
+        </button>
 
-<textarea
-id="win"
-placeholder="What was your biggest win today?"
-></textarea>
+        <!-- Additional thoughts -->
+        <button
+          class="journal-option"
+          id="thoughtsMainButton"
+          type="button"
+          data-target="additionalSection"
+        >
+          <span class="option-label">
+            Additional Thoughts
+          </span>
 
-<br><br>
+          <span class="option-status">✓</span>
+        </button>
 
-<label>🎯 Tomorrow's Focus</label>
+      </div>
+    </section>
 
-<textarea
-id="focus"
-placeholder="What will you focus on tomorrow?"
-></textarea>
+    <button
+      class="save-main-button"
+      id="saveMainButton"
+      type="button"
+    >
+      SAVE
+    </button>
 
-<br><br>
+  </main>
 
-<label>💭 Additional Thoughts</label>
+  <!-- Journal pop-up -->
+  <div
+    class="modal-overlay"
+    id="journalModalOverlay"
+    aria-hidden="true"
+  >
 
-<textarea
-id="thoughts"
-placeholder="Anything else on your mind?"
-></textarea>
+    <section
+      class="journal-modal"
+      id="journalModal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="journalModalTitle"
+    >
 
-<br><br>
+      <div class="modal-handle"></div>
 
-<button
-class="save-btn"
-onclick="saveEntry()">
-💾 Save My Reflection
-</button>
+      <div class="modal-top">
 
-<div class="saved" id="saved"></div>
+        <div class="modal-heading-area">
+          <p class="modal-small-label">Your private space</p>
 
-</div>
+          <h2
+            class="modal-title"
+            id="journalModalTitle"
+          >
+            Today’s Reflection
+          </h2>
 
-<script>
+          <p
+            class="modal-date"
+            id="modalDate"
+          ></p>
+        </div>
 
-const prompts = {
+        <button
+          class="close-modal-button"
+          id="closeModalButton"
+          type="button"
+          aria-label="Exit journal window"
+        >
+          ×
+        </button>
 
-"😊 Happy":"What made you smile today?",
-"😌 Calm":"What helped you feel peaceful today?",
-"💪 Motivated":"What goal excites you most right now?",
-"😔 Sad":"What would help you feel supported today?",
-"😴 Tired":"How can you recharge yourself?",
-"😰 Stressed":"What can you let go of today?",
-"😟 Anxious":"What is going well right now?",
-"😤 Frustrated":"What challenge taught you something?",
-"🤔 Confused":"What small step could bring clarity?",
-"✨ Inspired":"What idea excites you most?",
-"🎯 Focused":"What is your main priority today?",
-"🌟 Confident":"What strength are you proud of?",
-"🌈 Optimistic":"What are you looking forward to?",
-"❤️ Loved":"Who made you feel appreciated?",
-"🏆 Accomplished":"What achievement are you proud of?",
-"⚡ Energized":"How will you use your energy?",
-"🧘 Peaceful":"What brought you inner peace?",
-"🙏 Grateful":"What are you grateful for today?",
-"💖 Hopeful":"What gives you hope today?",
-"🚀 Excited":"What are you excited about?"
+      </div>
 
-};
+      <!-- Mood section -->
+      <section
+        class="modal-section"
+        id="moodSection"
+      >
+        <div class="section-header">
+          <span class="section-number">1</span>
 
-const mood =
-document.getElementById("mood");
+          <h3 class="section-title">
+            How are you feeling?
+          </h3>
+        </div>
 
-const prompt =
-document.getElementById("prompt");
+        <p class="section-description">
+          Choose the emotion that best matches your day.
+        </p>
 
-const journal =
-document.getElementById("journal");
+        <div
+          class="emoji-grid"
+          id="emojiGrid"
+          role="group"
+          aria-label="Choose your mood"
+        >
 
-function updatePrompt(){
-prompt.innerHTML =
-"<strong>Prompt:</strong><br>" +
-prompts[mood.value];
-}
+          <button
+            class="emoji-button"
+            type="button"
+            data-emoji="🤩"
+            data-mood="Amazing"
+            aria-label="Amazing"
+          >
+            <span class="emoji">🤩</span>
+            <span class="emoji-name">Amazing</span>
+          </button>
 
-mood.addEventListener(
-"change",
-updatePrompt
-);
+          <button
+            class="emoji-button"
+            type="button"
+            data-emoji="😄"
+            data-mood="Happy"
+            aria-label="Happy"
+          >
+            <span class="emoji">😄</span>
+            <span class="emoji-name">Happy</span>
+          </button>
 
-journal.addEventListener(
-"input",
-function(){
-document.getElementById("count").innerText =
-journal.value.length;
-}
-);
+          <button
+            class="emoji-button"
+            type="button"
+            data-emoji="🥰"
+            data-mood="Loved"
+            aria-label="Loved"
+          >
+            <span class="emoji">🥰</span>
+            <span class="emoji-name">Loved</span>
+          </button>
 
-function saveEntry(){
+          <button
+            class="emoji-button"
+            type="button"
+            data-emoji="😌"
+            data-mood="Peaceful"
+            aria-label="Peaceful"
+          >
+            <span class="emoji">😌</span>
+            <span class="emoji-name">Peaceful</span>
+          </button>
 
-localStorage.setItem(
-"journalMood",
-mood.value
-);
+          <button
+            class="emoji-button"
+            type="button"
+            data-emoji="🙂"
+            data-mood="Good"
+            aria-label="Good"
+          >
+            <span class="emoji">🙂</span>
+            <span class="emoji-name">Good</span>
+          </button>
 
-localStorage.setItem(
-"journalText",
-journal.value
-);
+          <button
+            class="emoji-button"
+            type="button"
+            data-emoji="😐"
+            data-mood="Neutral"
+            aria-label="Neutral"
+          >
+            <span class="emoji">😐</span>
+            <span class="emoji-name">Neutral</span>
+          </button>
 
-document.getElementById("saved")
-.innerText =
-"✓ Journal entry saved";
-}
+          <button
+            class="emoji-button"
+            type="button"
+            data-emoji="😔"
+            data-mood="Low"
+            aria-label="Low"
+          >
+            <span class="emoji">😔</span>
+            <span class="emoji-name">Low</span>
+          </button>
 
-document.getElementById(
-"todayDate"
-).innerText =
-new Date().toLocaleDateString();
+          <button
+            class="emoji-button"
+            type="button"
+            data-emoji="😢"
+            data-mood="Sad"
+            aria-label="Sad"
+          >
+            <span class="emoji">😢</span>
+            <span class="emoji-name">Sad</span>
+          </button>
 
-updatePrompt();
+          <button
+            class="emoji-button"
+            type="button"
+            data-emoji="😣"
+            data-mood="Stressed"
+            aria-label="Stressed"
+          >
+            <span class="emoji">😣</span>
+            <span class="emoji-name">Stressed</span>
+          </button>
 
-</script>
+          <button
+            class="emoji-button"
+            type="button"
+            data-emoji="😡"
+            data-mood="Angry"
+            aria-label="Angry"
+          >
+            <span class="emoji">😡</span>
+            <span class="emoji-name">Angry</span>
+          </button>
+
+        </div>
+      </section>
+
+      <!-- Three questions -->
+      <section class="modal-section">
+
+        <div class="section-header">
+          <span class="section-number">2</span>
+
+          <h3 class="section-title">
+            Write your reflection
+          </h3>
+        </div>
+
+        <p class="section-description">
+          Your answers are saved privately on this device.
+        </p>
+
+        <!-- Question 1 -->
+        <div
+          class="writing-question"
+          id="questionOne"
+        >
+          <label
+            class="question-label"
+            for="peacefulAnswer"
+          >
+            <span class="question-icon">🌿</span>
+            What helped you feel peaceful today?
+          </label>
+
+          <textarea
+            class="journal-textarea"
+            id="peacefulAnswer"
+            maxlength="500"
+            placeholder="Describe a peaceful moment, person, place or thought..."
+          ></textarea>
+
+          <span
+            class="character-count"
+            data-counter-for="peacefulAnswer"
+          >
+            0 / 500
+          </span>
+        </div>
+
+        <!-- Question 2 -->
+        <div
+          class="writing-question"
+          id="questionTwo"
+        >
+          <label
+            class="question-label"
+            for="gratefulAnswer"
+          >
+            <span class="question-icon">🤍</span>
+            What are you grateful for today?
+          </label>
+
+          <textarea
+            class="journal-textarea"
+            id="gratefulAnswer"
+            maxlength="500"
+            placeholder="Write about something meaningful, even if it felt small..."
+          ></textarea>
+
+          <span
+            class="character-count"
+            data-counter-for="gratefulAnswer"
+          >
+            0 / 500
+          </span>
+        </div>
+
+        <!-- Question 3 -->
+        <div
+          class="writing-question"
+          id="questionThree"
+        >
+          <label
+            class="question-label"
+            for="focusAnswer"
+          >
+            <span class="question-icon">🎯</span>
+            What will you focus on tomorrow?
+          </label>
+
+          <textarea
+            class="journal-textarea"
+            id="focusAnswer"
+            maxlength="500"
+            placeholder="Choose one clear and gentle priority for tomorrow..."
+          ></textarea>
+
+          <span
+            class="character-count"
+            data-counter-for="focusAnswer"
+          >
+            0 / 500
+          </span>
+        </div>
+
+      </section>
+
+      <!-- Additional thoughts -->
+      <section
+        class="modal-section"
+        id="additionalSection"
+      >
+        <div class="section-header">
+          <span class="section-number">3</span>
+
+          <h3 class="section-title">
+            Additional thoughts
+          </h3>
+        </div>
+
+        <p class="section-description">
+          This part is optional. Write anything else that is on your mind.
+        </p>
+
+        <div class="writing-question">
+          <label
+            class="question-label"
+            for="additionalAnswer"
+          >
+            <span class="question-icon">💭</span>
+            Anything else you would like to remember?
+          </label>
+
+          <textarea
+            class="journal-textarea"
+            id="additionalAnswer"
+            maxlength="800"
+            placeholder="Let your thoughts flow freely..."
+          ></textarea>
+
+          <span
+            class="character-count"
+            data-counter-for="additionalAnswer"
+          >
+            0 / 800
+          </span>
+        </div>
+      </section>
+
+      <!-- Save and exit buttons -->
+      <div class="modal-actions">
+
+        <button
+          class="modal-action exit-button"
+          id="exitModalButton"
+          type="button"
+        >
+          Exit
+        </button>
+
+        <button
+          class="modal-action save-modal-button"
+          id="saveModalButton"
+          type="button"
+        >
+          Save Entry
+        </button>
+
+      </div>
+
+      <p class="saved-note">
+        Your journal entry remains on this device after refreshing or reopening the app.
+      </p>
+
+    </section>
+  </div>
+
+  <!-- Saved confirmation -->
+  <div
+    class="toast"
+    id="toast"
+    role="status"
+    aria-live="polite"
+  >
+    Journal entry saved successfully ✓
+  </div>
+
+  <script>
+    /* ================================
+       ELEMENTS
+    ================================= */
+
+    const modalOverlay = document.getElementById("journalModalOverlay");
+    const journalModal = document.getElementById("journalModal");
+
+    const closeModalButton = document.getElementById("closeModalButton");
+    const exitModalButton = document.getElementById("exitModalButton");
+
+    const saveModalButton = document.getElementById("saveModalButton");
+    const saveMainButton = document.getElementById("saveMainButton");
+
+    const moodMainButton = document.getElementById("moodMainButton");
+    const peacefulMainButton = document.getElementById("peacefulMainButton");
+    const gratefulMainButton = document.getElementById("gratefulMainButton");
+    const focusMainButton = document.getElementById("focusMainButton");
+    const thoughtsMainButton = document.getElementById("thoughtsMainButton");
+
+    const selectedMoodText = document.getElementById("selectedMoodText");
+    const emojiButtons = document.querySelectorAll(".emoji-button");
+
+    const peacefulAnswer = document.getElementById("peacefulAnswer");
+    const gratefulAnswer = document.getElementById("gratefulAnswer");
+    const focusAnswer = document.getElementById("focusAnswer");
+    const additionalAnswer = document.getElementById("additionalAnswer");
+
+    const modalDate = document.getElementById("modalDate");
+    const toast = document.getElementById("toast");
+
+    const storageKey = "dailyMindsetJournalEntry";
+
+    let selectedMood = {
+      emoji: "🚀",
+      mood: "Excited"
+    };
+
+    let toastTimeout;
+
+    /* ================================
+       DISPLAY TODAY'S DATE
+    ================================= */
+
+    function showTodayDate() {
+      const today = new Date();
+
+      modalDate.textContent = today.toLocaleDateString(
+        undefined,
+        {
+          weekday: "long",
+          month: "long",
+          day: "numeric",
+          year: "numeric"
+        }
+      );
+    }
+
+    /* ================================
+       OPEN MODAL
+    ================================= */
+
+    function openJournalModal(targetId = "moodSection") {
+      modalOverlay.classList.add("open");
+      modalOverlay.setAttribute("aria-hidden", "false");
+
+      document.body.style.overflow = "hidden";
+
+      requestAnimationFrame(() => {
+        const target = document.getElementById(targetId);
+
+        if (target) {
+          target.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+          });
+        }
+      });
+    }
+
+    /* ================================
+       CLOSE MODAL
+    ================================= */
+
+    function closeJournalModal() {
+      modalOverlay.classList.remove("open");
+      modalOverlay.setAttribute("aria-hidden", "true");
+
+      document.body.style.overflow = "";
+    }
+
+    /* ================================
+       EMOJI SELECTION
+    ================================= */
+
+    function selectMood(button) {
+      emojiButtons.forEach((emojiButton) => {
+        emojiButton.classList.remove("selected");
+        emojiButton.setAttribute("aria-pressed", "false");
+      });
+
+      button.classList.add("selected");
+      button.setAttribute("aria-pressed", "true");
+
+      selectedMood = {
+        emoji: button.dataset.emoji,
+        mood: button.dataset.mood
+      };
+
+      selectedMoodText.textContent =
+        `${selectedMood.emoji} ${selectedMood.mood}`;
+
+      moodMainButton.classList.add("completed");
+    }
+
+    emojiButtons.forEach((button) => {
+      button.setAttribute("aria-pressed", "false");
+
+      button.addEventListener("click", () => {
+        selectMood(button);
+      });
+    });
+
+    /* ================================
+       CHARACTER COUNTERS
+    ================================= */
+
+    function updateCharacterCounter(textarea) {
+      const counter = document.querySelector(
+        `[data-counter-for="${textarea.id}"]`
+      );
+
+      if (!counter) {
+        return;
+      }
+
+      counter.textContent =
+        `${textarea.value.length} / ${textarea.maxLength}`;
+    }
+
+    document
+      .querySelectorAll(".journal-textarea")
+      .forEach((textarea) => {
+        textarea.addEventListener("input", () => {
+          updateCharacterCounter(textarea);
+          updateCompletedButtons();
+        });
+      });
+
+    /* ================================
+       MAIN BUTTON COMPLETION CHECKS
+    ================================= */
+
+    function updateCompletedButtons() {
+      peacefulMainButton.classList.toggle(
+        "completed",
+        peacefulAnswer.value.trim().length > 0
+      );
+
+      gratefulMainButton.classList.toggle(
+        "completed",
+        gratefulAnswer.value.trim().length > 0
+      );
+
+      focusMainButton.classList.toggle(
+        "completed",
+        focusAnswer.value.trim().length > 0
+      );
+
+      thoughtsMainButton.classList.toggle(
+        "completed",
+        additionalAnswer.value.trim().length > 0
+      );
+
+      moodMainButton.classList.toggle(
+        "completed",
+        Boolean(selectedMood.mood)
+      );
+    }
+
+    /* ================================
+       SAVE DATA
+    ================================= */
+
+    function saveJournalEntry(closeAfterSaving = false) {
+      const journalData = {
+        date: new Date().toISOString(),
+        mood: selectedMood,
+        peaceful: peacefulAnswer.value.trim(),
+        grateful: gratefulAnswer.value.trim(),
+        tomorrowFocus: focusAnswer.value.trim(),
+        additionalThoughts: additionalAnswer.value.trim()
+      };
+
+      try {
+        localStorage.setItem(
+          storageKey,
+          JSON.stringify(journalData)
+        );
+
+        updateCompletedButtons();
+        showToast("Journal entry saved successfully ✓");
+
+        if (closeAfterSaving) {
+          setTimeout(() => {
+            closeJournalModal();
+          }, 350);
+        }
+      } catch (error) {
+        console.error("Journal saving failed:", error);
+
+        showToast(
+          "The journal could not be saved on this device."
+        );
+      }
+    }
+
+    /* ================================
+       LOAD SAVED DATA
+    ================================= */
+
+    function loadJournalEntry() {
+      try {
+        const savedEntry = localStorage.getItem(storageKey);
+
+        if (!savedEntry) {
+          updateCompletedButtons();
+          return;
+        }
+
+        const data = JSON.parse(savedEntry);
+
+        if (data.mood) {
+          selectedMood = {
+            emoji: data.mood.emoji || "🙂",
+            mood: data.mood.mood || "Good"
+          };
+
+          selectedMoodText.textContent =
+            `${selectedMood.emoji} ${selectedMood.mood}`;
+
+          emojiButtons.forEach((button) => {
+            const isSelected =
+              button.dataset.mood === selectedMood.mood;
+
+            button.classList.toggle(
+              "selected",
+              isSelected
+            );
+
+            button.setAttribute(
+              "aria-pressed",
+              String(isSelected)
+            );
+          });
+        }
+
+        peacefulAnswer.value = data.peaceful || "";
+        gratefulAnswer.value = data.grateful || "";
+        focusAnswer.value = data.tomorrowFocus || "";
+        additionalAnswer.value =
+          data.additionalThoughts || "";
+
+        document
+          .querySelectorAll(".journal-textarea")
+          .forEach(updateCharacterCounter);
+
+        updateCompletedButtons();
+      } catch (error) {
+        console.error("Journal loading failed:", error);
+      }
+    }
+
+    /* ================================
+       TOAST MESSAGE
+    ================================= */
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+
+      clearTimeout(toastTimeout);
+
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove("show");
+      }, 2400);
+    }
+
+    /* ================================
+       BUTTON EVENTS
+    ================================= */
+
+    document
+      .querySelectorAll(".journal-option")
+      .forEach((button) => {
+        button.addEventListener("click", () => {
+          openJournalModal(button.dataset.target);
+        });
+      });
+
+    closeModalButton.addEventListener(
+      "click",
+      closeJournalModal
+    );
+
+    exitModalButton.addEventListener(
+      "click",
+      closeJournalModal
+    );
+
+    saveModalButton.addEventListener("click", () => {
+      saveJournalEntry(true);
+    });
+
+    saveMainButton.addEventListener("click", () => {
+      saveJournalEntry(false);
+    });
+
+    /* Close when clicking dark background */
+    modalOverlay.addEventListener("click", (event) => {
+      if (event.target === modalOverlay) {
+        closeJournalModal();
+      }
+    });
+
+    /* Close using keyboard Escape button */
+    document.addEventListener("keydown", (event) => {
+      if (
+        event.key === "Escape" &&
+        modalOverlay.classList.contains("open")
+      ) {
+        closeJournalModal();
+      }
+    });
+
+    /* Stop clicks inside modal from closing it */
+    journalModal.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+
+    /* ================================
+       START THE PAGE
+    ================================= */
+
+    showTodayDate();
+    loadJournalEntry();
+  </script>
 
 </body>
 </html>
