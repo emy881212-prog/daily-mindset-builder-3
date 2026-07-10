@@ -2079,6 +2079,61 @@
 
   makeVisibleBubblesNow();
   setTimeout(makeVisibleBubblesNow, 400);
+</script><style>
+  .visible-bubble {
+    animation-name: bubbleMoveUpLive !important;
+    animation-timing-function: linear !important;
+    animation-iteration-count: infinite !important;
+    will-change: transform, top, opacity !important;
+  }
+
+  @keyframes bubbleMoveUpLive {
+    0% {
+      transform: translateY(0) translateX(0) scale(0.8);
+      opacity: 0.25;
+    }
+
+    25% {
+      transform: translateY(-120px) translateX(10px) scale(1);
+      opacity: 0.7;
+    }
+
+    50% {
+      transform: translateY(-260px) translateX(-8px) scale(1.08);
+      opacity: 0.55;
+    }
+
+    75% {
+      transform: translateY(-420px) translateX(14px) scale(1.15);
+      opacity: 0.4;
+    }
+
+    100% {
+      transform: translateY(-620px) translateX(-12px) scale(1.25);
+      opacity: 0;
+    }
+  }
+</style>
+
+<script>
+  function restartMovingBubbles() {
+    const bubbles = document.querySelectorAll(".visible-bubble");
+
+    bubbles.forEach((bubble, index) => {
+      bubble.style.animationName = "none";
+
+      setTimeout(() => {
+        bubble.style.animationName = "bubbleMoveUpLive";
+        bubble.style.animationDuration = (8 + Math.random() * 8) + "s";
+        bubble.style.animationDelay = (index * 0.12) + "s";
+        bubble.style.animationIterationCount = "infinite";
+        bubble.style.animationTimingFunction = "linear";
+      }, 30);
+    });
+  }
+
+  restartMovingBubbles();
+  setTimeout(restartMovingBubbles, 500);
 </script>
 </body>
 
