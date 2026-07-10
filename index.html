@@ -2227,6 +2227,100 @@
   }
 
   startRealMovingBubbles();
+</script><style>
+  .super-moving-bubbles-layer {
+    position: absolute !important;
+    inset: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+    z-index: 2 !important;
+  }
+
+  .super-moving-bubble {
+    position: absolute !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.42) !important;
+    box-shadow:
+      0 0 14px rgba(255, 255, 255, 0.75),
+      inset 0 0 8px rgba(255, 255, 255, 0.45) !important;
+    opacity: 0.65 !important;
+    transition: none !important;
+  }
+
+  .screen {
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  .screen > *:not(.super-moving-bubbles-layer) {
+    position: relative !important;
+    z-index: 3 !important;
+  }
+</style>
+
+<script>
+  function forceAllBubblesToMove() {
+    const screen = document.querySelector(".screen");
+    if (!screen) return;
+
+    document.querySelectorAll(
+      ".floating-bubbles-layer, .extra-bubbles-bottom, .soft-bubbles-upgrade, .visible-bubbles-layer, .live-bubbles-layer, .super-moving-bubbles-layer"
+    ).forEach(layer => layer.remove());
+
+    const layer = document.createElement("div");
+    layer.className = "super-moving-bubbles-layer";
+    screen.prepend(layer);
+
+    const bubbles = [];
+
+    for (let i = 0; i < 90; i++) {
+      const bubble = document.createElement("span");
+      bubble.className = "super-moving-bubble";
+
+      const size = 4 + Math.random() * 13;
+
+      const bubbleData = {
+        el: bubble,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        size: size,
+        speed: 0.05 + Math.random() * 0.08,
+        drift: -0.025 + Math.random() * 0.05,
+        opacity: 0.25 + Math.random() * 0.5
+      };
+
+      bubble.style.width = bubbleData.size + "px";
+      bubble.style.height = bubbleData.size + "px";
+      bubble.style.opacity = bubbleData.opacity;
+
+      layer.appendChild(bubble);
+      bubbles.push(bubbleData);
+    }
+
+    function move() {
+      bubbles.forEach(bubble => {
+        bubble.y -= bubble.speed;
+        bubble.x += bubble.drift;
+
+        if (bubble.y < -10) {
+          bubble.y = 110;
+          bubble.x = Math.random() * 100;
+        }
+
+        if (bubble.x < -8) bubble.x = 108;
+        if (bubble.x > 108) bubble.x = -8;
+
+        bubble.el.style.left = bubble.x + "%";
+        bubble.el.style.top = bubble.y + "%";
+      });
+
+      requestAnimationFrame(move);
+    }
+
+    move();
+  }
+
+  forceAllBubblesToMove();
 </script>
 </body>
 
