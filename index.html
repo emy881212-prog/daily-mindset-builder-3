@@ -16,24 +16,51 @@
       min-height: 100vh;
       display: flex;
       justify-content: center;
-      background: #222;
+      background: #1f1f1f;
       font-family: Georgia, "Times New Roman", serif;
+      overflow-x: hidden;
     }
 
     .screen {
       width: 412px;
       min-height: 917px;
       padding: 18px 10px 66px;
-      background: linear-gradient(
-        180deg,
-        #f8f6f8 0%,
-        #ded9de 35%,
-        #b9b0ba 68%,
-        #8c8497 100%
-      );
+      background:
+        radial-gradient(circle at 20% 10%, rgba(255,255,255,0.95), transparent 26%),
+        radial-gradient(circle at 85% 28%, rgba(255,226,232,0.55), transparent 28%),
+        linear-gradient(180deg, #f8f6f8 0%, #ded9de 35%, #b9b0ba 68%, #8c8497 100%);
       color: #000;
+      position: relative;
       overflow: hidden;
       animation: pageOpen 0.8s ease forwards;
+    }
+
+    .screen::before {
+      content: "";
+      position: absolute;
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      background: rgba(255, 216, 224, 0.35);
+      top: 240px;
+      left: -90px;
+      filter: blur(35px);
+      animation: floatingGlow 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .screen::after {
+      content: "";
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.25);
+      bottom: 160px;
+      right: -110px;
+      filter: blur(35px);
+      animation: floatingGlowTwo 9s ease-in-out infinite;
+      pointer-events: none;
     }
 
     @keyframes pageOpen {
@@ -41,9 +68,72 @@
         opacity: 0;
         transform: translateY(20px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
+      }
+    }
+
+    @keyframes floatingGlow {
+      0%, 100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      50% {
+        transform: translate(35px, 30px) scale(1.12);
+      }
+    }
+
+    @keyframes floatingGlowTwo {
+      0%, 100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      50% {
+        transform: translate(-30px, -35px) scale(1.1);
+      }
+    }
+
+    .sparkle {
+      position: absolute;
+      width: 7px;
+      height: 7px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 0 12px rgba(255,255,255,0.9);
+      opacity: 0.65;
+      animation: sparkleFloat 4s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .sparkle.one {
+      top: 120px;
+      right: 42px;
+    }
+
+    .sparkle.two {
+      top: 440px;
+      left: 24px;
+      animation-delay: 1.2s;
+    }
+
+    .sparkle.three {
+      bottom: 240px;
+      right: 32px;
+      animation-delay: 2s;
+    }
+
+    @keyframes sparkleFloat {
+      0%, 100% {
+        transform: translateY(0) scale(1);
+        opacity: 0.35;
+      }
+
+      50% {
+        transform: translateY(-12px) scale(1.45);
+        opacity: 0.9;
       }
     }
 
@@ -52,6 +142,8 @@
       align-items: center;
       gap: 16px;
       margin-bottom: 45px;
+      position: relative;
+      z-index: 3;
     }
 
     .logo-wrap {
@@ -63,6 +155,11 @@
       justify-content: center;
       align-items: center;
       margin-left: 1px;
+      transition: 0.3s ease;
+    }
+
+    .logo-wrap:hover {
+      transform: rotate(-4deg) scale(1.08);
     }
 
     .logo {
@@ -82,6 +179,7 @@
       0%, 100% {
         transform: scale(1);
       }
+
       50% {
         transform: scale(1.07);
       }
@@ -92,12 +190,44 @@
       margin-top: -5px;
     }
 
+    .account-btn {
+      margin-left: auto;
+      border: 1px solid rgba(0,0,0,0.3);
+      background: rgba(255,255,255,0.5);
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: Arial, Helvetica, sans-serif;
+      transition: 0.25s ease;
+    }
+
+    .account-btn:hover {
+      background: #111;
+      color: white;
+      transform: translateY(-2px);
+    }
+
     .main-title {
       text-align: center;
       font-size: 31px;
       font-style: italic;
       font-weight: 400;
       margin-bottom: 27px;
+      position: relative;
+      z-index: 3;
+      transition: 0.3s ease;
+    }
+
+    .main-title:hover {
+      transform: translateY(-4px);
+      text-shadow: 0 8px 14px rgba(0,0,0,0.18);
+    }
+
+    .quiz-screen,
+    .result-screen {
+      position: relative;
+      z-index: 3;
     }
 
     .question-title {
@@ -114,11 +244,19 @@
       font-size: 31px;
       line-height: 1.12;
       padding: 12px;
+      transition: 0.35s ease;
+    }
+
+    .question-title:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.12),
+        0 15px 25px rgba(0,0,0,0.16);
     }
 
     .question-card {
       width: 315px;
-      min-height: 485px;
+      min-height: 500px;
       margin: 0 auto;
       border-radius: 28px;
       background: rgba(220, 197, 201, 0.75);
@@ -129,15 +267,18 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 18px;
-      padding: 34px 56px;
+      gap: 16px;
+      padding: 34px 46px;
       animation: smoothFloat 4s ease-in-out infinite;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      will-change: transform;
     }
 
     @keyframes smoothFloat {
       0%, 100% {
         transform: translateY(0);
       }
+
       50% {
         transform: translateY(-5px);
       }
@@ -145,22 +286,35 @@
 
     .answer-btn {
       width: 100%;
-      height: 43px;
+      min-height: 44px;
       border: 1.5px solid #111;
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.78);
       font-family: Georgia, "Times New Roman", serif;
-      font-size: 29px;
+      font-size: 28px;
       font-style: italic;
       cursor: pointer;
       transition: 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: 1.05;
+      padding: 5px 12px;
+      white-space: normal;
+    }
+
+    .answer-btn.long-answer {
+      font-size: 23px;
+      padding: 6px 12px;
     }
 
     .answer-btn:hover,
     .answer-btn.selected {
       background: #111;
       color: #fff;
-      transform: scale(1.04);
+      transform: translateX(6px) scale(1.04);
+      box-shadow: 0 9px 16px rgba(0,0,0,0.25);
     }
 
     .quiz-actions {
@@ -171,27 +325,31 @@
     }
 
     .small-btn {
-      height: 48px;
+      height: 52px;
       min-width: 120px;
       border: 2px solid #111;
-      background: rgba(255, 255, 255, 0.70);
+      background: rgba(255, 255, 255, 0.72);
+      color: #111;
       font-family: Georgia, "Times New Roman", serif;
-      font-size: 22px;
+      font-size: 24px;
       font-style: italic;
       cursor: pointer;
       box-shadow: 0 4px 7px rgba(0, 0, 0, 0.28);
       transition: 0.25s ease;
     }
 
-    .small-btn:hover {
+    .small-btn:hover:not(:disabled) {
       background: #111;
       color: white;
-      transform: translateY(-3px);
+      transform: translateY(-4px);
+      box-shadow: 0 10px 18px rgba(0,0,0,0.35);
     }
 
     .small-btn:disabled {
-      opacity: 0.35;
+      opacity: 0.55;
+      color: rgba(0,0,0,0.45);
       cursor: not-allowed;
+      background: rgba(255,255,255,0.45);
     }
 
     .result-screen {
@@ -209,11 +367,16 @@
       font-size: 30px;
       font-style: italic;
       font-weight: 400;
+      transition: 0.3s ease;
+    }
+
+    .result-title:hover {
+      transform: translateY(-4px) scale(1.03);
     }
 
     .quote-card {
       width: 374px;
-      height: 354px;
+      min-height: 354px;
       margin: 0 auto;
       border-radius: 42px;
       background: rgba(226, 202, 204, 0.78);
@@ -227,7 +390,10 @@
       text-align: center;
       position: relative;
       overflow: hidden;
+      padding: 34px 28px 62px;
       animation: smoothFloat 4s ease-in-out infinite;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      will-change: transform;
     }
 
     .quote-card::before {
@@ -238,7 +404,7 @@
       background: linear-gradient(
         90deg,
         transparent,
-        rgba(255, 255, 255, 0.28),
+        rgba(255, 255, 255, 0.30),
         transparent
       );
       top: -120px;
@@ -251,9 +417,11 @@
       0% {
         left: -170px;
       }
+
       45% {
         left: 430px;
       }
+
       100% {
         left: 430px;
       }
@@ -276,36 +444,78 @@
 
     .arrows {
       position: absolute;
-      bottom: 22px;
+      bottom: 24px;
       left: 34px;
       right: 34px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      z-index: 3;
+      z-index: 4;
+      pointer-events: none;
     }
 
     .arrow-btn {
-      width: 75px;
-      height: 28px;
+      width: 100px;
+      height: 32px;
       border: none;
       background: transparent;
-      color: white;
-      font-size: 31px;
-      line-height: 20px;
       cursor: pointer;
+      position: relative;
+      pointer-events: auto;
       transition: 0.25s ease;
-      font-family: Arial, Helvetica, sans-serif;
     }
 
-    .arrow-btn:hover {
-      transform: scale(1.15);
-      filter: drop-shadow(0 0 6px white);
+    .arrow-btn::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 74px;
+      height: 2px;
+      background: white;
+      box-shadow: 0 0 8px rgba(255,255,255,0.85);
+    }
+
+    .arrow-btn.left::before {
+      left: 22px;
+    }
+
+    .arrow-btn.right::before {
+      right: 22px;
+    }
+
+    .arrow-btn.left::after {
+      content: "←";
+      position: absolute;
+      left: 0;
+      top: -8px;
+      color: white;
+      font-size: 34px;
+      font-family: Arial, Helvetica, sans-serif;
+      text-shadow: 0 0 8px rgba(255,255,255,0.9);
+    }
+
+    .arrow-btn.right::after {
+      content: "→";
+      position: absolute;
+      right: 0;
+      top: -8px;
+      color: white;
+      font-size: 34px;
+      font-family: Arial, Helvetica, sans-serif;
+      text-shadow: 0 0 8px rgba(255,255,255,0.9);
+    }
+
+    .arrow-btn.left:hover {
+      transform: translateX(-8px) scale(1.08);
+    }
+
+    .arrow-btn.right:hover {
+      transform: translateX(8px) scale(1.08);
     }
 
     .explanation {
       width: 300px;
-      height: 106px;
+      min-height: 106px;
       margin: 22px auto 74px;
       background: rgba(224, 170, 160, 0.82);
       box-shadow:
@@ -317,8 +527,14 @@
       text-align: center;
       font-size: 24px;
       font-style: italic;
-      line-height: 1.95;
+      line-height: 1.55;
+      padding: 15px;
       transition: 0.35s ease;
+    }
+
+    .explanation:hover {
+      transform: translateY(-5px) scale(1.03);
+      box-shadow: 0 14px 22px rgba(0,0,0,0.28);
     }
 
     .explanation.fade {
@@ -333,15 +549,17 @@
     }
 
     .btn {
-      height: 59px;
+      min-height: 59px;
       border: 2px solid #111;
       background: rgba(255, 255, 255, 0.70);
+      color: #111;
       font-family: Georgia, "Times New Roman", serif;
       font-size: 24px;
       font-style: italic;
       cursor: pointer;
       box-shadow: 0 4px 7px rgba(0, 0, 0, 0.35);
       transition: 0.25s ease;
+      padding: 8px 10px;
     }
 
     .start-btn {
@@ -355,8 +573,188 @@
     .btn:hover {
       background: #111;
       color: white;
-      transform: translateY(-4px);
+      transform: translateY(-4px) scale(1.03);
       box-shadow: 0 9px 15px rgba(0, 0, 0, 0.45);
+    }
+
+    .btn:active,
+    .small-btn:active,
+    .answer-btn:active {
+      transform: scale(0.96);
+    }
+
+    .auth-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(20, 18, 22, 0.48);
+      backdrop-filter: blur(13px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      z-index: 100;
+    }
+
+    .auth-window {
+      width: 360px;
+      max-width: 94vw;
+      border-radius: 32px;
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.9), transparent 35%),
+        linear-gradient(180deg, rgba(250,247,248,0.96), rgba(219,194,199,0.96));
+      box-shadow:
+        0 26px 60px rgba(0,0,0,0.34),
+        inset 0 0 22px rgba(255,255,255,0.35);
+      padding: 30px 24px 24px;
+      text-align: center;
+      position: relative;
+      animation: modalOpen 0.55s ease forwards;
+      border: 1px solid rgba(255,255,255,0.6);
+    }
+
+    @keyframes modalOpen {
+      from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.95);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .auth-close {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      border: none;
+      background: rgba(255,255,255,0.45);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+      transition: 0.25s ease;
+    }
+
+    .auth-close:hover {
+      background: #111;
+      color: white;
+      transform: rotate(90deg);
+    }
+
+    .auth-logo {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 14px;
+      border-radius: 16px;
+      background: #111;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      box-shadow: 0 0 0 10px rgba(255,255,255,0.45);
+    }
+
+    .auth-window h2 {
+      font-size: 30px;
+      font-style: italic;
+      font-weight: 400;
+      margin-bottom: 8px;
+    }
+
+    .auth-window p {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      opacity: 0.75;
+      margin-bottom: 22px;
+    }
+
+    .auth-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 18px;
+      background: rgba(255,255,255,0.42);
+      padding: 6px;
+      border-radius: 999px;
+    }
+
+    .auth-tab {
+      flex: 1;
+      border: none;
+      border-radius: 999px;
+      padding: 10px 6px;
+      background: transparent;
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.25s ease;
+    }
+
+    .auth-tab.active,
+    .auth-tab:hover {
+      background: #111;
+      color: white;
+    }
+
+    .auth-form {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .auth-form.active {
+      display: flex;
+    }
+
+    .auth-input {
+      width: 100%;
+      border: 1px solid rgba(0,0,0,0.18);
+      border-radius: 16px;
+      padding: 14px 15px;
+      font-size: 15px;
+      background: rgba(255,255,255,0.72);
+      outline: none;
+      transition: 0.25s ease;
+    }
+
+    .auth-input:focus {
+      border-color: #111;
+      box-shadow: 0 0 0 4px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+    }
+
+    .auth-main-btn,
+    .guest-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 14px 16px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.25s ease;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .auth-main-btn {
+      background: #111;
+      color: white;
+    }
+
+    .guest-btn {
+      background: rgba(255,255,255,0.65);
+      color: #111;
+      border: 1px solid rgba(0,0,0,0.16);
+      margin-top: 8px;
+    }
+
+    .auth-main-btn:hover,
+    .guest-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 18px rgba(0,0,0,0.20);
     }
 
     .saved-message {
@@ -373,7 +771,7 @@
       opacity: 0;
       pointer-events: none;
       transition: 0.35s ease;
-      z-index: 20;
+      z-index: 200;
     }
 
     .saved-message.show {
@@ -389,17 +787,28 @@
       .quote-card {
         width: calc(100vw - 38px);
       }
+
+      .quote {
+        font-size: 36px;
+      }
     }
   </style>
 </head>
 
 <body>
   <main class="screen">
+    <div class="sparkle one"></div>
+    <div class="sparkle two"></div>
+    <div class="sparkle three"></div>
+
     <header class="top">
       <div class="logo-wrap">
         <div class="logo">✦</div>
       </div>
+
       <div class="brand">Daily Mindset Builder</div>
+
+      <button class="account-btn" id="accountBtn">Account</button>
     </header>
 
     <section class="quiz-screen" id="quizScreen">
@@ -409,7 +818,7 @@
         How are you feeling today?
       </div>
 
-      <div class="question-card" id="answersCard"></div>
+      <div class="question-card moving-card" id="answersCard"></div>
 
       <div class="quiz-actions">
         <button class="small-btn" id="backBtn">Back</button>
@@ -422,7 +831,7 @@
 
       <div class="result-title">Your Mindset Quote</div>
 
-      <section class="quote-card">
+      <section class="quote-card moving-card">
         <p class="quote" id="quoteText">
           “Your peace is<br>
           not lost<br>
@@ -432,14 +841,13 @@
         </p>
 
         <div class="arrows">
-          <button class="arrow-btn" id="prevQuoteBtn">←──</button>
-          <button class="arrow-btn" id="nextQuoteBtn">──→</button>
+          <button class="arrow-btn left" id="prevQuoteBtn" aria-label="Previous quote"></button>
+          <button class="arrow-btn right" id="nextQuoteBtn" aria-label="Next quote"></button>
         </div>
       </section>
 
       <section class="explanation" id="explanationText">
-        Under quote: short<br>
-        explanation
+        This quote reminds you to slow down and return to your peaceful center.
       </section>
 
       <div class="bottom-buttons">
@@ -448,6 +856,40 @@
       </div>
     </section>
   </main>
+
+  <section class="auth-overlay" id="authOverlay">
+    <div class="auth-window">
+      <button class="auth-close" id="authClose">×</button>
+
+      <div class="auth-logo">✦</div>
+
+      <h2>Welcome</h2>
+      <p>Choose how you want to enter your Daily Mindset Builder.</p>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="guest">Guest</button>
+        <button class="auth-tab" data-tab="login">Log In</button>
+        <button class="auth-tab" data-tab="signup">Sign Up</button>
+      </div>
+
+      <div class="auth-form active" id="guestForm">
+        <button class="guest-btn" id="guestBtn">Enter as Guest</button>
+      </div>
+
+      <div class="auth-form" id="loginForm">
+        <input class="auth-input" type="email" placeholder="Email" />
+        <input class="auth-input" type="password" placeholder="Password" />
+        <button class="auth-main-btn" id="loginBtn">Log In</button>
+      </div>
+
+      <div class="auth-form" id="signupForm">
+        <input class="auth-input" type="text" placeholder="Your name" />
+        <input class="auth-input" type="email" placeholder="Email" />
+        <input class="auth-input" type="password" placeholder="Create password" />
+        <button class="auth-main-btn" id="signupBtn">Create Account</button>
+      </div>
+    </div>
+  </section>
 
   <div class="saved-message" id="savedMessage">Quote saved ✦</div>
 
@@ -498,23 +940,23 @@
     const quoteResults = [
       {
         quote: "“Your peace is<br>not lost<br>It is waiting for<br>you to return<br>to yourself”",
-        explanation: "Under quote: short<br>explanation"
+        explanation: "This quote reminds you to slow down and return to your peaceful center."
       },
       {
         quote: "“You do not need<br>to fix everything<br>today<br>One small step<br>is enough”",
-        explanation: "A soft reminder to breathe<br>and move slowly."
+        explanation: "A soft reminder to breathe and move slowly."
       },
       {
         quote: "“Rest is not<br>weakness<br>Rest is how<br>your energy<br>comes back”",
-        explanation: "This quote is for tired days<br>when you need care."
+        explanation: "This quote is for tired days when you need care."
       },
       {
         quote: "“Your future is<br>built by the brave<br>choice you make<br>today”",
-        explanation: "A quote for confidence<br>and motivation."
+        explanation: "A quote for confidence and motivation."
       },
       {
         quote: "“Soft days are<br>still part of<br>your healing”",
-        explanation: "A gentle reminder that<br>growth can be quiet."
+        explanation: "A gentle reminder that growth can be quiet."
       }
     ];
 
@@ -531,9 +973,11 @@
     const quoteText = document.getElementById("quoteText");
     const explanationText = document.getElementById("explanationText");
     const savedMessage = document.getElementById("savedMessage");
+    const authOverlay = document.getElementById("authOverlay");
 
     function loadQuestion() {
       const q = questions[currentQuestion];
+
       questionText.textContent = q.question;
       answersCard.innerHTML = "";
 
@@ -541,6 +985,10 @@
         const btn = document.createElement("button");
         btn.className = "answer-btn";
         btn.textContent = answer;
+
+        if (answer.length > 13) {
+          btn.classList.add("long-answer");
+        }
 
         if (userAnswers[currentQuestion] === answer) {
           btn.classList.add("selected");
@@ -599,7 +1047,7 @@
 
       setTimeout(() => {
         quoteText.innerHTML = quoteResults[index].quote;
-        explanationText.innerHTML = quoteResults[index].explanation;
+        explanationText.textContent = quoteResults[index].explanation;
 
         quoteText.classList.remove("fade");
         explanationText.classList.remove("fade");
@@ -637,11 +1085,7 @@
 
       localStorage.setItem("savedQuotes", JSON.stringify(savedQuotes));
 
-      savedMessage.classList.add("show");
-
-      setTimeout(() => {
-        savedMessage.classList.remove("show");
-      }, 1800);
+      showMessage("Quote saved ✦");
     });
 
     document.getElementById("startAgainBtn").addEventListener("click", () => {
@@ -651,6 +1095,62 @@
       quizScreen.style.display = "block";
       loadQuestion();
       window.scrollTo(0, 0);
+    });
+
+    function showMessage(text) {
+      savedMessage.textContent = text;
+      savedMessage.classList.add("show");
+
+      setTimeout(() => {
+        savedMessage.classList.remove("show");
+      }, 1800);
+    }
+
+    document.querySelectorAll(".auth-tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".auth-tab").forEach(t => t.classList.remove("active"));
+        document.querySelectorAll(".auth-form").forEach(form => form.classList.remove("active"));
+
+        tab.classList.add("active");
+
+        const selectedTab = tab.dataset.tab;
+        document.getElementById(selectedTab + "Form").classList.add("active");
+      });
+    });
+
+    function closeAuth(mode) {
+      localStorage.setItem("mindsetUserMode", mode);
+      authOverlay.style.display = "none";
+      showMessage(mode === "guest" ? "Entered as guest ✦" : "Welcome ✦");
+    }
+
+    document.getElementById("guestBtn").addEventListener("click", () => closeAuth("guest"));
+    document.getElementById("loginBtn").addEventListener("click", () => closeAuth("login"));
+    document.getElementById("signupBtn").addEventListener("click", () => closeAuth("signup"));
+
+    document.getElementById("authClose").addEventListener("click", () => {
+      closeAuth("guest");
+    });
+
+    document.getElementById("accountBtn").addEventListener("click", () => {
+      authOverlay.style.display = "flex";
+    });
+
+    document.querySelectorAll(".moving-card").forEach(card => {
+      card.addEventListener("mousemove", event => {
+        const rect = card.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+
+        const rotateX = ((y / rect.height) - 0.5) * -8;
+        const rotateY = ((x / rect.width) - 0.5) * 8;
+
+        card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-6px)`;
+      });
+
+      card.addEventListener("mouseleave", () => {
+        card.style.transform = "";
+      });
     });
 
     loadQuestion();
