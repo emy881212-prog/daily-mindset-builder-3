@@ -3059,6 +3059,131 @@
   forceMenuButtonFixedOnPhone();
   setTimeout(forceMenuButtonFixedOnPhone, 300);
   setTimeout(forceMenuButtonFixedOnPhone, 1000);
+</script><style>
+  /* TRUE FIXED MENU BUTTON - DOES NOT MOVE WITH APP */
+  #fixedAnimeMenuBtn {
+    position: fixed !important;
+    top: 96px !important;
+    right: 22px !important;
+    left: auto !important;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    border: 1px solid rgba(0,0,0,0.18) !important;
+    background: rgba(255,255,255,0.72) !important;
+    backdrop-filter: blur(12px) !important;
+    box-shadow:
+      0 8px 20px rgba(0,0,0,0.16),
+      inset 0 0 14px rgba(255,255,255,0.55) !important;
+    z-index: 2147483647 !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  #fixedAnimeMenuBtn span {
+    position: absolute !important;
+    width: 20px !important;
+    height: 2px !important;
+    border-radius: 999px !important;
+    background: #111 !important;
+    transition: 0.25s ease !important;
+  }
+
+  #fixedAnimeMenuBtn span:nth-child(1) {
+    transform: translateY(-7px);
+  }
+
+  #fixedAnimeMenuBtn span:nth-child(2) {
+    transform: translateY(0);
+  }
+
+  #fixedAnimeMenuBtn span:nth-child(3) {
+    transform: translateY(7px);
+  }
+
+  #fixedAnimeMenuBtn.open span:nth-child(1) {
+    transform: rotate(45deg);
+  }
+
+  #fixedAnimeMenuBtn.open span:nth-child(2) {
+    opacity: 0;
+  }
+
+  #fixedAnimeMenuBtn.open span:nth-child(3) {
+    transform: rotate(-45deg);
+  }
+
+  #animeMenuPanel,
+  #animeMenuOverlay {
+    position: fixed !important;
+    z-index: 2147483646 !important;
+  }
+</style>
+
+<script>
+  function createRealFixedMenuButton() {
+    const oldMenuBtn = document.getElementById("animeMenuBtn");
+
+    if (oldMenuBtn) {
+      oldMenuBtn.style.display = "none";
+      oldMenuBtn.remove();
+    }
+
+    let fixedBtn = document.getElementById("fixedAnimeMenuBtn");
+
+    if (!fixedBtn) {
+      fixedBtn = document.createElement("button");
+      fixedBtn.id = "fixedAnimeMenuBtn";
+      fixedBtn.type = "button";
+      fixedBtn.setAttribute("aria-label", "Open menu");
+      fixedBtn.innerHTML = "<span></span><span></span><span></span>";
+      document.body.appendChild(fixedBtn);
+    }
+
+    const menuPanel = document.getElementById("animeMenuPanel");
+    const menuOverlay = document.getElementById("animeMenuOverlay");
+
+    if (menuPanel && menuPanel.parentElement !== document.body) {
+      document.body.appendChild(menuPanel);
+    }
+
+    if (menuOverlay && menuOverlay.parentElement !== document.body) {
+      document.body.appendChild(menuOverlay);
+    }
+
+    fixedBtn.onclick = function () {
+      if (!menuPanel || !menuOverlay) return;
+
+      const isOpen = menuPanel.classList.contains("show");
+
+      if (isOpen) {
+        fixedBtn.classList.remove("open");
+        menuPanel.classList.remove("show");
+        menuOverlay.classList.remove("show");
+      } else {
+        fixedBtn.classList.add("open");
+        menuPanel.classList.add("show");
+        menuOverlay.classList.add("show");
+      }
+    };
+
+    if (menuOverlay) {
+      menuOverlay.onclick = function () {
+        fixedBtn.classList.remove("open");
+        menuPanel.classList.remove("show");
+        menuOverlay.classList.remove("show");
+      };
+    }
+  }
+
+  createRealFixedMenuButton();
+  setTimeout(createRealFixedMenuButton, 300);
+  setTimeout(createRealFixedMenuButton, 1000);
+  window.addEventListener("scroll", createRealFixedMenuButton);
 </script>
 </body>
 
