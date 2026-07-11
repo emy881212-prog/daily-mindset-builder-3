@@ -37,8 +37,8 @@ function connectAppMenuLinks() {
   const pageLinks = {
     insights: "insights.html",
     journal: "journal.html",
-    saved: "saved-quotes.html"
-  };
+  mindsetcoach: "mindset-coach.html",
+  saved: "saved-quotes.html"};
 
   document.addEventListener(
     "click",
