@@ -31,6 +31,11 @@ img {
   height: auto;
 }
 
+/* Remove the duplicate Saved Quotes entry from the right-side Mindset Menu. */
+.anime-menu-list .anime-menu-item[data-menu-action="saved"] {
+  display: none !important;
+}
+
 /* =============================================
    JOURNAL HISTORY CALENDAR NOTE ENHANCEMENT
 ============================================= */
