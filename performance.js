@@ -1,4 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
+  optimizePagePerformance();
+  connectAppMenuLinks();
+  initializeJournalHistoryCalendarNotes();
+  initializeQuoteCollectionLabels();
+});
+
+function optimizePagePerformance() {
   const processorCores = navigator.hardwareConcurrency || 8;
   const deviceMemory = navigator.deviceMemory || 8;
 
@@ -19,10 +26,50 @@ document.addEventListener("DOMContentLoaded", () => {
       video.preload = "metadata";
     }
   });
+}
 
-  initializeJournalHistoryCalendarNotes();
-  initializeQuoteCollectionLabels();
-});
+/* =====================================================
+   CONNECT THE MAIN APP MENU
+   Capture mode stops the old "coming soon" alert first.
+===================================================== */
+
+function connectAppMenuLinks() {
+  const pageLinks = {
+    insights: "insights.html",
+    journal: "journal.html",
+    saved: "saved-quotes.html"
+  };
+
+  document.addEventListener(
+    "click",
+    (event) => {
+      const menuItem = event.target.closest(
+        ".anime-menu-item[data-menu-action]"
+      );
+
+      if (!menuItem) {
+        return;
+      }
+
+      const destination = pageLinks[menuItem.dataset.menuAction];
+
+      if (!destination) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+
+      window.location.href = destination;
+    },
+    true
+  );
+}
+
+/* =====================================================
+   JOURNAL HISTORY CALENDAR HIGHLIGHT NOTES
+===================================================== */
 
 function initializeJournalHistoryCalendarNotes() {
   const modalContent = document.getElementById("modalContent");
@@ -48,7 +95,7 @@ function initializeJournalHistoryCalendarNotes() {
   }
 
   document.body.classList.add("journal-history-page");
-  addCalendarNoteStyles();
+  addCalendarNoteRuntimeStyles();
 
   const historyStorageKey = "dailyMindsetJournalHistory";
   const maximumLength = 800;
@@ -104,7 +151,7 @@ function initializeJournalHistoryCalendarNotes() {
       return true;
     } catch (error) {
       console.error("Could not save calendar highlight:", error);
-      showMessage("The calendar highlight could not be saved");
+      showCalendarMessage("The calendar highlight could not be saved");
       return false;
     }
   }
@@ -172,18 +219,38 @@ function initializeJournalHistoryCalendarNotes() {
     }
 
     refreshCalendarAfterSave(dateKey);
-    showMessage("Calendar highlight saved ✓");
+    showCalendarMessage("Calendar highlight saved ✓");
     return true;
+  }
+
+  function showCalendarMessage(message) {
+    if (typeof window.showToast === "function") {
+      window.showToast(message);
+      return;
+    }
+
+    const toast = document.getElementById("toast");
+
+    if (!toast) {
+      return;
+    }
+
+    toast.textContent = message;
+    toast.classList.add("show");
+
+    window.setTimeout(() => {
+      toast.classList.remove("show");
+    }, 2300);
   }
 
   function refreshCalendarAfterSave(dateKey) {
     try {
-      if (typeof captureCurrentEntries === "function") {
-        captureCurrentEntries();
+      if (typeof window.captureCurrentEntries === "function") {
+        window.captureCurrentEntries();
       }
 
-      if (typeof renderCalendar === "function") {
-        renderCalendar();
+      if (typeof window.renderCalendar === "function") {
+        window.renderCalendar();
       }
     } catch (error) {
       console.error("Could not refresh the calendar:", error);
@@ -200,30 +267,6 @@ function initializeJournalHistoryCalendarNotes() {
         renderCalendarEditor(dateKey, false);
       }
     }, 80);
-  }
-
-  function showMessage(message) {
-    try {
-      if (typeof showToast === "function") {
-        showToast(message);
-        return;
-      }
-    } catch (error) {
-      console.error("Could not show the app message:", error);
-    }
-
-    const toast = document.getElementById("toast");
-
-    if (!toast) {
-      return;
-    }
-
-    toast.textContent = message;
-    toast.classList.add("show");
-
-    window.setTimeout(() => {
-      toast.classList.remove("show");
-    }, 2300);
   }
 
   function setBottomButtonMode(isCalendarView) {
@@ -300,28 +343,17 @@ function initializeJournalHistoryCalendarNotes() {
         <span class="calendar-note-count">0 / ${maximumLength}</span>
       </div>
 
-      <button
-        class="calendar-note-clear"
-        type="button"
-      >
+      <button class="calendar-note-clear" type="button">
         Clear Text
       </button>
     `;
 
     dayDetails.appendChild(editor);
 
-    const textarea = editor.querySelector(
-      ".calendar-note-textarea"
-    );
-    const counter = editor.querySelector(
-      ".calendar-note-count"
-    );
-    const status = editor.querySelector(
-      ".calendar-note-status"
-    );
-    const clearButton = editor.querySelector(
-      ".calendar-note-clear"
-    );
+    const textarea = editor.querySelector(".calendar-note-textarea");
+    const counter = editor.querySelector(".calendar-note-count");
+    const status = editor.querySelector(".calendar-note-status");
+    const clearButton = editor.querySelector(".calendar-note-clear");
 
     textarea.value = savedNote
       ? String(savedNote.details || "")
@@ -334,7 +366,6 @@ function initializeJournalHistoryCalendarNotes() {
     }
 
     updateCounter();
-
     textarea.addEventListener("input", updateCounter);
 
     clearButton.addEventListener("click", (event) => {
@@ -365,12 +396,8 @@ function initializeJournalHistoryCalendarNotes() {
       return;
     }
 
-    const textarea = editor.querySelector(
-      ".calendar-note-textarea"
-    );
-    const status = editor.querySelector(
-      ".calendar-note-status"
-    );
+    const textarea = editor.querySelector(".calendar-note-textarea");
+    const status = editor.querySelector(".calendar-note-status");
     const noteText = textarea.value.trim();
 
     if (!noteText) {
@@ -406,20 +433,9 @@ function initializeJournalHistoryCalendarNotes() {
     setBottomButtonMode(false);
   }
 
-  calendarViewButton.addEventListener(
-    "click",
-    activateCalendarView
-  );
-
-  timelineViewButton?.addEventListener(
-    "click",
-    activateNonCalendarView
-  );
-
-  insightsViewButton?.addEventListener(
-    "click",
-    activateNonCalendarView
-  );
+  calendarViewButton.addEventListener("click", activateCalendarView);
+  timelineViewButton?.addEventListener("click", activateNonCalendarView);
+  insightsViewButton?.addEventListener("click", activateNonCalendarView);
 
   document.addEventListener("click", (event) => {
     const dayButton = event.target.closest(
@@ -474,7 +490,7 @@ function initializeJournalHistoryCalendarNotes() {
   });
 }
 
-function addCalendarNoteStyles() {
+function addCalendarNoteRuntimeStyles() {
   if (document.getElementById("calendarNoteRuntimeStyles")) {
     return;
   }
@@ -508,6 +524,10 @@ function addCalendarNoteStyles() {
 
   document.head.appendChild(style);
 }
+
+/* =====================================================
+   QUOTE COLLECTION WORDING
+===================================================== */
 
 function initializeQuoteCollectionLabels() {
   const collectionButton = document.querySelector(
