@@ -2847,6 +2847,11 @@
         Insights
       </button>
 
+      <button class="anime-menu-item" type="button" data-menu-action="mindsetcoach">
+        <span class="anime-menu-icon">🤖</span>
+        Mindset Coach
+      </button>
+
       <button class="anime-menu-item" type="button" data-menu-action="saved">
         <span class="anime-menu-icon">♡</span>
         Saved Quotes
@@ -2894,6 +2899,10 @@
 
         if (action === "insights") {
           alert("Insights page coming soon.");
+        }
+
+        if (action === "mindsetcoach") {
+          window.location.href = "mindset-coach.html";
         }
 
         if (action === "saved") {
