@@ -19,29 +19,42 @@ document.addEventListener("DOMContentLoaded", () => {
       video.preload = "metadata";
     }
   });
+
+  initializeJournalHistoryCalendarNotes();
 });
 
-/* =============================================
-   JOURNAL HISTORY CALENDAR NOTE ENHANCEMENT
-   Runs only on journal-history.html
-============================================= */
-
-document.addEventListener("DOMContentLoaded", () => {
+function initializeJournalHistoryCalendarNotes() {
   const modalContent = document.getElementById("modalContent");
   const calendarViewButton = document.querySelector(
     '[data-view="calendar"]'
   );
+  const timelineViewButton = document.querySelector(
+    '[data-view="timeline"]'
+  );
+  const insightsViewButton = document.querySelector(
+    '[data-view="insights"]'
+  );
+  const bottomActionButton = document.getElementById("exitButton");
+  const modalOverlay = document.getElementById("modalOverlay");
 
-  if (!modalContent || !calendarViewButton) {
+  if (
+    !modalContent ||
+    !calendarViewButton ||
+    !bottomActionButton ||
+    !modalOverlay
+  ) {
     return;
   }
 
   document.body.classList.add("journal-history-page");
+  addCalendarNoteStyles();
 
   const historyStorageKey = "dailyMindsetJournalHistory";
-  const maxNoteLength = 800;
+  const maximumLength = 800;
 
+  let currentView = "";
   let selectedDate = getTodayKey();
+  let observerTimer;
 
   function getTodayKey() {
     const today = new Date();
@@ -53,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ].join("-");
   }
 
-  function formatNoteDate(dateKey) {
+  function formatDate(dateKey) {
     const date = new Date(`${dateKey}T12:00:00`);
 
     if (Number.isNaN(date.getTime())) {
@@ -70,16 +83,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function readHistory() {
     try {
-      const savedHistory = localStorage.getItem(historyStorageKey);
-      const parsedHistory = savedHistory
-        ? JSON.parse(savedHistory)
-        : [];
+      const savedValue = localStorage.getItem(historyStorageKey);
+      const parsedValue = savedValue ? JSON.parse(savedValue) : [];
 
-      return Array.isArray(parsedHistory)
-        ? parsedHistory
-        : [];
+      return Array.isArray(parsedValue) ? parsedValue : [];
     } catch (error) {
-      console.error("Could not read calendar notes:", error);
+      console.error("Could not read calendar highlights:", error);
       return [];
     }
   }
@@ -93,8 +102,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       return true;
     } catch (error) {
-      console.error("Could not save calendar note:", error);
-      notify("The calendar note could not be saved");
+      console.error("Could not save calendar highlight:", error);
+      showMessage("The calendar highlight could not be saved");
       return false;
     }
   }
@@ -102,14 +111,12 @@ document.addEventListener("DOMContentLoaded", () => {
   function countWords(text) {
     const cleanText = String(text || "").trim();
 
-    if (!cleanText) {
-      return 0;
-    }
-
-    return cleanText.split(/\s+/).filter(Boolean).length;
+    return cleanText
+      ? cleanText.split(/\s+/).filter(Boolean).length
+      : 0;
   }
 
-  function getCalendarNote(dateKey) {
+  function findCalendarNote(dateKey) {
     return readHistory().find((entry) => {
       return (
         entry &&
@@ -126,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return false;
     }
 
-    const historyWithoutOldNote = readHistory().filter((entry) => {
+    const history = readHistory().filter((entry) => {
       return !(
         entry &&
         entry.type === "calendar-note" &&
@@ -134,16 +141,16 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     });
 
-    const now = new Date().toISOString();
+    const savedAt = new Date().toISOString();
 
-    historyWithoutOldNote.push({
+    history.push({
       id: `calendar-note-${dateKey}`,
       signature: `calendar-note-${dateKey}`,
       type: "calendar-note",
       title: "Calendar Highlight",
       icon: "🗓️",
       date: dateKey,
-      createdAt: now,
+      createdAt: savedAt,
       summary:
         cleanText.length > 110
           ? `${cleanText.slice(0, 110)}…`
@@ -152,41 +159,23 @@ document.addEventListener("DOMContentLoaded", () => {
       words: countWords(cleanText)
     });
 
-    historyWithoutOldNote.sort((firstEntry, secondEntry) => {
+    history.sort((firstEntry, secondEntry) => {
       return (
         new Date(secondEntry.createdAt || secondEntry.date) -
         new Date(firstEntry.createdAt || firstEntry.date)
       );
     });
 
-    if (!writeHistory(historyWithoutOldNote)) {
+    if (!writeHistory(history)) {
       return false;
     }
 
-    refreshCalendarAndReselect(dateKey);
-    notify("Calendar highlight saved ✓");
-
+    refreshCalendarAfterSave(dateKey);
+    showMessage("Calendar highlight saved ✓");
     return true;
   }
 
-  function deleteCalendarNote(dateKey) {
-    const updatedHistory = readHistory().filter((entry) => {
-      return !(
-        entry &&
-        entry.type === "calendar-note" &&
-        entry.date === dateKey
-      );
-    });
-
-    if (!writeHistory(updatedHistory)) {
-      return;
-    }
-
-    refreshCalendarAndReselect(dateKey);
-    notify("Calendar highlight removed");
-  }
-
-  function refreshCalendarAndReselect(dateKey) {
+  function refreshCalendarAfterSave(dateKey) {
     try {
       if (typeof captureCurrentEntries === "function") {
         captureCurrentEntries();
@@ -200,26 +189,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     window.setTimeout(() => {
-      const dateButton = document.querySelector(
+      const selectedDayButton = document.querySelector(
         `.calendar-day[data-date="${dateKey}"]`
       );
 
-      if (dateButton) {
-        dateButton.click();
+      if (selectedDayButton) {
+        selectedDayButton.click();
       } else {
-        prepareDayDetailsCard();
+        renderCalendarEditor(dateKey, false);
       }
-    }, 60);
+    }, 80);
   }
 
-  function notify(message) {
+  function showMessage(message) {
     try {
       if (typeof showToast === "function") {
         showToast(message);
         return;
       }
     } catch (error) {
-      console.error("Could not show the app toast:", error);
+      console.error("Could not show the app message:", error);
     }
 
     const toast = document.getElementById("toast");
@@ -236,64 +225,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 2300);
   }
 
-  function createOpenNoteButton() {
-    const openButton = document.createElement("button");
+  function setBottomButtonMode(isCalendarView) {
+    bottomActionButton.textContent = isCalendarView
+      ? "Save"
+      : "Exit";
 
-    openButton.type = "button";
-    openButton.className = "calendar-note-open";
-    openButton.innerHTML = `
-      <span class="calendar-note-open-icon">＋</span>
-      <span>
-        <strong>Add or edit a calendar highlight</strong>
-        <small>${formatNoteDate(selectedDate)}</small>
-      </span>
-    `;
-
-    return openButton;
-  }
-
-  function prepareDayDetailsCard() {
-    const dayDetails = document.getElementById("dayDetails");
-
-    if (!dayDetails) {
-      return;
-    }
-
-    dayDetails.classList.add("calendar-note-clickable");
-    dayDetails.setAttribute("data-note-date", selectedDate);
-
-    const currentTitle = dayDetails.querySelector(
-      ".day-details-title"
+    bottomActionButton.classList.toggle(
+      "calendar-save-button",
+      isCalendarView
     );
-
-    if (
-      currentTitle &&
-      currentTitle.textContent.trim() ===
-        "Select a highlighted day"
-    ) {
-      currentTitle.textContent =
-        "Select any day or write a highlight";
-
-      const currentText = dayDetails.querySelector(
-        ".day-details-text"
-      );
-
-      if (currentText) {
-        currentText.textContent =
-          "Tap any calendar date to view its entries, or tap this card to add a personal note for today.";
-      }
-    }
-
-    if (
-      !dayDetails.querySelector(".calendar-note-open") &&
-      !dayDetails.querySelector(".calendar-note-editor")
-    ) {
-      dayDetails.appendChild(createOpenNoteButton());
-    }
   }
 
-  function openNoteEditor(dateKey) {
-    selectedDate = dateKey || selectedDate || getTodayKey();
+  function renderCalendarEditor(dateKey, focusTextarea = false) {
+    if (currentView !== "calendar") {
+      return;
+    }
 
     const dayDetails = document.getElementById("dayDetails");
 
@@ -301,43 +247,39 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    dayDetails.classList.add("calendar-note-clickable");
-    dayDetails.setAttribute("data-note-date", selectedDate);
+    selectedDate = dateKey || selectedDate || getTodayKey();
 
     const existingEditor = dayDetails.querySelector(
       ".calendar-note-editor"
     );
 
-    if (existingEditor) {
-      const existingTextarea = existingEditor.querySelector(
-        ".calendar-note-textarea"
-      );
-
-      if (existingTextarea) {
-        existingTextarea.focus();
+    if (
+      existingEditor &&
+      existingEditor.dataset.date === selectedDate
+    ) {
+      if (focusTextarea) {
+        existingEditor
+          .querySelector(".calendar-note-textarea")
+          ?.focus();
       }
 
       return;
     }
 
-    const openButton = dayDetails.querySelector(
-      ".calendar-note-open"
-    );
+    existingEditor?.remove();
+    dayDetails.querySelector(".calendar-note-open")?.remove();
 
-    if (openButton) {
-      openButton.remove();
-    }
-
-    const savedNote = getCalendarNote(selectedDate);
+    const savedNote = findCalendarNote(selectedDate);
     const editor = document.createElement("section");
 
     editor.className = "calendar-note-editor";
+    editor.dataset.date = selectedDate;
     editor.innerHTML = `
       <div class="calendar-note-editor-heading">
         <div class="calendar-note-editor-icon">✍️</div>
         <div>
-          <h4>Write a calendar highlight</h4>
-          <p>${formatNoteDate(selectedDate)}</p>
+          <h4>Add calendar highlight</h4>
+          <p>${formatDate(selectedDate)}</p>
         </div>
       </div>
 
@@ -348,30 +290,21 @@ document.addEventListener("DOMContentLoaded", () => {
       <textarea
         class="calendar-note-textarea"
         id="calendarNoteTextarea"
-        maxlength="${maxNoteLength}"
+        maxlength="${maximumLength}"
         placeholder="Write a meaningful moment, thought, lesson, achievement or memory..."
       ></textarea>
 
       <div class="calendar-note-meta">
         <span class="calendar-note-status" aria-live="polite"></span>
-        <span class="calendar-note-count">0 / ${maxNoteLength}</span>
+        <span class="calendar-note-count">0 / ${maximumLength}</span>
       </div>
 
-      <div class="calendar-note-actions">
-        <button
-          class="calendar-note-clear"
-          type="button"
-        >
-          Clear
-        </button>
-
-        <button
-          class="calendar-note-save"
-          type="button"
-        >
-          Save Highlight
-        </button>
-      </div>
+      <button
+        class="calendar-note-clear"
+        type="button"
+      >
+        Clear Text
+      </button>
     `;
 
     dayDetails.appendChild(editor);
@@ -379,14 +312,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const textarea = editor.querySelector(
       ".calendar-note-textarea"
     );
-    const count = editor.querySelector(
+    const counter = editor.querySelector(
       ".calendar-note-count"
     );
     const status = editor.querySelector(
       ".calendar-note-status"
-    );
-    const saveButton = editor.querySelector(
-      ".calendar-note-save"
     );
     const clearButton = editor.querySelector(
       ".calendar-note-clear"
@@ -396,123 +326,184 @@ document.addEventListener("DOMContentLoaded", () => {
       ? String(savedNote.details || "")
       : "";
 
-    function updateCount() {
-      count.textContent =
-        `${textarea.value.length} / ${maxNoteLength}`;
+    function updateCounter() {
+      counter.textContent =
+        `${textarea.value.length} / ${maximumLength}`;
       status.textContent = "";
     }
 
-    updateCount();
+    updateCounter();
 
-    textarea.addEventListener("input", updateCount);
-
-    saveButton.addEventListener("click", (event) => {
-      event.stopPropagation();
-
-      const noteText = textarea.value.trim();
-
-      if (!noteText) {
-        status.textContent = "Write something before saving.";
-        textarea.focus();
-        return;
-      }
-
-      status.textContent = "Saving...";
-      saveButton.disabled = true;
-
-      const didSave = saveCalendarNote(
-        selectedDate,
-        noteText
-      );
-
-      if (!didSave) {
-        saveButton.disabled = false;
-        status.textContent = "Could not save. Please try again.";
-      }
-    });
+    textarea.addEventListener("input", updateCounter);
 
     clearButton.addEventListener("click", (event) => {
       event.stopPropagation();
-
-      if (getCalendarNote(selectedDate)) {
-        const shouldDelete = window.confirm(
-          "Remove the saved calendar highlight for this day?"
-        );
-
-        if (!shouldDelete) {
-          return;
-        }
-
-        deleteCalendarNote(selectedDate);
-        return;
-      }
-
       textarea.value = "";
-      updateCount();
+      updateCounter();
       textarea.focus();
     });
 
-    window.requestAnimationFrame(() => {
-      textarea.focus();
-      editor.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest"
+    if (focusTextarea) {
+      window.requestAnimationFrame(() => {
+        textarea.focus();
+        editor.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest"
+        });
       });
-    });
+    }
   }
+
+  function saveVisibleCalendarEditor() {
+    const editor = document.querySelector(
+      "#dayDetails .calendar-note-editor"
+    );
+
+    if (!editor) {
+      renderCalendarEditor(selectedDate, true);
+      return;
+    }
+
+    const textarea = editor.querySelector(
+      ".calendar-note-textarea"
+    );
+    const status = editor.querySelector(
+      ".calendar-note-status"
+    );
+    const noteText = textarea.value.trim();
+
+    if (!noteText) {
+      status.textContent = "Write something before saving.";
+      textarea.focus();
+      return;
+    }
+
+    status.textContent = "Saving...";
+    saveCalendarNote(selectedDate, noteText);
+  }
+
+  function activateCalendarView() {
+    currentView = "calendar";
+    selectedDate = getTodayKey();
+    setBottomButtonMode(true);
+
+    window.setTimeout(() => {
+      const todayButton = document.querySelector(
+        `.calendar-day[data-date="${selectedDate}"]`
+      );
+
+      if (todayButton) {
+        todayButton.click();
+      } else {
+        renderCalendarEditor(selectedDate, false);
+      }
+    }, 90);
+  }
+
+  function activateNonCalendarView() {
+    currentView = "other";
+    setBottomButtonMode(false);
+  }
+
+  calendarViewButton.addEventListener(
+    "click",
+    activateCalendarView
+  );
+
+  timelineViewButton?.addEventListener(
+    "click",
+    activateNonCalendarView
+  );
+
+  insightsViewButton?.addEventListener(
+    "click",
+    activateNonCalendarView
+  );
 
   document.addEventListener("click", (event) => {
     const dayButton = event.target.closest(
       ".calendar-day:not(.empty)"
     );
 
-    if (dayButton && dayButton.dataset.date) {
+    if (
+      currentView === "calendar" &&
+      dayButton &&
+      dayButton.dataset.date
+    ) {
       selectedDate = dayButton.dataset.date;
 
       window.setTimeout(() => {
-        openNoteEditor(selectedDate);
+        renderCalendarEditor(selectedDate, true);
       }, 0);
-
-      return;
-    }
-
-    const openButton = event.target.closest(
-      ".calendar-note-open"
-    );
-
-    if (openButton) {
-      event.preventDefault();
-      event.stopPropagation();
-      openNoteEditor(selectedDate);
-      return;
-    }
-
-    const dayDetails = event.target.closest("#dayDetails");
-
-    if (
-      dayDetails &&
-      !event.target.closest(
-        "textarea, button, .calendar-note-editor"
-      )
-    ) {
-      openNoteEditor(selectedDate);
     }
   });
 
+  bottomActionButton.addEventListener(
+    "click",
+    (event) => {
+      if (
+        currentView !== "calendar" ||
+        !modalOverlay.classList.contains("open")
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      saveVisibleCalendarEditor();
+    },
+    true
+  );
+
   const detailsObserver = new MutationObserver(() => {
-    prepareDayDetailsCard();
+    if (currentView !== "calendar") {
+      return;
+    }
+
+    window.clearTimeout(observerTimer);
+
+    observerTimer = window.setTimeout(() => {
+      renderCalendarEditor(selectedDate, false);
+    }, 20);
   });
 
   detailsObserver.observe(modalContent, {
     childList: true,
     subtree: true
   });
+}
 
-  calendarViewButton.addEventListener("click", () => {
-    selectedDate = getTodayKey();
+function addCalendarNoteStyles() {
+  if (document.getElementById("calendarNoteRuntimeStyles")) {
+    return;
+  }
 
-    window.setTimeout(() => {
-      prepareDayDetailsCard();
-    }, 80);
-  });
-});
+  const style = document.createElement("style");
+  style.id = "calendarNoteRuntimeStyles";
+  style.textContent = `
+    body.journal-history-page .calendar-save-button {
+      color: white !important;
+      background: linear-gradient(110deg, #c78a84, #916968) !important;
+      border-color: rgba(99, 64, 70, 0.28) !important;
+      box-shadow:
+        0 7px 16px rgba(99, 64, 70, 0.27),
+        inset 0 1px 0 rgba(255, 255, 255, 0.31) !important;
+    }
+
+    body.journal-history-page .calendar-note-editor {
+      margin-top: 15px;
+    }
+
+    body.journal-history-page .calendar-note-editor-heading h4 {
+      font-size: 19px;
+    }
+
+    body.journal-history-page .calendar-note-clear {
+      width: 100%;
+      min-height: 45px;
+      margin-top: 9px;
+    }
+  `;
+
+  document.head.appendChild(style);
+}
