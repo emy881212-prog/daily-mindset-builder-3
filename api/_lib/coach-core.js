@@ -218,7 +218,7 @@ async function requestJsonFromOpenAI(openai, { prompt, jsonShapeHint, fallback }
             role: "system",
             content: [
               {
-                type: "text",
+                type: "input_text",
                 text: "You are a supportive, practical mindset coaching assistant. Return only valid JSON and no markdown."
               }
             ]
@@ -227,7 +227,7 @@ async function requestJsonFromOpenAI(openai, { prompt, jsonShapeHint, fallback }
             role: "user",
             content: [
               {
-                type: "text",
+                type: "input_text",
                 text: `${prompt}\n\nReturn JSON with this exact shape:\n${jsonShapeHint}`
               }
             ]
@@ -491,11 +491,11 @@ async function personalCoachHandler(req, res) {
           input: [
             {
               role: "system",
-              content: [{ type: "text", text: systemPrompt }]
+              content: [{ type: "input_text", text: systemPrompt }]
             },
             {
               role: "user",
-              content: [{ type: "text", text: userPrompt }]
+              content: [{ type: "input_text", text: userPrompt }]
             }
           ]
         });
