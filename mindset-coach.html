@@ -836,7 +836,20 @@
     function getAuthenticatedUserId() {
       const direct = String(localStorage.getItem("mindsetUserId") || "").trim();
       const email = String(localStorage.getItem("mindsetUserEmail") || "").trim().toLowerCase();
-      return direct || email;
+
+      if (direct || email) {
+        return direct || email;
+      }
+
+      const existingFallback = String(localStorage.getItem("mindsetFallbackUserId") || "").trim();
+
+      if (existingFallback) {
+        return existingFallback;
+      }
+
+      const fallback = `guest-${getDeviceId()}`;
+      localStorage.setItem("mindsetFallbackUserId", fallback);
+      return fallback;
     }
 
     function showError(message) {

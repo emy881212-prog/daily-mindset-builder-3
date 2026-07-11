@@ -1,4 +1,12 @@
+const fs = require("fs");
+const path = require("path");
+
 const DURABLE_USAGE_KEY_PREFIX = "dm:ai-usage:v1:";
+const LOCAL_USAGE_FILE = path.join(process.cwd(), ".data", "usage-store.json");
+const localUsageMemory = new Map();
+let warnedMissingRedis = false;
+let warnedRedisFailure = false;
+let warnedLocalFileFailure = false;
 
 function safeString(value, fallback = "") {
   if (typeof value === "string") {
@@ -21,6 +29,34 @@ function getRedisConfig() {
   }
 
   return { baseUrl: baseUrl.replace(/\/$/, ""), token };
+}
+
+function warnAdminsOnly(message, mark) {
+  if (mark === "missing" && warnedMissingRedis) {
+    return;
+  }
+
+  if (mark === "redis" && warnedRedisFailure) {
+    return;
+  }
+
+  if (mark === "local" && warnedLocalFileFailure) {
+    return;
+  }
+
+  if (mark === "missing") {
+    warnedMissingRedis = true;
+  }
+
+  if (mark === "redis") {
+    warnedRedisFailure = true;
+  }
+
+  if (mark === "local") {
+    warnedLocalFileFailure = true;
+  }
+
+  console.warn(`[usage-store] ${message}`);
 }
 
 function usageKey(userId) {
@@ -83,6 +119,47 @@ async function redisSetJson(key, value) {
   }
 }
 
+async function readLocalStoreObject() {
+  try {
+    const raw = await fs.promises.readFile(LOCAL_USAGE_FILE, "utf8");
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch (error) {
+    if (error && error.code === "ENOENT") {
+      return {};
+    }
+
+    warnAdminsOnly("Local usage file is unavailable; using in-memory fallback.", "local");
+    return {};
+  }
+}
+
+async function writeLocalStoreObject(data) {
+  try {
+    await fs.promises.mkdir(path.dirname(LOCAL_USAGE_FILE), { recursive: true });
+    await fs.promises.writeFile(LOCAL_USAGE_FILE, JSON.stringify(data), "utf8");
+  } catch (_error) {
+    warnAdminsOnly("Failed writing local usage file; continuing with in-memory fallback.", "local");
+  }
+}
+
+async function localGetJson(key) {
+  const store = await readLocalStoreObject();
+
+  if (Object.prototype.hasOwnProperty.call(store, key)) {
+    return store[key];
+  }
+
+  return localUsageMemory.has(key) ? localUsageMemory.get(key) : null;
+}
+
+async function localSetJson(key, value) {
+  localUsageMemory.set(key, value);
+  const store = await readLocalStoreObject();
+  store[key] = value;
+  await writeLocalStoreObject(store);
+}
+
 function createDefaultUsageState() {
   return {
     version: 1,
@@ -117,7 +194,20 @@ function pruneState(state, currentDateKey, currentMonthKey) {
 
 async function readUsageState(userId, currentDateKey, currentMonthKey) {
   const key = usageKey(userId);
-  const existing = await redisGetJson(key);
+  const config = getRedisConfig();
+  let existing;
+
+  if (config) {
+    try {
+      existing = await redisGetJson(key);
+    } catch (_error) {
+      warnAdminsOnly("Redis read failed; falling back to local usage storage.", "redis");
+      existing = await localGetJson(key);
+    }
+  } else {
+    warnAdminsOnly("Redis not configured. Using local usage storage fallback.", "missing");
+    existing = await localGetJson(key);
+  }
 
   if (!existing) {
     return createDefaultUsageState();
@@ -130,7 +220,21 @@ async function writeUsageState(userId, usageState) {
   const key = usageKey(userId);
   const next = ensureUsageShape(usageState);
   next.updatedAt = new Date().toISOString();
-  await redisSetJson(key, next);
+
+  const config = getRedisConfig();
+
+  if (config) {
+    try {
+      await redisSetJson(key, next);
+      return;
+    } catch (_error) {
+      warnAdminsOnly("Redis write failed; falling back to local usage storage.", "redis");
+    }
+  } else {
+    warnAdminsOnly("Redis not configured. Using local usage storage fallback.", "missing");
+  }
+
+  await localSetJson(key, next);
 }
 
 function isDurableStoreConfigured() {

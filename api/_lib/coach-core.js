@@ -1,13 +1,11 @@
 const OpenAI = require("openai");
 const {
   readUsageState,
-  writeUsageState,
-  isDurableStoreConfigured
+  writeUsageState
 } = require("./durable-usage-store");
 const {
   readSavedInsights,
   writeSavedInsights,
-  isInsightsStoreConfigured,
   MAX_INSIGHTS_PER_USER
 } = require("./durable-insights-store");
 
@@ -116,13 +114,6 @@ function authRequiredPayload() {
   return {
     error: "Authentication required. Please sign in to use AI coaching.",
     code: "auth_required"
-  };
-}
-
-function durableStoreUnavailablePayload() {
-  return {
-    error: "Durable usage store is not configured.",
-    code: "durable_store_not_configured"
   };
 }
 
@@ -300,13 +291,6 @@ function createInsightId(userId) {
   return `ins-${Date.now()}-${randomPart}-${safeString(userId, "user")}`;
 }
 
-function insightsStoreUnavailablePayload() {
-  return {
-    error: "Durable saved-insights store is not configured.",
-    code: "saved_insights_store_not_configured"
-  };
-}
-
 function normalizeFeatureType(rawType) {
   const normalized = safeString(rawType, "").toLowerCase();
   const map = {
@@ -336,10 +320,6 @@ function getSearchQuery(req, body) {
 async function saveInsightHandler(req, res) {
   if (req.method && req.method !== "POST") {
     return methodNotAllowed(res);
-  }
-
-  if (!isInsightsStoreConfigured()) {
-    return sendJson(res, 500, insightsStoreUnavailablePayload());
   }
 
   const body = readBody(req);
@@ -393,10 +373,6 @@ async function listSavedInsightsHandler(req, res) {
     return methodNotAllowed(res);
   }
 
-  if (!isInsightsStoreConfigured()) {
-    return sendJson(res, 500, insightsStoreUnavailablePayload());
-  }
-
   const body = readBody(req);
   const userId = getAuthenticatedUserId(req, body);
 
@@ -431,10 +407,6 @@ async function listSavedInsightsHandler(req, res) {
 async function deleteSavedInsightHandler(req, res) {
   if (req.method && req.method !== "POST" && req.method !== "DELETE") {
     return methodNotAllowed(res);
-  }
-
-  if (!isInsightsStoreConfigured()) {
-    return sendJson(res, 500, insightsStoreUnavailablePayload());
   }
 
   const body = readBody(req);
@@ -587,19 +559,7 @@ async function requestJsonFromOpenAI(openai, { prompt, jsonShapeHint, fallback }
   throw lastError;
 }
 
-function durableStoreErrorPayload(message) {
-  return {
-    error: message || "Durable usage store request failed.",
-    code: "durable_store_error"
-  };
-}
-
 async function getUsageAccessOrRespond(req, res, body) {
-  if (!isDurableStoreConfigured()) {
-    sendJson(res, 500, durableStoreUnavailablePayload());
-    return null;
-  }
-
   const userId = getAuthenticatedUserId(req, body);
 
   if (!userId) {
@@ -615,8 +575,15 @@ async function getUsageAccessOrRespond(req, res, body) {
   try {
     usageState = await readUsageState(userId, dateKey, monthKey);
   } catch (error) {
-    sendJson(res, 500, durableStoreErrorPayload(error && error.message ? error.message : "Failed to read usage state."));
-    return null;
+    console.warn("[usage-store] Read failed; continuing with default usage state:", error && error.message ? error.message : error);
+    usageState = {
+      version: 1,
+      freeTotal: 0,
+      monthly: {},
+      fairUseDaily: {},
+      fairUseMonthly: {},
+      updatedAt: new Date().toISOString()
+    };
   }
 
   const gate = evaluatePlanLimit({
@@ -658,8 +625,7 @@ async function incrementUsageAndSummarizeOrRespond(res, access) {
   try {
     await writeUsageState(access.userId, updatedUsage);
   } catch (error) {
-    sendJson(res, 500, durableStoreErrorPayload(error && error.message ? error.message : "Failed to persist usage state."));
-    return null;
+    console.warn("[usage-store] Write failed; continuing without blocking user:", error && error.message ? error.message : error);
   }
 
   const summary = usageSummary({

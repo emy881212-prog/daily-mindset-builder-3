@@ -1,5 +1,13 @@
+const fs = require("fs");
+const path = require("path");
+
 const DURABLE_INSIGHTS_KEY_PREFIX = "dm:ai-saved:v1:";
 const MAX_INSIGHTS_PER_USER = 500;
+const LOCAL_INSIGHTS_FILE = path.join(process.cwd(), ".data", "saved-insights.json");
+const localInsightsMemory = new Map();
+let warnedMissingRedis = false;
+let warnedRedisFailure = false;
+let warnedLocalFileFailure = false;
 
 function safeString(value, fallback = "") {
   if (typeof value === "string") {
@@ -22,6 +30,34 @@ function getRedisConfig() {
   }
 
   return { baseUrl: baseUrl.replace(/\/$/, ""), token };
+}
+
+function warnAdminsOnly(message, mark) {
+  if (mark === "missing" && warnedMissingRedis) {
+    return;
+  }
+
+  if (mark === "redis" && warnedRedisFailure) {
+    return;
+  }
+
+  if (mark === "local" && warnedLocalFileFailure) {
+    return;
+  }
+
+  if (mark === "missing") {
+    warnedMissingRedis = true;
+  }
+
+  if (mark === "redis") {
+    warnedRedisFailure = true;
+  }
+
+  if (mark === "local") {
+    warnedLocalFileFailure = true;
+  }
+
+  console.warn(`[saved-insights] ${message}`);
 }
 
 function insightsKey(userId) {
@@ -84,6 +120,47 @@ async function redisSetJson(key, value) {
   }
 }
 
+async function readLocalStoreObject() {
+  try {
+    const raw = await fs.promises.readFile(LOCAL_INSIGHTS_FILE, "utf8");
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch (error) {
+    if (error && error.code === "ENOENT") {
+      return {};
+    }
+
+    warnAdminsOnly("Local saved-insights file is unavailable; using in-memory fallback.", "local");
+    return {};
+  }
+}
+
+async function writeLocalStoreObject(data) {
+  try {
+    await fs.promises.mkdir(path.dirname(LOCAL_INSIGHTS_FILE), { recursive: true });
+    await fs.promises.writeFile(LOCAL_INSIGHTS_FILE, JSON.stringify(data), "utf8");
+  } catch (_error) {
+    warnAdminsOnly("Failed writing local saved-insights file; continuing with in-memory fallback.", "local");
+  }
+}
+
+async function localGetJson(key) {
+  const store = await readLocalStoreObject();
+
+  if (Object.prototype.hasOwnProperty.call(store, key)) {
+    return store[key];
+  }
+
+  return localInsightsMemory.has(key) ? localInsightsMemory.get(key) : null;
+}
+
+async function localSetJson(key, value) {
+  localInsightsMemory.set(key, value);
+  const store = await readLocalStoreObject();
+  store[key] = value;
+  await writeLocalStoreObject(store);
+}
+
 function normalizeEntry(entry) {
   const source = entry && typeof entry === "object" ? entry : {};
 
@@ -98,7 +175,20 @@ function normalizeEntry(entry) {
 
 async function readSavedInsights(userId) {
   const key = insightsKey(userId);
-  const existing = await redisGetJson(key);
+  const config = getRedisConfig();
+  let existing;
+
+  if (config) {
+    try {
+      existing = await redisGetJson(key);
+    } catch (_error) {
+      warnAdminsOnly("Redis read failed; falling back to local saved-insights storage.", "redis");
+      existing = await localGetJson(key);
+    }
+  } else {
+    warnAdminsOnly("Redis not configured. Using local saved-insights storage fallback.", "missing");
+    existing = await localGetJson(key);
+  }
 
   if (!Array.isArray(existing)) {
     return [];
@@ -116,7 +206,21 @@ async function writeSavedInsights(userId, entries) {
     ? entries.map(normalizeEntry).filter((entry) => entry.id && entry.userId)
     : [];
 
-  await redisSetJson(key, normalizedEntries.slice(0, MAX_INSIGHTS_PER_USER));
+  const payload = normalizedEntries.slice(0, MAX_INSIGHTS_PER_USER);
+  const config = getRedisConfig();
+
+  if (config) {
+    try {
+      await redisSetJson(key, payload);
+      return;
+    } catch (_error) {
+      warnAdminsOnly("Redis write failed; falling back to local saved-insights storage.", "redis");
+    }
+  } else {
+    warnAdminsOnly("Redis not configured. Using local saved-insights storage fallback.", "missing");
+  }
+
+  await localSetJson(key, payload);
 }
 
 function isInsightsStoreConfigured() {
