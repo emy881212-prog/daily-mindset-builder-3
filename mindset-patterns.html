@@ -63,9 +63,13 @@
         );
     }
 
+    button,
+    textarea {
+      font: inherit;
+    }
+
     button {
       border: 0;
-      font: inherit;
       cursor: pointer;
       touch-action: manipulation;
     }
@@ -619,29 +623,90 @@
       background: rgba(225, 176, 172, 0.46);
     }
 
-    .recommendation {
+    /* Every purple box is now a real writing field. */
+    .write-box {
       margin-top: 12px;
       padding: 14px;
-      border-radius: 18px;
+      border: 1px solid rgba(113, 75, 86, 0.16);
+      border-radius: 19px;
       background:
         linear-gradient(
           145deg,
-          rgba(242, 199, 195, 0.72),
-          rgba(203, 161, 164, 0.58)
+          rgba(220, 183, 210, 0.82),
+          rgba(184, 149, 181, 0.62)
         );
+      box-shadow:
+        0 7px 17px rgba(83, 57, 76, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.35);
     }
 
-    .recommendation-title {
+    .write-box-title {
+      display: block;
       font-family: Georgia, "Times New Roman", serif;
-      font-size: 16px;
+      font-size: 17px;
       font-weight: 600;
+      color: #32272e;
     }
 
-    .recommendation-text {
-      margin-top: 6px;
+    .write-box-prompt {
+      margin-top: 5px;
       font-size: 11px;
+      line-height: 1.45;
+      color: rgba(52, 39, 47, 0.67);
+    }
+
+    .response-input {
+      display: block;
+      width: 100%;
+      min-height: 112px;
+      margin-top: 10px;
+      padding: 12px 13px;
+      resize: vertical;
+      border: 1px solid rgba(86, 58, 76, 0.2);
+      border-radius: 15px;
+      outline: none;
+      color: #2b2228;
+      background: rgba(255, 255, 255, 0.83);
+      font-size: 13px;
       line-height: 1.5;
-      color: rgba(57, 43, 49, 0.72);
+      box-shadow:
+        inset 0 2px 7px rgba(86, 57, 75, 0.06),
+        0 1px 0 rgba(255, 255, 255, 0.5);
+      transition:
+        border-color 160ms ease,
+        box-shadow 160ms ease,
+        background 160ms ease;
+    }
+
+    .response-input:focus {
+      border-color: rgba(126, 77, 111, 0.58);
+      background: rgba(255, 255, 255, 0.98);
+      box-shadow:
+        0 0 0 4px rgba(139, 88, 125, 0.12),
+        inset 0 2px 7px rgba(86, 57, 75, 0.04);
+    }
+
+    .response-input::placeholder {
+      color: rgba(60, 44, 54, 0.44);
+    }
+
+    .input-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .input-status,
+    .character-count {
+      font-size: 9px;
+      line-height: 1.3;
+      color: rgba(53, 40, 48, 0.58);
+    }
+
+    .input-status {
+      font-weight: 700;
     }
 
     .modal-actions {
@@ -678,12 +743,12 @@
       background:
         linear-gradient(
           110deg,
-          #c78a84,
-          #916968
+          #a7799a,
+          #76546f
         );
       box-shadow:
-        0 7px 16px rgba(99, 64, 70, 0.26),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        0 7px 16px rgba(83, 53, 77, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.28);
     }
 
     .toast {
@@ -711,7 +776,8 @@
       transform: translate(-50%, 0);
     }
 
-    button:focus-visible {
+    button:focus-visible,
+    textarea:focus-visible {
       outline: 3px solid rgba(255, 255, 255, 0.95);
       outline-offset: 3px;
     }
@@ -850,7 +916,7 @@
             <span class="button-icon">🌱</span>
             <span class="button-title">Growth &amp; Reframing Guide</span>
             <span class="button-description">
-              Receive a practical reflection and one useful next step
+              Receive a practical reflection and write your personal next steps
             </span>
           </span>
           <span class="button-arrow">›</span>
@@ -909,112 +975,8 @@
   </div>
 
   <script>
-    const STORAGE_SNAPSHOT_KEY = "dailyMindsetPatternSnapshots";
-
-    const themeDefinitions = {
-      Confidence: {
-        icon: "✨",
-        words: [
-          "confidence", "confident", "believe", "worthy", "enough",
-          "self worth", "brave", "courage", "capable", "proud"
-        ]
-      },
-      Growth: {
-        icon: "🌱",
-        words: [
-          "growth", "grow", "learn", "improve", "progress", "change",
-          "practice", "develop", "better", "lesson"
-        ]
-      },
-      Peace: {
-        icon: "🌿",
-        words: [
-          "peace", "calm", "breathe", "rest", "quiet", "slow",
-          "gentle", "relax", "still", "safe"
-        ]
-      },
-      Goals: {
-        icon: "🎯",
-        words: [
-          "goal", "focus", "future", "plan", "achieve", "success",
-          "tomorrow", "dream", "work", "finish"
-        ]
-      },
-      Gratitude: {
-        icon: "🤍",
-        words: [
-          "gratitude", "grateful", "thank", "appreciate", "blessing",
-          "fortunate", "joy", "kindness", "love", "support"
-        ]
-      },
-      Stress: {
-        icon: "🌧️",
-        words: [
-          "stress", "stressed", "anxious", "anxiety", "worry", "worried",
-          "pressure", "overwhelmed", "fear", "tired", "difficult"
-        ]
-      },
-      Relationships: {
-        icon: "💞",
-        words: [
-          "relationship", "partner", "friend", "family", "people",
-          "mother", "father", "boyfriend", "girlfriend", "connection"
-        ]
-      },
-      Wellbeing: {
-        icon: "🫶",
-        words: [
-          "health", "sleep", "body", "energy", "exercise", "food",
-          "wellness", "healing", "care", "routine"
-        ]
-      }
-    };
-
-    const toneWords = {
-      encouraging: [
-        "happy", "hope", "hopeful", "good", "great", "proud", "excited",
-        "love", "success", "strong", "capable", "grateful", "peaceful",
-        "confident", "better", "win", "joy", "positive"
-      ],
-      challenging: [
-        "sad", "angry", "stress", "stressed", "anxious", "worry", "fear",
-        "tired", "overwhelmed", "difficult", "bad", "hurt", "lonely",
-        "failure", "can't", "cannot", "never", "pressure"
-      ],
-      calming: [
-        "calm", "peace", "breathe", "rest", "slow", "gentle", "quiet",
-        "safe", "accept", "patience", "balance", "relax", "still"
-      ]
-    };
-
-    const strengthWords = {
-      "Self-awareness": ["notice", "realize", "understand", "aware", "recognize"],
-      "Persistence": ["continue", "try", "keep going", "practice", "again"],
-      "Self-compassion": ["gentle", "kind", "forgive", "accept", "care"],
-      "Problem-solving": ["plan", "solution", "step", "focus", "decide"],
-      "Gratitude": ["grateful", "thank", "appreciate", "blessing"],
-      "Courage": ["brave", "courage", "face", "confident", "strong"]
-    };
-
-    const triggerWords = {
-      "Uncertainty": ["maybe", "unsure", "uncertain", "confused", "don't know"],
-      "Pressure": ["pressure", "deadline", "must", "should", "urgent", "overwhelmed"],
-      "Self-doubt": ["can't", "cannot", "not enough", "failure", "doubt"],
-      "Low energy": ["tired", "exhausted", "sleep", "drained", "no energy"],
-      "Conflict": ["argument", "conflict", "fight", "upset", "angry"],
-      "Change": ["change", "new", "different", "unknown", "transition"]
-    };
-
-    const stopWords = new Set([
-      "the", "and", "that", "this", "with", "from", "have", "will", "what",
-      "when", "where", "were", "been", "your", "you", "for", "but", "not",
-      "are", "was", "today", "tomorrow", "about", "into", "they", "them",
-      "then", "than", "just", "very", "really", "feel", "felt", "because",
-      "would", "could", "should", "there", "their", "things", "something",
-      "anything", "more", "some", "like", "also", "much", "make", "made",
-      "want", "need", "my", "me", "i", "it", "is", "to", "of", "in",
-      "on", "at", "a", "an", "be", "or", "so", "do", "did", "has"
-    ]);
+    const RESPONSE_STORAGE_KEY = "dailyMindsetPatternResponses";
+    const SNAPSHOT_STORAGE_KEY = "dailyMindsetPatternSnapshots";
 
     const modalOverlay = document.getElementById("modalOverlay");
     const patternModal = document.getElementById("patternModal");
@@ -1031,16 +993,56 @@
     const overviewText = document.getElementById("overviewText");
     const toast = document.getElementById("toast");
 
-    let analysis = createAnalysis();
+    const themeGroups = {
+      Confidence: ["confidence", "confident", "believe", "worthy", "capable", "proud"],
+      Growth: ["growth", "grow", "learn", "improve", "progress", "change", "lesson"],
+      Peace: ["peace", "calm", "breathe", "rest", "quiet", "gentle", "safe"],
+      Goals: ["goal", "focus", "future", "plan", "achieve", "success", "dream"],
+      Gratitude: ["gratitude", "grateful", "thank", "appreciate", "joy", "kindness"],
+      Stress: ["stress", "anxious", "worry", "pressure", "overwhelmed", "fear", "tired"]
+    };
+
+    const toneGroups = {
+      Encouraging: ["happy", "hope", "good", "great", "proud", "excited", "strong", "grateful", "confident", "win"],
+      Challenging: ["sad", "angry", "stress", "anxious", "worry", "fear", "tired", "overwhelmed", "difficult", "hurt"],
+      Calming: ["calm", "peace", "breathe", "rest", "slow", "gentle", "quiet", "safe", "accept", "balance"]
+    };
+
+    const triggerGroups = {
+      "Uncertainty": ["maybe", "unsure", "uncertain", "confused", "don't know"],
+      "Pressure": ["pressure", "deadline", "must", "should", "urgent", "overwhelmed"],
+      "Self-doubt": ["can't", "cannot", "not enough", "failure", "doubt"],
+      "Low energy": ["tired", "exhausted", "sleep", "drained", "no energy"],
+      "Conflict": ["argument", "conflict", "fight", "upset", "angry"]
+    };
+
+    const strengthGroups = {
+      "Self-awareness": ["notice", "realize", "understand", "aware", "recognize"],
+      "Persistence": ["continue", "try", "keep going", "practice", "again"],
+      "Self-compassion": ["gentle", "kind", "forgive", "accept", "care"],
+      "Problem-solving": ["plan", "solution", "step", "focus", "decide"],
+      "Gratitude": ["grateful", "thank", "appreciate", "blessing"]
+    };
+
     let currentView = "themes";
+    let analysis = analyzeJournal();
     let toastTimer;
 
-    function safeParse(value) {
+    function safeParse(value, fallbackValue) {
       try {
         return JSON.parse(value);
       } catch (error) {
-        return value;
+        return fallbackValue;
       }
+    }
+
+    function escapeHTML(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
     }
 
     function collectText(value, results, depth = 0) {
@@ -1049,14 +1051,14 @@
       }
 
       if (typeof value === "string") {
-        const cleanValue = value.trim();
+        const text = value.trim();
 
         if (
-          cleanValue.length >= 3 &&
-          !/^https?:\/\//i.test(cleanValue) &&
-          !/^\d{4}-\d{2}-\d{2}/.test(cleanValue)
+          text.length >= 3 &&
+          !/^https?:\/\//i.test(text) &&
+          !/^\d{4}-\d{2}-\d{2}/.test(text)
         ) {
-          results.push(cleanValue);
+          results.push(text);
         }
 
         return;
@@ -1069,7 +1071,7 @@
 
       if (typeof value === "object") {
         Object.entries(value).forEach(([key, item]) => {
-          if (/^(id|signature|icon|type|createdAt|updatedAt|savedAt)$/i.test(key)) {
+          if (/^(id|signature|icon|createdAt|updatedAt|savedAt)$/i.test(key)) {
             return;
           }
 
@@ -1078,177 +1080,411 @@
       }
     }
 
-    function getJournalTexts() {
+    function getJournalEntries() {
       const results = [];
-      const relevantKeyPattern = /(journal|gratitude|goal|reflection|mood|quote|mindset|dream)/i;
+      const relevantKey = /(journal|gratitude|goal|reflection|mood|quote|mindset|dream)/i;
 
       for (let index = 0; index < localStorage.length; index += 1) {
         const key = localStorage.key(index);
 
-        if (!key || !relevantKeyPattern.test(key)) {
+        if (!key || !relevantKey.test(key)) {
           continue;
         }
 
-        const value = localStorage.getItem(key);
+        const rawValue = localStorage.getItem(key);
 
-        if (!value) {
+        if (!rawValue) {
           continue;
         }
 
-        collectText(safeParse(value), results);
+        collectText(safeParse(rawValue, rawValue), results);
       }
 
       return Array.from(new Set(results));
     }
 
-    function countMatches(text, phrases) {
-      return phrases.reduce((total, phrase) => {
-        const escapedPhrase = phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        const expression = new RegExp(`\\b${escapedPhrase}\\b`, "gi");
+    function countMatches(text, words) {
+      return words.reduce((total, word) => {
+        const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const expression = new RegExp(`\\b${escapedWord}\\b`, "gi");
         const matches = text.match(expression);
         return total + (matches ? matches.length : 0);
       }, 0);
     }
 
-    function calculatePercentages(counts) {
-      const total = Object.values(counts).reduce((sum, value) => sum + value, 0);
+    function scoreGroups(text, groups) {
+      return Object.entries(groups)
+        .map(([label, words]) => ({
+          label,
+          score: countMatches(text, words)
+        }))
+        .sort((first, second) => second.score - first.score);
+    }
+
+    function makePercentages(items) {
+      const total = items.reduce((sum, item) => sum + item.score, 0);
 
       if (!total) {
-        const keys = Object.keys(counts);
-        const evenValue = Math.floor(100 / keys.length);
+        const even = Math.floor(100 / items.length);
         let used = 0;
 
-        return keys.reduce((result, key, index) => {
-          const value = index === keys.length - 1 ? 100 - used : evenValue;
-          result[key] = value;
+        return items.reduce((result, item, index) => {
+          const value = index === items.length - 1 ? 100 - used : even;
+          result[item.label] = value;
           used += value;
           return result;
         }, {});
       }
 
-      const keys = Object.keys(counts);
       let used = 0;
 
-      return keys.reduce((result, key, index) => {
-        const value = index === keys.length - 1
+      return items.reduce((result, item, index) => {
+        const value = index === items.length - 1
           ? 100 - used
-          : Math.round((counts[key] / total) * 100);
-
-        result[key] = Math.max(0, value);
-        used += result[key];
+          : Math.round((item.score / total) * 100);
+        result[item.label] = Math.max(0, value);
+        used += result[item.label];
         return result;
       }, {});
     }
 
-    function findTopLabels(text, definitions, maximum = 3) {
-      return Object.entries(definitions)
-        .map(([label, information]) => {
-          const words = Array.isArray(information) ? information : information.words;
-          return {
-            label,
-            icon: information.icon || "✦",
-            score: countMatches(text, words)
-          };
-        })
-        .sort((first, second) => second.score - first.score)
-        .slice(0, maximum);
-    }
-
-    function findFrequentWords(text, maximum = 6) {
-      const counts = {};
-
-      text
-        .toLowerCase()
-        .replace(/[^a-z'\s-]/g, " ")
-        .split(/\s+/)
-        .filter((word) => word.length > 3 && !stopWords.has(word))
-        .forEach((word) => {
-          counts[word] = (counts[word] || 0) + 1;
-        });
-
-      return Object.entries(counts)
-        .sort((first, second) => second[1] - first[1])
-        .slice(0, maximum)
-        .map(([word, count]) => ({ word, count }));
-    }
-
-    function createAnalysis() {
-      const entries = getJournalTexts();
-      const completeText = entries.join(" ").toLowerCase();
-
-      const themes = findTopLabels(completeText, themeDefinitions, 5);
-      const themeCounts = themes.reduce((result, theme) => {
-        result[theme.label] = theme.score;
-        return result;
-      }, {});
-      const themePercentages = calculatePercentages(themeCounts);
-
-      const toneCounts = {
-        Encouraging: countMatches(completeText, toneWords.encouraging),
-        Challenging: countMatches(completeText, toneWords.challenging),
-        Calming: countMatches(completeText, toneWords.calming)
-      };
-      const tonePercentages = calculatePercentages(toneCounts);
-
-      const timeCounts = {
-        Past: countMatches(completeText, ["was", "were", "before", "yesterday", "remember", "happened"]),
-        Present: countMatches(completeText, ["today", "now", "currently", "feel", "am", "is"]),
-        Future: countMatches(completeText, ["tomorrow", "will", "future", "plan", "goal", "want"])
-      };
-      const timePercentages = calculatePercentages(timeCounts);
-
-      const strengths = findTopLabels(completeText, strengthWords, 3);
-      const triggers = findTopLabels(completeText, triggerWords, 3);
-      const frequentWords = findFrequentWords(completeText);
-
-      const dominantTheme = themes[0] || {
-        label: "Self-discovery",
-        icon: "🧠",
-        score: 0
-      };
+    function analyzeJournal() {
+      const entries = getJournalEntries();
+      const text = entries.join(" ").toLowerCase();
+      const themes = scoreGroups(text, themeGroups);
+      const tones = scoreGroups(text, toneGroups);
+      const triggers = scoreGroups(text, triggerGroups);
+      const strengths = scoreGroups(text, strengthGroups);
 
       return {
         entries,
-        completeText,
         themes,
-        themePercentages,
-        toneCounts,
-        tonePercentages,
-        timeCounts,
-        timePercentages,
-        strengths,
+        tones,
         triggers,
-        frequentWords,
-        dominantTheme,
-        createdAt: new Date().toISOString()
+        strengths,
+        themePercentages: makePercentages(themes),
+        tonePercentages: makePercentages(tones),
+        dominantTheme: themes[0] || { label: "Self-discovery", score: 0 },
+        strongestTone: tones[0] || { label: "Balanced", score: 0 },
+        strongestStrength: strengths.find((item) => item.score > 0) || null
       };
     }
 
-    function escapeHTML(value) {
-      return String(value || "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    function readResponses() {
+      return safeParse(
+        localStorage.getItem(RESPONSE_STORAGE_KEY) || "{}",
+        {}
+      );
+    }
+
+    function getSavedResponse(view, fieldId) {
+      const responses = readResponses();
+      return responses?.[view]?.[fieldId] || "";
+    }
+
+    function createWriteBox(fieldId, title, prompt, placeholder) {
+      const savedValue = getSavedResponse(currentView, fieldId);
+
+      return `
+        <div class="write-box">
+          <label class="write-box-title" for="${escapeHTML(fieldId)}">
+            ${escapeHTML(title)}
+          </label>
+
+          <p class="write-box-prompt">${escapeHTML(prompt)}</p>
+
+          <textarea
+            class="response-input"
+            id="${escapeHTML(fieldId)}"
+            data-field-id="${escapeHTML(fieldId)}"
+            maxlength="600"
+            placeholder="${escapeHTML(placeholder)}"
+          >${escapeHTML(savedValue)}</textarea>
+
+          <div class="input-footer">
+            <span class="input-status">
+              ${savedValue ? "Saved response loaded" : "Write your response here"}
+            </span>
+            <span class="character-count">
+              ${savedValue.length} / 600
+            </span>
+          </div>
+        </div>
+      `;
+    }
+
+    function connectWritingFields() {
+      modalContent.querySelectorAll(".response-input").forEach((textarea) => {
+        const count = textarea
+          .closest(".write-box")
+          .querySelector(".character-count");
+        const status = textarea
+          .closest(".write-box")
+          .querySelector(".input-status");
+
+        textarea.addEventListener("input", () => {
+          count.textContent = `${textarea.value.length} / 600`;
+          status.textContent = "Unsaved changes";
+        });
+      });
+    }
+
+    function createBars(items, percentages, icons = {}) {
+      return items.slice(0, 4).map((item) => `
+        <div class="bar-row">
+          <span class="bar-label">
+            ${icons[item.label] || "✦"} ${escapeHTML(item.label)}
+          </span>
+          <span class="bar-track">
+            <span
+              class="bar-fill"
+              style="width:${Math.max(5, percentages[item.label] || 0)}%"
+            ></span>
+          </span>
+          <span class="bar-value">${percentages[item.label] || 0}%</span>
+        </div>
+      `).join("");
     }
 
     function updateOverview() {
       if (!analysis.entries.length) {
         overviewTitle.textContent = "Your pattern space is ready";
         overviewText.textContent =
-          "Complete journal entries to make these insights more personal and accurate.";
+          "Complete journal entries to make these insights more personal.";
         return;
       }
 
       overviewTitle.textContent =
-        `${analysis.dominantTheme.icon} ${analysis.dominantTheme.label} is your strongest theme`;
-
+        `${analysis.dominantTheme.label} is your strongest current theme`;
       overviewText.textContent =
         `${analysis.entries.length} saved reflection${analysis.entries.length === 1 ? "" : "s"} were reviewed privately on this device.`;
     }
 
-    function openModal() {
+    function renderThemes() {
+      currentView = "themes";
+      modalLabel.textContent = "Recurring subjects";
+      modalTitle.textContent = "Dominant Mindset Themes";
+      modalDescription.textContent =
+        "See which subjects receive the most attention in saved reflections.";
+
+      modalContent.innerHTML = `
+        <section class="insight-card">
+          <div class="insight-heading">
+            <div class="insight-icon">🧠</div>
+            <h3 class="insight-title">
+              Leading theme: ${escapeHTML(analysis.dominantTheme.label)}
+            </h3>
+          </div>
+          <p class="insight-text">
+            A leading theme does not define the user. It shows which subject has appeared
+            most often in the saved writing currently available.
+          </p>
+          <div class="bar-list">
+            ${createBars(
+              analysis.themes,
+              analysis.themePercentages,
+              {
+                Confidence: "✨",
+                Growth: "🌱",
+                Peace: "🌿",
+                Goals: "🎯",
+                Gratitude: "🤍",
+                Stress: "🌧️"
+              }
+            )}
+          </div>
+        </section>
+
+        <section class="insight-card">
+          ${createWriteBox(
+            "themeReflection",
+            "Reflection question",
+            "Is this theme receiving attention because it matters deeply, or because it still feels unresolved?",
+            "Write what this theme means to you and what you are noticing..."
+          )}
+        </section>
+      `;
+
+      connectWritingFields();
+    }
+
+    function renderBalance() {
+      currentView = "balance";
+      modalLabel.textContent = "Language balance";
+      modalTitle.textContent = "Thought Balance";
+      modalDescription.textContent =
+        "Compare encouraging, challenging and calming language patterns.";
+
+      modalContent.innerHTML = `
+        <section class="insight-card">
+          <div class="insight-heading">
+            <div class="insight-icon">⚖️</div>
+            <h3 class="insight-title">Current language balance</h3>
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat-card">
+              <div class="stat-number">${analysis.tonePercentages.Encouraging}%</div>
+              <div class="stat-label">Encouraging</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">${analysis.tonePercentages.Challenging}%</div>
+              <div class="stat-label">Challenging</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">${analysis.tonePercentages.Calming}%</div>
+              <div class="stat-label">Calming</div>
+            </div>
+          </div>
+
+          <p class="insight-text">
+            The strongest current language pattern is
+            <strong>${escapeHTML(analysis.strongestTone.label.toLowerCase())}</strong>.
+            Challenging language is not failure; it may simply show honest reflection.
+          </p>
+
+          ${createWriteBox(
+            "balancedStep",
+            "Balanced next step",
+            "What is one part of this situation that is within your control today?",
+            "Write one realistic action that feels manageable..."
+          )}
+        </section>
+      `;
+
+      connectWritingFields();
+    }
+
+    function renderTriggers() {
+      currentView = "triggers";
+      modalLabel.textContent = "Pressure and resilience";
+      modalTitle.textContent = "Triggers & Strengths";
+      modalDescription.textContent =
+        "Possible language patterns—not diagnoses or clinical conclusions.";
+
+      const visibleTriggers = analysis.triggers.filter((item) => item.score > 0);
+      const visibleStrengths = analysis.strengths.filter((item) => item.score > 0);
+
+      modalContent.innerHTML = `
+        <section class="insight-card">
+          <div class="insight-heading">
+            <div class="insight-icon">🔎</div>
+            <h3 class="insight-title">Possible pressure points</h3>
+          </div>
+          <div class="tag-list">
+            ${visibleTriggers.length
+              ? visibleTriggers.slice(0, 4).map((item) => `
+                  <span class="tag">${escapeHTML(item.label)} · ${item.score}</span>
+                `).join("")
+              : '<span class="tag">No strong pressure pattern detected</span>'}
+          </div>
+        </section>
+
+        <section class="insight-card">
+          <div class="insight-heading">
+            <div class="insight-icon">🛡️</div>
+            <h3 class="insight-title">Strengths already present</h3>
+          </div>
+          <div class="tag-list">
+            ${visibleStrengths.length
+              ? visibleStrengths.slice(0, 4).map((item) => `
+                  <span class="tag">${escapeHTML(item.label)} · ${item.score}</span>
+                `).join("")
+              : '<span class="tag">More entries will reveal strengths</span>'}
+          </div>
+
+          ${createWriteBox(
+            "triggerResponse",
+            "Useful pattern check",
+            "When the pressure point appears, which strength helps even a little?",
+            "Describe the trigger, your usual response and the strength you want to use..."
+          )}
+        </section>
+      `;
+
+      connectWritingFields();
+    }
+
+    function getGuidance() {
+      const theme = analysis.dominantTheme.label.toLowerCase();
+
+      if (analysis.strongestTone.label === "Challenging") {
+        return {
+          reframe: "A difficult thought is information, not a final verdict.",
+          action: `Choose one small action connected to ${theme} that can be completed in ten minutes.`
+        };
+      }
+
+      if (analysis.strongestTone.label === "Calming") {
+        return {
+          reframe: "Calm reflection is a strength, and it can also prepare you for action.",
+          action: `Turn one peaceful insight about ${theme} into a specific next step.`
+        };
+      }
+
+      return {
+        reframe: "Encouraging thoughts become more reliable when supported by realistic action.",
+        action: `Write one piece of evidence that shows progress in ${theme}, then choose the next small step.`
+      };
+    }
+
+    function renderGrowth() {
+      currentView = "growth";
+      modalLabel.textContent = "Practical self-reflection";
+      modalTitle.textContent = "Growth & Reframing Guide";
+      modalDescription.textContent =
+        "A gentle action plan with real writing fields for your own responses.";
+
+      const guidance = getGuidance();
+      const strength = analysis.strongestStrength?.label || "Self-awareness";
+
+      modalContent.innerHTML = `
+        <section class="insight-card">
+          <div class="insight-heading">
+            <div class="insight-icon">🌱</div>
+            <h3 class="insight-title">A healthier reframe</h3>
+          </div>
+          <p class="insight-text">“${escapeHTML(guidance.reframe)}”</p>
+
+          ${createWriteBox(
+            "usefulNextStep",
+            "One useful next step",
+            guidance.action,
+            "Write the exact next step you choose for yourself..."
+          )}
+        </section>
+
+        <section class="insight-card">
+          <div class="insight-heading">
+            <div class="insight-icon">✦</div>
+            <h3 class="insight-title">Strength to use intentionally</h3>
+          </div>
+          <p class="insight-text">
+            Your writing currently shows <strong>${escapeHTML(strength)}</strong>.
+            Consider how this strength can support your next response.
+          </p>
+
+          ${createWriteBox(
+            "eveningPrompt",
+            "Evening prompt",
+            "What repeated today, how did I respond, and what response would support me better next time?",
+            "Write your evening reflection here..."
+          )}
+        </section>
+      `;
+
+      connectWritingFields();
+    }
+
+    function openView(view) {
+      analysis = analyzeJournal();
+      updateOverview();
+
+      if (view === "themes") renderThemes();
+      if (view === "balance") renderBalance();
+      if (view === "triggers") renderTriggers();
+      if (view === "growth") renderGrowth();
+
       modalOverlay.classList.add("open");
       modalOverlay.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
@@ -1267,345 +1503,55 @@
       toastTimer = setTimeout(() => toast.classList.remove("show"), 2300);
     }
 
-    function createNoDataCard() {
-      return `
-        <section class="insight-card">
-          <div class="insight-heading">
-            <div class="insight-icon">📝</div>
-            <h3 class="insight-title">More reflection creates clearer insight</h3>
-          </div>
-          <p class="insight-text">
-            No substantial journal text was found yet. After the user saves mood notes,
-            gratitude entries, goals or daily reflections, this page will automatically
-            turn those words into personal mindset patterns.
-          </p>
-          <div class="recommendation">
-            <h4 class="recommendation-title">Helpful starting prompt</h4>
-            <p class="recommendation-text">
-              “What thought repeated most today, and what did it make me do?”
-            </p>
-          </div>
-        </section>
-      `;
-    }
-
-    function createBarRows(items, percentages) {
-      return items.map((item) => `
-        <div class="bar-row">
-          <span class="bar-label">${escapeHTML(item.icon || "✦")} ${escapeHTML(item.label)}</span>
-          <span class="bar-track">
-            <span
-              class="bar-fill"
-              style="width:${Math.max(5, percentages[item.label] || 0)}%"
-            ></span>
-          </span>
-          <span class="bar-value">${percentages[item.label] || 0}%</span>
-        </div>
-      `).join("");
-    }
-
-    function renderThemes() {
-      modalLabel.textContent = "Recurring subjects";
-      modalTitle.textContent = "Dominant Mindset Themes";
-      modalDescription.textContent =
-        "Themes are based on words that repeat across saved journal sections.";
-
-      if (!analysis.entries.length) {
-        modalContent.innerHTML = createNoDataCard();
-        return;
-      }
-
-      modalContent.innerHTML = `
-        <section class="insight-card">
-          <div class="insight-heading">
-            <div class="insight-icon">${analysis.dominantTheme.icon}</div>
-            <div>
-              <h3 class="insight-title">Your leading theme is ${escapeHTML(analysis.dominantTheme.label)}</h3>
-            </div>
-          </div>
-          <p class="insight-text">
-            This does not define your personality. It simply shows what has needed the
-            most attention in your recent saved reflections.
-          </p>
-          <div class="bar-list">
-            ${createBarRows(analysis.themes, analysis.themePercentages)}
-          </div>
-        </section>
-
-        <section class="insight-card">
-          <div class="insight-heading">
-            <div class="insight-icon">💬</div>
-            <h3 class="insight-title">Words appearing often</h3>
-          </div>
-          <div class="tag-list">
-            ${analysis.frequentWords.length
-              ? analysis.frequentWords.map((item) => `
-                  <span class="tag">${escapeHTML(item.word)} · ${item.count}</span>
-                `).join("")
-              : '<span class="tag">More entries needed</span>'}
-          </div>
-          <div class="recommendation">
-            <h4 class="recommendation-title">Reflection question</h4>
-            <p class="recommendation-text">
-              Is this theme receiving attention because it matters deeply, or because it
-              has remained unresolved?
-            </p>
-          </div>
-        </section>
-      `;
-    }
-
-    function renderBalance() {
-      modalLabel.textContent = "Language balance";
-      modalTitle.textContent = "Thought Balance";
-      modalDescription.textContent =
-        "A simple comparison of encouraging, challenging and calming language.";
-
-      if (!analysis.entries.length) {
-        modalContent.innerHTML = createNoDataCard();
-        return;
-      }
-
-      const strongestTone = Object.entries(analysis.tonePercentages)
-        .sort((first, second) => second[1] - first[1])[0];
-      const strongestTime = Object.entries(analysis.timePercentages)
-        .sort((first, second) => second[1] - first[1])[0];
-
-      modalContent.innerHTML = `
-        <section class="insight-card">
-          <div class="insight-heading">
-            <div class="insight-icon">⚖️</div>
-            <h3 class="insight-title">Current language balance</h3>
-          </div>
-
-          <div class="stat-grid">
-            <div class="stat-card">
-              <div class="stat-number">${analysis.tonePercentages.Encouraging}%</div>
-              <div class="stat-label">Encouraging language</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-number">${analysis.tonePercentages.Challenging}%</div>
-              <div class="stat-label">Challenging language</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-number">${analysis.tonePercentages.Calming}%</div>
-              <div class="stat-label">Calming language</div>
-            </div>
-          </div>
-
-          <p class="insight-text">
-            Your strongest language pattern is currently
-            <strong>${escapeHTML(strongestTone[0].toLowerCase())}</strong>.
-            A challenging score is not a failure—it can simply mean the journal is being
-            used honestly during difficult moments.
-          </p>
-        </section>
-
-        <section class="insight-card">
-          <div class="insight-heading">
-            <div class="insight-icon">🕰️</div>
-            <h3 class="insight-title">Where your attention goes</h3>
-          </div>
-          <div class="bar-list">
-            ${createBarRows(
-              [
-                { label: "Past", icon: "↩" },
-                { label: "Present", icon: "●" },
-                { label: "Future", icon: "→" }
-              ],
-              analysis.timePercentages
-            )}
-          </div>
-          <div class="recommendation">
-            <h4 class="recommendation-title">Balanced next step</h4>
-            <p class="recommendation-text">
-              Your reflections lean most toward the ${escapeHTML(strongestTime[0].toLowerCase())}.
-              Add one sentence about what is within your control today.
-            </p>
-          </div>
-        </section>
-      `;
-    }
-
-    function renderTriggers() {
-      modalLabel.textContent = "Pressure and resilience";
-      modalTitle.textContent = "Triggers & Strengths";
-      modalDescription.textContent =
-        "Possible patterns, not diagnoses, based on recurring language.";
-
-      if (!analysis.entries.length) {
-        modalContent.innerHTML = createNoDataCard();
-        return;
-      }
-
-      const visibleTriggers = analysis.triggers.filter((item) => item.score > 0);
-      const visibleStrengths = analysis.strengths.filter((item) => item.score > 0);
-
-      modalContent.innerHTML = `
-        <section class="insight-card">
-          <div class="insight-heading">
-            <div class="insight-icon">🔎</div>
-            <h3 class="insight-title">Possible pressure points</h3>
-          </div>
-          <p class="insight-text">
-            These are subjects that may deserve gentler attention. They are only language
-            signals and should not be treated as clinical conclusions.
-          </p>
-          <div class="tag-list">
-            ${visibleTriggers.length
-              ? visibleTriggers.map((item) => `
-                  <span class="tag">${escapeHTML(item.label)} · ${item.score}</span>
-                `).join("")
-              : '<span class="tag">No strong trigger pattern detected</span>'}
-          </div>
-        </section>
-
-        <section class="insight-card">
-          <div class="insight-heading">
-            <div class="insight-icon">🛡️</div>
-            <h3 class="insight-title">Strengths already present</h3>
-          </div>
-          <p class="insight-text">
-            Your writing also contains signs of coping, awareness and forward movement.
-          </p>
-          <div class="tag-list">
-            ${visibleStrengths.length
-              ? visibleStrengths.map((item) => `
-                  <span class="tag">${escapeHTML(item.label)} · ${item.score}</span>
-                `).join("")
-              : '<span class="tag">Add more reflections to reveal strengths</span>'}
-          </div>
-          <div class="recommendation">
-            <h4 class="recommendation-title">Useful pattern check</h4>
-            <p class="recommendation-text">
-              When the pressure point appears, which strength helps even a little?
-              Connecting those two patterns can make coping more intentional.
-            </p>
-          </div>
-        </section>
-      `;
-    }
-
-    function getPersonalizedGuidance() {
-      const dominantTone = Object.entries(analysis.tonePercentages)
-        .sort((first, second) => second[1] - first[1])[0][0];
-      const theme = analysis.dominantTheme.label;
-
-      if (dominantTone === "Challenging") {
-        return {
-          reframe: "A difficult thought is information, not a final verdict.",
-          action: `Choose one small action connected to ${theme.toLowerCase()} that can be completed in ten minutes.`
-        };
-      }
-
-      if (dominantTone === "Calming") {
-        return {
-          reframe: "Calm reflection is a strength, and it can also be used to prepare for action.",
-          action: `Turn one peaceful insight about ${theme.toLowerCase()} into a specific next step.`
-        };
-      }
-
-      return {
-        reframe: "Encouraging thoughts become more reliable when they are supported by realistic action.",
-        action: `Write one piece of evidence that shows progress in ${theme.toLowerCase()}, then choose the next small step.`
-      };
-    }
-
-    function renderGrowth() {
-      modalLabel.textContent = "Practical self-reflection";
-      modalTitle.textContent = "Growth & Reframing Guide";
-      modalDescription.textContent =
-        "A gentle action plan based on the strongest pattern currently visible.";
-
-      if (!analysis.entries.length) {
-        modalContent.innerHTML = createNoDataCard();
-        return;
-      }
-
-      const guidance = getPersonalizedGuidance();
-      const strongestStrength = analysis.strengths.find((item) => item.score > 0);
-
-      modalContent.innerHTML = `
-        <section class="insight-card">
-          <div class="insight-heading">
-            <div class="insight-icon">🌱</div>
-            <h3 class="insight-title">A healthier reframe</h3>
-          </div>
-          <p class="insight-text">
-            “${escapeHTML(guidance.reframe)}”
-          </p>
-          <div class="recommendation">
-            <h4 class="recommendation-title">One useful next step</h4>
-            <p class="recommendation-text">${escapeHTML(guidance.action)}</p>
-          </div>
-        </section>
-
-        <section class="insight-card">
-          <div class="insight-heading">
-            <div class="insight-icon">✦</div>
-            <h3 class="insight-title">Strength to use intentionally</h3>
-          </div>
-          <p class="insight-text">
-            ${strongestStrength
-              ? `Your writing most clearly shows <strong>${escapeHTML(strongestStrength.label)}</strong>. Use it deliberately when the same difficult pattern returns.`
-              : "Your strengths will become clearer as more journal entries are saved."}
-          </p>
-          <div class="recommendation">
-            <h4 class="recommendation-title">Evening prompt</h4>
-            <p class="recommendation-text">
-              “What repeated today, how did I respond, and what response would support me better next time?”
-            </p>
-          </div>
-        </section>
-      `;
-    }
-
-    function openView(view) {
-      currentView = view;
-      analysis = createAnalysis();
-      updateOverview();
-
-      if (view === "themes") renderThemes();
-      if (view === "balance") renderBalance();
-      if (view === "triggers") renderTriggers();
-      if (view === "growth") renderGrowth();
-
-      openModal();
-    }
-
     function saveCurrentInsight() {
+      const allResponses = readResponses();
+      const viewResponses = {};
+
+      modalContent.querySelectorAll(".response-input").forEach((textarea) => {
+        viewResponses[textarea.dataset.fieldId] = textarea.value.trim();
+
+        const status = textarea
+          .closest(".write-box")
+          .querySelector(".input-status");
+        status.textContent = "Saved ✓";
+      });
+
+      allResponses[currentView] = viewResponses;
+
       const snapshot = {
         id: `mindset-pattern-${Date.now()}`,
         savedAt: new Date().toISOString(),
         view: currentView,
+        responses: viewResponses,
         entriesReviewed: analysis.entries.length,
         dominantTheme: analysis.dominantTheme.label,
         themePercentages: analysis.themePercentages,
         tonePercentages: analysis.tonePercentages,
-        timePercentages: analysis.timePercentages,
-        strengths: analysis.strengths,
-        triggers: analysis.triggers
+        strongestStrength: analysis.strongestStrength?.label || "Self-awareness"
       };
 
       try {
-        const existingValue = localStorage.getItem(STORAGE_SNAPSHOT_KEY);
-        const existingSnapshots = existingValue
-          ? JSON.parse(existingValue)
-          : [];
-        const snapshots = Array.isArray(existingSnapshots)
-          ? existingSnapshots
-          : [];
-
-        snapshots.unshift(snapshot);
         localStorage.setItem(
-          STORAGE_SNAPSHOT_KEY,
+          RESPONSE_STORAGE_KEY,
+          JSON.stringify(allResponses)
+        );
+
+        const savedSnapshots = safeParse(
+          localStorage.getItem(SNAPSHOT_STORAGE_KEY) || "[]",
+          []
+        );
+        const snapshots = Array.isArray(savedSnapshots) ? savedSnapshots : [];
+        snapshots.unshift(snapshot);
+
+        localStorage.setItem(
+          SNAPSHOT_STORAGE_KEY,
           JSON.stringify(snapshots.slice(0, 30))
         );
 
-        showToast("Mindset insight saved ✓");
+        showToast("Your written insight was saved ✓");
       } catch (error) {
-        console.error("Could not save mindset insight:", error);
-        showToast("The insight could not be saved");
+        console.error("Could not save mindset responses:", error);
+        showToast("The response could not be saved");
       }
     }
 
