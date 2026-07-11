@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Weekly Growth Summary</title>
+  <link rel="stylesheet" href="performance.css">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --background-top: #fffafb;
+      --background-middle: #eee9ed;
+      --background-bottom: #817e8c;
+      --panel-light: #ead8da;
+      --panel-dark: #c5adb0;
+      --button-light: #efb5aa;
+      --button-middle: #d9a099;
+      --button-dark: #ae8985;
+      --dark: #171416;
+      --muted: rgba(51, 40, 45, 0.64);
+      --white: #ffffff;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--background-bottom);
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: hidden;
+      color: var(--dark);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 24% 7%, rgba(255,255,255,.9), transparent 31%),
+        linear-gradient(180deg, var(--background-top) 0%, var(--background-middle) 40%, var(--background-bottom) 100%);
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .bubbles {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .bubble {
+      position: absolute;
+      bottom: -55px;
+      width: var(--size);
+      height: var(--size);
+      border: 1px solid rgba(255,255,255,.45);
+      border-radius: 50%;
+      background: rgba(255,255,255,.11);
+      box-shadow: inset 0 0 12px rgba(255,255,255,.28), 0 4px 17px rgba(255,255,255,.08);
+      animation: rise var(--duration) linear infinite;
+      animation-delay: var(--delay);
+    }
+
+    .bubble:nth-child(1) { left: 7%; --size: 18px; --duration: 17s; --delay: -4s; }
+    .bubble:nth-child(2) { left: 24%; --size: 11px; --duration: 14s; --delay: -9s; }
+    .bubble:nth-child(3) { left: 43%; --size: 25px; --duration: 21s; --delay: -13s; }
+    .bubble:nth-child(4) { left: 63%; --size: 15px; --duration: 16s; --delay: -6s; }
+    .bubble:nth-child(5) { left: 79%; --size: 21px; --duration: 19s; --delay: -11s; }
+    .bubble:nth-child(6) { left: 92%; --size: 12px; --duration: 15s; --delay: -7s; }
+
+    @keyframes rise {
+      0% { transform: translate3d(0, 0, 0); opacity: 0; }
+      12% { opacity: .7; }
+      50% { transform: translate3d(11px, -55vh, 0); }
+      100% { transform: translate3d(-8px, -115vh, 0); opacity: 0; }
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 430px;
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0 auto;
+      padding: max(13px, env(safe-area-inset-top)) 20px max(28px, env(safe-area-inset-bottom));
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .logo-button {
+      display: grid;
+      place-items: center;
+      width: 56px;
+      min-width: 56px;
+      height: 56px;
+      border: 10px solid rgba(255,255,255,.94);
+      border-radius: 50%;
+      color: white;
+      background: #17181c;
+      box-shadow: 0 3px 8px rgba(0,0,0,.18), inset 0 0 0 1px rgba(255,255,255,.06);
+    }
+
+    .logo-symbol {
+      font-size: 25px;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .brand-name {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .title-wrapper {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      margin: 5px 0 14px;
+    }
+
+    .title-box {
+      width: 100%;
+      padding: 12px 18px 13px;
+      text-align: center;
+      background: rgba(255,255,255,.64);
+      box-shadow: 0 7px 22px rgba(77,70,77,.06);
+    }
+
+    .page-title {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(29px, 8.2vw, 38px);
+      font-weight: 500;
+      font-style: italic;
+      line-height: 1;
+      letter-spacing: -1.2px;
+    }
+
+    .page-subtitle {
+      max-width: 330px;
+      margin: 8px auto 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 13px;
+      line-height: 1.42;
+      color: rgba(43,37,40,.62);
+    }
+
+    .week-navigation {
+      display: grid;
+      grid-template-columns: 44px 1fr 44px;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 14px;
+    }
+
+    .week-arrow {
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(32,25,29,.27);
+      border-radius: 50%;
+      color: #211c1f;
+      background: rgba(255,255,255,.71);
+      box-shadow: 0 5px 11px rgba(49,42,48,.17);
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .week-box {
+      min-height: 54px;
+      padding: 9px 13px;
+      border: 1px solid rgba(46,36,41,.18);
+      border-radius: 999px;
+      text-align: center;
+      background: rgba(255,255,255,.67);
+      box-shadow: 0 6px 16px rgba(69,58,66,.12);
+    }
+
+    .week-label {
+      display: block;
+      color: rgba(46,36,41,.55);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .week-range {
+      display: block;
+      margin-top: 3px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 16px;
+    }
+
+    .growth-panel {
+      padding: 42px 13px 40px;
+      border: 2px solid rgba(177,112,112,.5);
+      border-radius: 66px;
+      background:
+        radial-gradient(circle at 50% 5%, rgba(255,255,255,.25), transparent 34%),
+        linear-gradient(145deg, var(--panel-light), var(--panel-dark));
+      box-shadow: 0 13px 23px rgba(45,38,48,.29), inset 5px 5px 14px rgba(255,255,255,.23), inset -7px -7px 15px rgba(104,75,84,.15);
+    }
+
+    .snapshot-title {
+      margin-bottom: 12px;
+      text-align: center;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 21px;
+      font-style: italic;
+      font-weight: 500;
+    }
+
+    .snapshot-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 30px;
+    }
+
+    .snapshot-card {
+      padding: 11px 7px;
+      border: 1px solid rgba(39,30,35,.17);
+      border-radius: 22px;
+      text-align: center;
+      background: rgba(255,255,255,.39);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.5);
+    }
+
+    .snapshot-icon {
+      display: block;
+      font-size: 20px;
+    }
+
+    .snapshot-label {
+      display: block;
+      margin-top: 4px;
+      color: rgba(45,36,40,.65);
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .snapshot-select {
+      width: 100%;
+      margin-top: 7px;
+      padding: 6px 3px;
+      border: 1px solid rgba(35,27,31,.2);
+      border-radius: 12px;
+      outline: none;
+      color: #241d21;
+      text-align: center;
+      background: rgba(255,255,255,.7);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .reflection-list {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .reflection-card {
+      position: relative;
+      width: 100%;
+      min-height: 188px;
+      padding: 22px 24px 19px;
+      border: 1.5px solid #171517;
+      border-radius: 48px;
+      background: linear-gradient(105deg, var(--button-light) 0%, var(--button-middle) 52%, var(--button-dark) 100%);
+      box-shadow: 0 12px 10px rgba(61,49,57,.34), inset 3px 3px 5px rgba(255,255,255,.3), inset -4px -4px 8px rgba(83,56,57,.16);
+    }
+
+    .reflection-heading {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding-right: 34px;
+    }
+
+    .reflection-icon {
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .reflection-title {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 22px;
+      line-height: 1.1;
+    }
+
+    .reflection-prompt {
+      margin-top: 7px;
+      color: rgba(48,37,43,.67);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .reflection-textarea {
+      width: 100%;
+      min-height: 88px;
+      margin-top: 12px;
+      padding: 13px 14px;
+      resize: vertical;
+      border: 1px solid rgba(44,32,38,.24);
+      border-radius: 22px;
+      outline: none;
+      color: #211b1e;
+      background: rgba(255,255,255,.58);
+      box-shadow: inset 0 2px 7px rgba(80,55,64,.08);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .reflection-textarea::placeholder {
+      color: rgba(55,43,48,.47);
+    }
+
+    .reflection-textarea:focus,
+    .snapshot-select:focus {
+      border-color: rgba(95,57,70,.58);
+      box-shadow: 0 0 0 4px rgba(255,255,255,.24);
+    }
+
+    .word-count {
+      display: block;
+      margin-top: 6px;
+      text-align: right;
+      color: rgba(54,42,47,.51);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .insight-box {
+      margin-top: 29px;
+      padding: 20px 18px;
+      border: 1px solid rgba(255,255,255,.4);
+      border-radius: 30px;
+      background: rgba(255,255,255,.35);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.48);
+    }
+
+    .insight-title {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 20px;
+      font-style: italic;
+      font-weight: 500;
+    }
+
+    .insight-text {
+      margin-top: 9px;
+      color: rgba(47,37,42,.73);
+      text-align: center;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .completion-track {
+      height: 8px;
+      margin-top: 15px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(68,53,60,.16);
+    }
+
+    .completion-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #775d66, #342a2f);
+      transition: width 220ms ease;
+    }
+
+    .completion-label {
+      display: block;
+      margin-top: 7px;
+      color: rgba(49,39,44,.59);
+      text-align: center;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .save-button,
+    .back-button {
+      display: block;
+      border: 1.5px solid #171517;
+      border-radius: 999px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 700;
+      box-shadow: 0 6px 8px rgba(34,29,34,.3), inset 0 1px 0 rgba(255,255,255,.65);
+      transition: transform 160ms ease, background 160ms ease;
+    }
+
+    .save-button {
+      width: 76%;
+      min-height: 54px;
+      margin: 24px auto 0;
+      color: white;
+      background: #171517;
+      font-size: 26px;
+    }
+
+    .back-button {
+      width: 68%;
+      min-height: 50px;
+      margin: 13px auto 0;
+      color: #171517;
+      background: rgba(247,247,247,.8);
+      font-size: 23px;
+    }
+
+    .save-button:active,
+    .back-button:active,
+    .week-arrow:active,
+    .logo-button:active {
+      transform: translateY(3px) scale(.99);
+    }
+
+    .toast {
+      position: fixed;
+      z-index: 80;
+      left: 50%;
+      bottom: max(22px, env(safe-area-inset-bottom));
+      width: max-content;
+      max-width: calc(100% - 36px);
+      padding: 11px 16px;
+      border-radius: 999px;
+      color: white;
+      text-align: center;
+      background: rgba(23,20,23,.93);
+      box-shadow: 0 12px 28px rgba(0,0,0,.28);
+      opacity: 0;
+      transform: translate(-50%, 18px);
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms ease;
+      font-size: 13px;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    button:focus-visible,
+    textarea:focus-visible,
+    select:focus-visible {
+      outline: 3px solid rgba(255,255,255,.95);
+      outline-offset: 3px;
+    }
+
+    @media (max-width: 370px) {
+      .app {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .growth-panel {
+        padding-left: 11px;
+        padding-right: 11px;
+        border-radius: 57px;
+      }
+
+      .reflection-card {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .reflection-title {
+        font-size: 20px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bubbles" aria-hidden="true">
+    <span class="bubble"></span><span class="bubble"></span><span class="bubble"></span>
+    <span class="bubble"></span><span class="bubble"></span><span class="bubble"></span>
+  </div>
+
+  <main class="app">
+    <header class="header">
+      <button class="logo-button" type="button" onclick="window.location.href='insights.html'" aria-label="Return to Insights">
+        <span class="logo-symbol">✦</span>
+      </button>
+      <p class="brand-name">Daily Mindset Builder</p>
+    </header>
+
+    <div class="title-wrapper">
+      <div class="title-box">
+        <h1 class="page-title">Weekly Growth Summary</h1>
+        <p class="page-subtitle">Review meaningful wins, challenges, lessons and personal progress from each week.</p>
+      </div>
+    </div>
+
+    <div class="week-navigation" aria-label="Choose week">
+      <button class="week-arrow" id="previousWeekButton" type="button" aria-label="Previous week">‹</button>
+      <div class="week-box">
+        <span class="week-label" id="weekLabel">This week</span>
+        <span class="week-range" id="weekRange"></span>
+      </div>
+      <button class="week-arrow" id="nextWeekButton" type="button" aria-label="Next week">›</button>
+    </div>
+
+    <section class="growth-panel">
+      <h2 class="snapshot-title">Your Weekly Snapshot</h2>
+
+      <div class="snapshot-grid">
+        <label class="snapshot-card">
+          <span class="snapshot-icon">😊</span>
+          <span class="snapshot-label">Mood</span>
+          <select class="snapshot-select" id="moodSelect" aria-label="Average mood">
+            <option value="">Choose</option>
+            <option value="1">1 · Low</option>
+            <option value="2">2 · Heavy</option>
+            <option value="3">3 · Steady</option>
+            <option value="4">4 · Good</option>
+            <option value="5">5 · Great</option>
+          </select>
+        </label>
+
+        <label class="snapshot-card">
+          <span class="snapshot-icon">⚡</span>
+          <span class="snapshot-label">Energy</span>
+          <select class="snapshot-select" id="energySelect" aria-label="Average energy">
+            <option value="">Choose</option>
+            <option value="1">1 · Very low</option>
+            <option value="2">2 · Low</option>
+            <option value="3">3 · Balanced</option>
+            <option value="4">4 · Strong</option>
+            <option value="5">5 · High</option>
+          </select>
+        </label>
+
+        <label class="snapshot-card">
+          <span class="snapshot-icon">🎯</span>
+          <span class="snapshot-label">Consistency</span>
+          <select class="snapshot-select" id="consistencySelect" aria-label="Weekly consistency">
+            <option value="">Choose</option>
+            <option value="1">1 · Starting</option>
+            <option value="2">2 · Uneven</option>
+            <option value="3">3 · Building</option>
+            <option value="4">4 · Consistent</option>
+            <option value="5">5 · Excellent</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="reflection-list">
+        <article class="reflection-card">
+          <div class="reflection-heading">
+            <span class="reflection-icon">🏆</span>
+            <h2 class="reflection-title">Meaningful Wins</h2>
+          </div>
+          <p class="reflection-prompt">What did you complete, improve, handle well or feel proud of this week?</p>
+          <textarea class="reflection-textarea" id="winsInput" maxlength="700" placeholder="Write the wins that genuinely mattered to you..."></textarea>
+          <span class="word-count" id="winsCount">0 / 700</span>
+        </article>
+
+        <article class="reflection-card">
+          <div class="reflection-heading">
+            <span class="reflection-icon">🧩</span>
+            <h2 class="reflection-title">Challenges &amp; Responses</h2>
+          </div>
+          <p class="reflection-prompt">What felt difficult, and what helped you cope, adapt or continue?</p>
+          <textarea class="reflection-textarea" id="challengesInput" maxlength="700" placeholder="Name the challenge without judging yourself, then note what helped..."></textarea>
+          <span class="word-count" id="challengesCount">0 / 700</span>
+        </article>
+
+        <article class="reflection-card">
+          <div class="reflection-heading">
+            <span class="reflection-icon">💡</span>
+            <h2 class="reflection-title">Lessons Learned</h2>
+          </div>
+          <p class="reflection-prompt">What did this week teach you about your needs, habits, boundaries or strengths?</p>
+          <textarea class="reflection-textarea" id="lessonsInput" maxlength="700" placeholder="Capture one or more lessons you want to remember..."></textarea>
+          <span class="word-count" id="lessonsCount">0 / 700</span>
+        </article>
+
+        <article class="reflection-card">
+          <div class="reflection-heading">
+            <span class="reflection-icon">🌱</span>
+            <h2 class="reflection-title">Progress &amp; Next Focus</h2>
+          </div>
+          <p class="reflection-prompt">How did you grow, and what one clear intention will guide your next week?</p>
+          <textarea class="reflection-textarea" id="progressInput" maxlength="700" placeholder="Describe your progress and choose one realistic next-week focus..."></textarea>
+          <span class="word-count" id="progressCount">0 / 700</span>
+        </article>
+      </div>
+
+      <div class="insight-box">
+        <h2 class="insight-title">✨ Your Growth Insight</h2>
+        <p class="insight-text" id="insightText">Complete your weekly reflection to reveal a balanced summary of your growth.</p>
+        <div class="completion-track" aria-hidden="true">
+          <div class="completion-fill" id="completionFill"></div>
+        </div>
+        <span class="completion-label" id="completionLabel">0% reflection complete</span>
+      </div>
+    </section>
+
+    <button class="save-button" id="saveButton" type="button">SAVE WEEK</button>
+    <button class="back-button" type="button" onclick="window.location.href='insights.html'">BACK</button>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const STORAGE_KEY = 'dailyMindsetWeeklyGrowthV1';
+    const DAY_MS = 86400000;
+
+    const moodSelect = document.getElementById('moodSelect');
+    const energySelect = document.getElementById('energySelect');
+    const consistencySelect = document.getElementById('consistencySelect');
+    const winsInput = document.getElementById('winsInput');
+    const challengesInput = document.getElementById('challengesInput');
+    const lessonsInput = document.getElementById('lessonsInput');
+    const progressInput = document.getElementById('progressInput');
+    const insightText = document.getElementById('insightText');
+    const completionFill = document.getElementById('completionFill');
+    const completionLabel = document.getElementById('completionLabel');
+    const weekLabel = document.getElementById('weekLabel');
+    const weekRange = document.getElementById('weekRange');
+    const nextWeekButton = document.getElementById('nextWeekButton');
+    const toast = document.getElementById('toast');
+
+    let toastTimer;
+    let selectedWeekStart = startOfWeek(new Date());
+
+    const textFields = [
+      { input: winsInput, count: document.getElementById('winsCount') },
+      { input: challengesInput, count: document.getElementById('challengesCount') },
+      { input: lessonsInput, count: document.getElementById('lessonsCount') },
+      { input: progressInput, count: document.getElementById('progressCount') }
+    ];
+
+    function startOfWeek(date) {
+      const result = new Date(date);
+      const day = result.getDay();
+      const distanceToMonday = day === 0 ? -6 : 1 - day;
+      result.setDate(result.getDate() + distanceToMonday);
+      result.setHours(0, 0, 0, 0);
+      return result;
+    }
+
+    function weekKey(date) {
+      return [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, '0'),
+        String(date.getDate()).padStart(2, '0')
+      ].join('-');
+    }
+
+    function readAllWeeks() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        return saved && typeof saved === 'object' ? saved : {};
+      } catch (error) {
+        console.error('Could not read weekly growth summaries:', error);
+        return {};
+      }
+    }
+
+    function weekData() {
+      return {
+        mood: moodSelect.value,
+        energy: energySelect.value,
+        consistency: consistencySelect.value,
+        wins: winsInput.value.trim(),
+        challenges: challengesInput.value.trim(),
+        lessons: lessonsInput.value.trim(),
+        progress: progressInput.value.trim(),
+        savedAt: new Date().toISOString()
+      };
+    }
+
+    function saveCurrentWeek() {
+      const allWeeks = readAllWeeks();
+      allWeeks[weekKey(selectedWeekStart)] = weekData();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(allWeeks));
+      updateInsight();
+      showToast('Weekly growth summary saved ✓');
+    }
+
+    function loadCurrentWeek() {
+      const saved = readAllWeeks()[weekKey(selectedWeekStart)] || {};
+      moodSelect.value = saved.mood || '';
+      energySelect.value = saved.energy || '';
+      consistencySelect.value = saved.consistency || '';
+      winsInput.value = saved.wins || '';
+      challengesInput.value = saved.challenges || '';
+      lessonsInput.value = saved.lessons || '';
+      progressInput.value = saved.progress || '';
+      updateWeekHeading();
+      updateAllCounts();
+      updateInsight();
+    }
+
+    function updateWeekHeading() {
+      const end = new Date(selectedWeekStart.getTime() + (6 * DAY_MS));
+      const currentStart = startOfWeek(new Date());
+      const difference = Math.round((selectedWeekStart - currentStart) / (7 * DAY_MS));
+
+      if (difference === 0) weekLabel.textContent = 'This week';
+      else if (difference === -1) weekLabel.textContent = 'Last week';
+      else weekLabel.textContent = 'Past week';
+
+      const sameMonth = selectedWeekStart.getMonth() === end.getMonth();
+      const startText = selectedWeekStart.toLocaleDateString(undefined, {
+        month: 'short',
+        day: 'numeric'
+      });
+      const endText = end.toLocaleDateString(undefined, {
+        month: sameMonth ? undefined : 'short',
+        day: 'numeric',
+        year: end.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
+      });
+
+      weekRange.textContent = `${startText} – ${endText}`;
+      nextWeekButton.disabled = difference >= 0;
+      nextWeekButton.style.opacity = difference >= 0 ? '.38' : '1';
+    }
+
+    function moveWeek(amount) {
+      selectedWeekStart = new Date(selectedWeekStart.getTime() + (amount * 7 * DAY_MS));
+      const currentStart = startOfWeek(new Date());
+      if (selectedWeekStart > currentStart) selectedWeekStart = currentStart;
+      loadCurrentWeek();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateAllCounts() {
+      textFields.forEach(({ input, count }) => {
+        count.textContent = `${input.value.length} / ${input.maxLength}`;
+      });
+    }
+
+    function completionPercentage() {
+      const values = [
+        moodSelect.value,
+        energySelect.value,
+        consistencySelect.value,
+        winsInput.value.trim(),
+        challengesInput.value.trim(),
+        lessonsInput.value.trim(),
+        progressInput.value.trim()
+      ];
+      const completed = values.filter(Boolean).length;
+      return Math.round((completed / values.length) * 100);
+    }
+
+    function updateInsight() {
+      const percentage = completionPercentage();
+      completionFill.style.width = `${percentage}%`;
+      completionLabel.textContent = `${percentage}% reflection complete`;
+
+      const mood = Number(moodSelect.value || 0);
+      const energy = Number(energySelect.value || 0);
+      const consistency = Number(consistencySelect.value || 0);
+      const filledReflections = [winsInput, challengesInput, lessonsInput, progressInput]
+        .filter((field) => field.value.trim().length > 0).length;
+
+      if (percentage === 0) {
+        insightText.textContent = 'Complete your weekly reflection to reveal a balanced summary of your growth.';
+        return;
+      }
+
+      if (filledReflections < 2) {
+        insightText.textContent = 'You have started noticing your week. Add at least one win and one lesson so your growth becomes easier to see.';
+        return;
+      }
+
+      let energyMessage = 'Your week shows a developing rhythm.';
+      if (energy && energy <= 2) energyMessage = 'Your energy was limited, so protecting recovery and choosing smaller priorities may be especially helpful.';
+      if (energy >= 4) energyMessage = 'Your energy supported forward movement, making this a useful time to reinforce the habits that worked.';
+
+      let consistencyMessage = 'Keep your next focus simple and realistic.';
+      if (consistency && consistency <= 2) consistencyMessage = 'Rather than aiming for perfection, choose one repeatable action for next week.';
+      if (consistency >= 4) consistencyMessage = 'Your consistency is becoming a strength; preserve it by avoiding unnecessary overload.';
+
+      let moodMessage = '';
+      if (mood && mood <= 2) moodMessage = ' Be gentle with how you evaluate yourself during a difficult emotional week.';
+      if (mood >= 4) moodMessage = ' Notice which people, routines or choices supported this positive emotional pattern.';
+
+      insightText.textContent = `${energyMessage} ${consistencyMessage}${moodMessage}`;
+    }
+
+    function showToast(message) {
+      window.clearTimeout(toastTimer);
+      toast.textContent = message;
+      toast.classList.add('show');
+      toastTimer = window.setTimeout(() => toast.classList.remove('show'), 2400);
+    }
+
+    textFields.forEach(({ input, count }) => {
+      input.addEventListener('input', () => {
+        count.textContent = `${input.value.length} / ${input.maxLength}`;
+        updateInsight();
+      });
+    });
+
+    [moodSelect, energySelect, consistencySelect].forEach((select) => {
+      select.addEventListener('change', updateInsight);
+    });
+
+    document.getElementById('previousWeekButton').addEventListener('click', () => moveWeek(-1));
+    nextWeekButton.addEventListener('click', () => moveWeek(1));
+    document.getElementById('saveButton').addEventListener('click', saveCurrentWeek);
+
+    loadCurrentWeek();
+  </script>
+
+  <script src="performance.js"></script>
+</body>
+</html>
