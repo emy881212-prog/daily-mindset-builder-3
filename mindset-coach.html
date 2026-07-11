@@ -1,1 +1,901 @@
-<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>Mindset Coach</title><link rel='stylesheet' href='performance.css'><style>body{margin:0;font-family:Inter,sans-serif;background:linear-gradient(180deg,#fffafb,#eee9ed,#817e8c);min-height:100vh}.app{max-width:430px;margin:auto;padding:20px}.title{text-align:center;font-family:Georgia,serif;font-size:42px;font-style:italic;margin-top:20px}.subtitle{text-align:center;color:#555;margin:10px auto 30px;max-width:300px}.card{display:flex;align-items:center;justify-content:center;min-height:120px;margin:18px 0;border-radius:40px;border:1px solid #171517;background:linear-gradient(100deg,#efb5aa,#d9a099,#ae8985);box-shadow:0 10px 18px rgba(0,0,0,.2);font-family:Georgia,serif;font-size:26px;text-align:center;padding:20px}.back{display:block;text-align:center;margin-top:20px;padding:14px;border-radius:999px;background:white;color:black;text-decoration:none}</style></head><body><div class='app'><div class='title'>🤖 Mindset Coach</div><div class='subtitle'>Personalized AI guidance designed to help you grow, reflect, and stay motivated.</div><div class='card'>📝 Analyze Journal Entry</div><div class='card'>🎯 Goal Coach</div><div class='card'>📈 Weekly Growth Report</div><div class='card'>🧠 Personal AI Coach</div><a class='back' href='app-main.html'>← Back</a></div></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mindset Coach</title>
+  <link rel="stylesheet" href="performance.css" />
+  <style>
+    :root {
+      --pink-100: #fff5f8;
+      --pink-200: #f9dfe8;
+      --pink-300: #f2c0d1;
+      --pink-400: #e7a2bc;
+      --pink-500: #d57ea5;
+      --berry-700: #8b3d5d;
+      --ink-900: #23131c;
+      --white: #ffffff;
+      --card-shadow: 0 16px 30px rgba(64, 18, 38, 0.17);
+      --radius-lg: 24px;
+      --radius-xl: 34px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink-900);
+      font-family: "Avenir Next", "Segoe UI", Tahoma, sans-serif;
+      background:
+        radial-gradient(circle at 12% 8%, rgba(255, 255, 255, 0.95), transparent 31%),
+        radial-gradient(circle at 90% 16%, rgba(255, 218, 230, 0.8), transparent 34%),
+        linear-gradient(190deg, var(--pink-100) 0%, var(--pink-200) 40%, #efd6e6 75%, #ceb0c5 100%);
+      padding: 14px;
+    }
+
+    .app-shell {
+      width: min(100%, 440px);
+      margin: 0 auto;
+      border-radius: var(--radius-xl);
+      padding: 16px 14px 20px;
+      backdrop-filter: blur(1px);
+      position: relative;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .pill-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(31, 12, 22, 0.2);
+      background: rgba(255, 255, 255, 0.84);
+      color: var(--ink-900);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .plan-badge {
+      min-height: 40px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: linear-gradient(140deg, #fef4f8, #f5dae6);
+      border: 1px solid rgba(139, 61, 93, 0.25);
+      font-weight: 600;
+      font-size: 12px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--berry-700);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hero {
+      border-radius: var(--radius-xl);
+      padding: 20px 18px;
+      background: linear-gradient(160deg, rgba(255, 255, 255, 0.92), rgba(250, 225, 236, 0.9));
+      border: 1px solid rgba(144, 62, 95, 0.15);
+      box-shadow: var(--card-shadow);
+      margin-bottom: 16px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      font-size: 33px;
+      line-height: 1.1;
+    }
+
+    .hero p {
+      margin: 9px 0 0;
+      color: #50343f;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .error-banner {
+      display: none;
+      margin: 0 0 14px;
+      border-radius: 16px;
+      padding: 11px 12px;
+      border: 1px solid rgba(170, 40, 80, 0.3);
+      background: #ffe8ef;
+      color: #7d173f;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .section-card {
+      border-radius: var(--radius-lg);
+      margin-bottom: 14px;
+      padding: 16px;
+      background: linear-gradient(160deg, rgba(255, 255, 255, 0.92), rgba(247, 222, 234, 0.88));
+      border: 1px solid rgba(107, 48, 74, 0.16);
+      box-shadow: var(--card-shadow);
+    }
+
+    .section-title {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 23px;
+      line-height: 1.2;
+      font-weight: 500;
+    }
+
+    .section-subtitle {
+      margin: 7px 0 12px;
+      font-size: 13px;
+      color: #5e4450;
+      line-height: 1.45;
+    }
+
+    textarea,
+    input[type="text"] {
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid rgba(80, 32, 53, 0.25);
+      padding: 12px 13px;
+      font: inherit;
+      font-size: 14px;
+      line-height: 1.4;
+      color: var(--ink-900);
+      background: rgba(255, 255, 255, 0.9);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      resize: vertical;
+    }
+
+    textarea:focus,
+    input[type="text"]:focus {
+      border-color: var(--berry-700);
+      box-shadow: 0 0 0 3px rgba(213, 126, 165, 0.22);
+    }
+
+    .btn-row {
+      margin-top: 10px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .pink-button {
+      border: 0;
+      border-radius: 999px;
+      background: linear-gradient(140deg, var(--pink-500), #b85783);
+      color: var(--white);
+      min-height: 42px;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      box-shadow: 0 10px 16px rgba(129, 47, 78, 0.25);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pink-button[disabled] {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: none;
+      flex-shrink: 0;
+    }
+
+    .pink-button.loading .spinner {
+      display: inline-block;
+    }
+
+    .result-grid {
+      margin-top: 12px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .result-item {
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(128, 60, 89, 0.14);
+      padding: 10px;
+    }
+
+    .result-item h4 {
+      margin: 0 0 4px;
+      font-size: 13px;
+      color: var(--berry-700);
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .result-item p,
+    .result-item li {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.4;
+      color: #2f1e25;
+    }
+
+    .result-item ul {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 4px;
+    }
+
+    .chat-shell {
+      border-radius: 18px;
+      border: 1px solid rgba(111, 52, 79, 0.18);
+      background: rgba(255, 255, 255, 0.88);
+      padding: 10px;
+    }
+
+    .chat-messages {
+      max-height: 260px;
+      overflow: auto;
+      display: grid;
+      gap: 8px;
+      padding-right: 2px;
+    }
+
+    .message {
+      border-radius: 14px;
+      padding: 10px;
+      font-size: 14px;
+      line-height: 1.4;
+      white-space: pre-wrap;
+    }
+
+    .message.user {
+      background: linear-gradient(145deg, #f7d0df, #efc0d4);
+      border: 1px solid rgba(149, 66, 101, 0.26);
+      justify-self: end;
+      width: 92%;
+    }
+
+    .message.assistant {
+      background: linear-gradient(145deg, #fff8fb, #f7e5ed);
+      border: 1px solid rgba(132, 63, 91, 0.21);
+      justify-self: start;
+      width: 94%;
+    }
+
+    .chat-input-row {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .usage-note {
+      margin: 0 0 8px;
+      font-size: 12px;
+      color: #684653;
+    }
+
+    .typing {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      color: #7d5470;
+      font-size: 12px;
+      margin: 8px 2px 0;
+    }
+
+    .typing-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #bd799d;
+      animation: bounce 1s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(2) { animation-delay: 0.12s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.24s; }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes bounce {
+      0%, 80%, 100% {
+        transform: scale(0.7);
+        opacity: 0.7;
+      }
+
+      40% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @media (min-width: 680px) {
+      body {
+        padding-top: 24px;
+      }
+
+      .app-shell {
+        width: min(100%, 760px);
+      }
+
+      .feature-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+
+      .full-width {
+        grid-column: span 2;
+      }
+
+      .chat-messages {
+        max-height: 320px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="header">
+      <a class="pill-link" href="journal.html" aria-label="Back to Journal">← Back to Journal</a>
+      <div class="plan-badge" id="planBadge">Plan: FREE</div>
+    </header>
+
+    <section class="hero">
+      <h1>🤖 Mindset Coach</h1>
+      <p>
+        Real AI-powered coaching for reflection, planning, and growth. Your responses are personalized
+        using your journal, mood, gratitude, goals, and weekly progress data.
+      </p>
+    </section>
+
+    <div class="error-banner" id="errorBanner" role="alert"></div>
+
+    <div class="feature-grid">
+      <section class="section-card">
+        <h2 class="section-title">📝 Analyze Journal Entry</h2>
+        <p class="section-subtitle">Get a positive observation, insight, action step, and encouragement.</p>
+        <textarea id="journalInput" rows="5" maxlength="2400" placeholder="Paste or write your journal entry..."></textarea>
+        <div class="btn-row">
+          <button class="pink-button" id="analyzeButton" type="button">
+            <span class="spinner" aria-hidden="true"></span>
+            Analyze Entry
+          </button>
+        </div>
+        <div class="result-grid" id="journalResult"></div>
+      </section>
+
+      <section class="section-card">
+        <h2 class="section-title">🎯 Goal Coach</h2>
+        <p class="section-subtitle">Turn one goal into a weekly plan, milestones, and motivation.</p>
+        <input id="goalInput" type="text" maxlength="400" placeholder="Enter your current goal..." />
+        <div class="btn-row">
+          <button class="pink-button" id="goalButton" type="button">
+            <span class="spinner" aria-hidden="true"></span>
+            Build Goal Plan
+          </button>
+        </div>
+        <div class="result-grid" id="goalResult"></div>
+      </section>
+
+      <section class="section-card full-width">
+        <h2 class="section-title">📈 Weekly Growth Report</h2>
+        <p class="section-subtitle">
+          Uses your saved mood tracker, journal, gratitude, goals, and weekly entries to generate growth feedback.
+        </p>
+        <div class="btn-row">
+          <button class="pink-button" id="weeklyButton" type="button">
+            <span class="spinner" aria-hidden="true"></span>
+            Generate Weekly Report
+          </button>
+        </div>
+        <div class="result-grid" id="weeklyResult"></div>
+      </section>
+
+      <section class="section-card full-width">
+        <h2 class="section-title">🧠 Personal AI Coach</h2>
+        <p class="section-subtitle">Ask anything. Your coach remembers recent conversations on this device.</p>
+        <p class="usage-note" id="usageNote">Daily AI usage: --</p>
+        <div class="chat-shell">
+          <div class="chat-messages" id="chatMessages"></div>
+          <div class="typing" id="typingIndicator" aria-live="polite">
+            <span>Coach is thinking</span>
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+          </div>
+          <div class="chat-input-row">
+            <textarea id="chatInput" rows="3" maxlength="1200" placeholder="Share what you need support with..."></textarea>
+            <div class="btn-row">
+              <button class="pink-button" id="chatButton" type="button">
+                <span class="spinner" aria-hidden="true"></span>
+                Send to Coach
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const PLAN_LIMITS = {
+      free: 3,
+      standard: 30,
+      premium: 100,
+      pro: Infinity
+    };
+
+    const CHAT_STORAGE_KEY = "dailyMindsetCoachChatHistoryV1";
+    const DEVICE_ID_KEY = "dailyMindsetDeviceId";
+
+    const errorBanner = document.getElementById("errorBanner");
+    const planBadge = document.getElementById("planBadge");
+    const usageNote = document.getElementById("usageNote");
+
+    const journalInput = document.getElementById("journalInput");
+    const analyzeButton = document.getElementById("analyzeButton");
+    const journalResult = document.getElementById("journalResult");
+
+    const goalInput = document.getElementById("goalInput");
+    const goalButton = document.getElementById("goalButton");
+    const goalResult = document.getElementById("goalResult");
+
+    const weeklyButton = document.getElementById("weeklyButton");
+    const weeklyResult = document.getElementById("weeklyResult");
+
+    const chatMessages = document.getElementById("chatMessages");
+    const chatInput = document.getElementById("chatInput");
+    const chatButton = document.getElementById("chatButton");
+    const typingIndicator = document.getElementById("typingIndicator");
+
+    function safeJSON(value, fallback) {
+      try {
+        const parsed = JSON.parse(value);
+        return parsed && typeof parsed === "object" ? parsed : fallback;
+      } catch (_error) {
+        return fallback;
+      }
+    }
+
+    function todayKey() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function generateDeviceId() {
+      if (window.crypto && window.crypto.randomUUID) {
+        return window.crypto.randomUUID();
+      }
+
+      return `dm-${Math.random().toString(36).slice(2)}-${Date.now()}`;
+    }
+
+    function getDeviceId() {
+      let deviceId = localStorage.getItem(DEVICE_ID_KEY);
+
+      if (!deviceId) {
+        deviceId = generateDeviceId();
+        localStorage.setItem(DEVICE_ID_KEY, deviceId);
+      }
+
+      return deviceId;
+    }
+
+    function getUserPlan() {
+      const explicitPlan = String(localStorage.getItem("mindsetPlan") || "").toLowerCase();
+
+      if (["free", "standard", "premium", "pro"].includes(explicitPlan)) {
+        return explicitPlan;
+      }
+
+      if (localStorage.getItem("mindsetSubscription") === "paid") {
+        return "premium";
+      }
+
+      return "free";
+    }
+
+    function planLabel(plan) {
+      return String(plan || "free").toUpperCase();
+    }
+
+    function showError(message) {
+      errorBanner.textContent = message;
+      errorBanner.style.display = "block";
+    }
+
+    function clearError() {
+      errorBanner.textContent = "";
+      errorBanner.style.display = "none";
+    }
+
+    function setButtonLoading(button, isLoading) {
+      button.classList.toggle("loading", Boolean(isLoading));
+      button.disabled = Boolean(isLoading);
+    }
+
+    function formatUsage(plan, used, remaining) {
+      const limit = PLAN_LIMITS[plan] || PLAN_LIMITS.free;
+
+      if (limit === Infinity) {
+        return "Daily AI usage: Unlimited (Pro plan)";
+      }
+
+      if (typeof used === "number") {
+        return `Daily AI usage: ${used}/${limit} used, ${Math.max(0, remaining)} left`;
+      }
+
+      return `Daily AI usage: 0/${limit} used`;
+    }
+
+    function textOrFallback(value, fallback) {
+      const cleaned = String(value || "").trim();
+      return cleaned || fallback;
+    }
+
+    function renderCards(container, cards) {
+      const html = cards.map((card) => {
+        const title = textOrFallback(card.title, "Insight");
+
+        if (Array.isArray(card.value)) {
+          const items = card.value.map((item) => `<li>${escapeHTML(textOrFallback(item, ""))}</li>`).join("");
+          return `
+            <article class="result-item">
+              <h4>${escapeHTML(title)}</h4>
+              <ul>${items}</ul>
+            </article>
+          `;
+        }
+
+        return `
+          <article class="result-item">
+            <h4>${escapeHTML(title)}</h4>
+            <p>${escapeHTML(textOrFallback(card.value, "No response available yet."))}</p>
+          </article>
+        `;
+      }).join("");
+
+      container.innerHTML = html;
+    }
+
+    function escapeHTML(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function readJSONStorage(key, fallback) {
+      return safeJSON(localStorage.getItem(key) || "", fallback);
+    }
+
+    function listRelevantLocalStorageKeys() {
+      const relevant = [];
+
+      for (let index = 0; index < localStorage.length; index += 1) {
+        const key = localStorage.key(index);
+
+        if (!key) {
+          continue;
+        }
+
+        if (/(mindset|journal|mood|gratitude|goal|reflection|quiz|questionnaire|weekly)/i.test(key)) {
+          relevant.push(key);
+        }
+      }
+
+      return relevant.sort();
+    }
+
+    function trimValue(value, max = 400) {
+      const text = String(value || "").trim();
+      return text.length > max ? `${text.slice(0, max)}...` : text;
+    }
+
+    function compactObject(input, depth = 0) {
+      if (depth > 2) {
+        return "[depth-limited]";
+      }
+
+      if (Array.isArray(input)) {
+        return input.slice(0, 12).map((item) => compactObject(item, depth + 1));
+      }
+
+      if (input && typeof input === "object") {
+        const output = {};
+        Object.keys(input).slice(0, 25).forEach((key) => {
+          output[key] = compactObject(input[key], depth + 1);
+        });
+        return output;
+      }
+
+      if (typeof input === "string") {
+        return trimValue(input, 300);
+      }
+
+      return input;
+    }
+
+    function buildWeeklySummaryData() {
+      const moodTracker = readJSONStorage("dailyMindsetJournalEntry", {});
+      const gratitude = readJSONStorage("dailyMindsetGratitudeJournal", {});
+      const goals = readJSONStorage("dailyMindsetGoalsAndDreams", {});
+      const reflection = readJSONStorage("dailyMindsetDailyReflection", {});
+      const weeklyAll = readJSONStorage("dailyMindsetWeeklyGrowthV1", {});
+      const history = readJSONStorage("dailyMindsetJournalHistory", []);
+      const moodEnergy = readJSONStorage("dailyMindsetMoodEnergyResponses", {});
+
+      const weekKeys = Object.keys(weeklyAll || {}).sort();
+      const latestWeekKey = weekKeys.length ? weekKeys[weekKeys.length - 1] : null;
+      const latestWeek = latestWeekKey ? weeklyAll[latestWeekKey] : {};
+
+      const questionnaireData = {};
+
+      listRelevantLocalStorageKeys().forEach((key) => {
+        if (/(quiz|questionnaire|result)/i.test(key)) {
+          questionnaireData[key] = compactObject(readJSONStorage(key, localStorage.getItem(key)));
+        }
+      });
+
+      const recentHistory = Array.isArray(history)
+        ? history.slice().sort((a, b) => new Date(b.createdAt || b.date || 0) - new Date(a.createdAt || a.date || 0)).slice(0, 25)
+        : [];
+
+      return {
+        generatedAt: new Date().toISOString(),
+        moodTracker: compactObject(moodTracker),
+        gratitudeJournal: compactObject(gratitude),
+        goalsAndDreams: compactObject(goals),
+        dailyReflection: compactObject(reflection),
+        weeklyGrowthLatest: compactObject(latestWeek),
+        weeklyGrowthWeekKey: latestWeekKey,
+        moodEnergyInsights: compactObject(moodEnergy),
+        journalHistoryRecent: compactObject(recentHistory),
+        questionnaireResults: compactObject(questionnaireData)
+      };
+    }
+
+    function readChatHistory() {
+      const stored = readJSONStorage(CHAT_STORAGE_KEY, []);
+      return Array.isArray(stored) ? stored : [];
+    }
+
+    function saveChatHistory(history) {
+      localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(history.slice(-30)));
+    }
+
+    function addMessage(role, text) {
+      const div = document.createElement("div");
+      div.className = `message ${role}`;
+      div.textContent = text;
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function renderChatHistory() {
+      chatMessages.innerHTML = "";
+
+      const history = readChatHistory();
+
+      if (!history.length) {
+        addMessage("assistant", "I am your mindset coach. Tell me what you want to improve this week.");
+        return;
+      }
+
+      history.forEach((item) => {
+        addMessage(item.role === "user" ? "user" : "assistant", String(item.text || ""));
+      });
+    }
+
+    async function callCoachApi(endpoint, payload) {
+      const plan = getUserPlan();
+      const deviceId = getDeviceId();
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-device-id": deviceId
+        },
+        body: JSON.stringify({
+          ...payload,
+          plan,
+          deviceId,
+          subscriptionStatus: localStorage.getItem("mindsetSubscription") || "free"
+        })
+      });
+
+      const json = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        const limitHint = json && json.code === "daily_limit_reached"
+          ? `Your ${planLabel(plan)} plan reached its daily AI limit.`
+          : "Could not complete this AI request.";
+
+        const detail = json && json.error ? json.error : "Please try again in a moment.";
+        throw new Error(`${limitHint} ${detail}`.trim());
+      }
+
+      if (typeof json.used === "number") {
+        usageNote.textContent = formatUsage(plan, json.used, json.remaining);
+      }
+
+      return json;
+    }
+
+    async function handleAnalyzeJournal() {
+      clearError();
+      const entry = journalInput.value.trim();
+
+      if (!entry) {
+        showError("Please enter a journal entry before analyzing.");
+        return;
+      }
+
+      setButtonLoading(analyzeButton, true);
+      journalResult.innerHTML = "";
+
+      try {
+        const data = await callCoachApi("/api/analyze-journal", { entry });
+
+        renderCards(journalResult, [
+          { title: "Positive Observation", value: data.positiveObservation },
+          { title: "Mindset Insight", value: data.mindsetInsight },
+          { title: "Small Action Step", value: data.smallActionStep },
+          { title: "Encouraging Message", value: data.encouragingMessage }
+        ]);
+      } catch (error) {
+        showError(error.message || "Journal analysis failed.");
+      } finally {
+        setButtonLoading(analyzeButton, false);
+      }
+    }
+
+    async function handleGoalCoach() {
+      clearError();
+      const goal = goalInput.value.trim();
+
+      if (!goal) {
+        showError("Please enter a goal before generating coaching.");
+        return;
+      }
+
+      setButtonLoading(goalButton, true);
+      goalResult.innerHTML = "";
+
+      try {
+        const data = await callCoachApi("/api/goal-coach", { goal });
+
+        renderCards(goalResult, [
+          { title: "Weekly Plan", value: data.weeklyPlan },
+          { title: "Small Milestones", value: Array.isArray(data.smallMilestones) ? data.smallMilestones : [String(data.smallMilestones || "") ] },
+          { title: "Motivational Reminder", value: data.motivationalReminder },
+          { title: "Progress Check-In Question", value: data.progressCheckInQuestion }
+        ]);
+      } catch (error) {
+        showError(error.message || "Goal coaching failed.");
+      } finally {
+        setButtonLoading(goalButton, false);
+      }
+    }
+
+    async function handleWeeklyReport() {
+      clearError();
+      setButtonLoading(weeklyButton, true);
+      weeklyResult.innerHTML = "";
+
+      try {
+        const summaryData = buildWeeklySummaryData();
+        const data = await callCoachApi("/api/weekly-report", { summaryData });
+
+        renderCards(weeklyResult, [
+          { title: "Main Strength", value: data.mainStrength },
+          { title: "Growth Area", value: data.growthArea },
+          { title: "Mood Trend", value: data.moodTrend },
+          { title: "Achievement Summary", value: data.achievementSummary },
+          { title: "Focus For Next Week", value: data.focusForNextWeek },
+          { title: "Encouraging Message", value: data.encouragingMessage }
+        ]);
+      } catch (error) {
+        showError(error.message || "Weekly report generation failed.");
+      } finally {
+        setButtonLoading(weeklyButton, false);
+      }
+    }
+
+    async function handleChat() {
+      clearError();
+      const message = chatInput.value.trim();
+
+      if (!message) {
+        showError("Please type a message for your coach.");
+        return;
+      }
+
+      const currentHistory = readChatHistory();
+      const updatedHistory = [...currentHistory, { role: "user", text: message, at: new Date().toISOString() }];
+      saveChatHistory(updatedHistory);
+      addMessage("user", message);
+      chatInput.value = "";
+
+      setButtonLoading(chatButton, true);
+      typingIndicator.style.display = "inline-flex";
+
+      try {
+        const context = buildWeeklySummaryData();
+
+        const data = await callCoachApi("/api/personal-coach", {
+          message,
+          context,
+          conversation: updatedHistory.slice(-12)
+        });
+
+        const reply = String(data.reply || "I am here for you. What is one small action you can take next?");
+        saveChatHistory([...updatedHistory, { role: "assistant", text: reply, at: new Date().toISOString() }]);
+        addMessage("assistant", reply);
+      } catch (error) {
+        showError(error.message || "Coach chat failed.");
+        addMessage("assistant", "I could not reach the AI coach right now. Please try again soon.");
+      } finally {
+        typingIndicator.style.display = "none";
+        setButtonLoading(chatButton, false);
+      }
+    }
+
+    function init() {
+      const plan = getUserPlan();
+      const limit = PLAN_LIMITS[plan] || PLAN_LIMITS.free;
+
+      planBadge.textContent = `Plan: ${planLabel(plan)}`;
+      usageNote.textContent = limit === Infinity
+        ? "Daily AI usage: Unlimited (Pro plan)"
+        : `Daily AI usage: 0/${limit} used`;
+
+      renderChatHistory();
+
+      analyzeButton.addEventListener("click", handleAnalyzeJournal);
+      goalButton.addEventListener("click", handleGoalCoach);
+      weeklyButton.addEventListener("click", handleWeeklyReport);
+      chatButton.addEventListener("click", handleChat);
+
+      chatInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          handleChat();
+        }
+      });
+
+      if (window.location.protocol === "file:") {
+        showError("Open this app through the backend server so AI features can call /api routes. Run: npm start");
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

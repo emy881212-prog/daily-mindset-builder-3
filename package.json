@@ -1,0 +1,28 @@
+{
+  "name": "daily-mindset-builder-3",
+  "version": "1.0.0",
+  "description": "A personalized motivation, confidence, and wellness app that matches daily quotes to each user’s mood and personality.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "echo \"No tests configured\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emy881212-prog/daily-mindset-builder-3.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/emy881212-prog/daily-mindset-builder-3/issues"
+  },
+  "homepage": "https://github.com/emy881212-prog/daily-mindset-builder-3#readme",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "openai": "^6.46.0"
+  }
+}
