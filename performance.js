@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   initializeJournalHistoryCalendarNotes();
+  initializeQuoteCollectionLabels();
 });
 
 function initializeJournalHistoryCalendarNotes() {
@@ -506,4 +507,50 @@ function addCalendarNoteStyles() {
   `;
 
   document.head.appendChild(style);
+}
+
+function initializeQuoteCollectionLabels() {
+  const collectionButton = document.querySelector(
+    '[data-view="collector"]'
+  );
+
+  if (!collectionButton) {
+    return;
+  }
+
+  function replaceCollectorText(root = document) {
+    const selectors = [
+      ".button-label",
+      "#modalTitle",
+      ".collector-summary-title",
+      ".collector-summary-text",
+      "#backToCollector"
+    ];
+
+    root.querySelectorAll(selectors.join(",")).forEach((element) => {
+      const originalText = element.textContent;
+      const correctedText = originalText
+        .replace(/Quote Collector/g, "Quote Collection")
+        .replace(/quote collector/g, "quote collection")
+        .replace(/Automatic quote collector/g, "Automatic quote collection")
+        .replace(/automatic quote collector/g, "automatic quote collection")
+        .replace(/The collector/g, "The collection")
+        .replace(/the collector/g, "the collection");
+
+      if (correctedText !== originalText) {
+        element.textContent = correctedText;
+      }
+    });
+  }
+
+  replaceCollectorText();
+
+  const observer = new MutationObserver(() => {
+    replaceCollectorText();
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
 }
