@@ -2,12 +2,12 @@ const OpenAI = require("openai");
 
 const planLimits = {
   free: 3,
-  standard: 30,
-  premium: 100,
+  standard: Infinity,
+  premium: Infinity,
   pro: Infinity
 };
 
-const usageByDay = new Map();
+const FREE_COACH_TOTAL_LIMIT = 3;
 const coachMemoryByDevice = new Map();
 
 function getDateKey() {
@@ -80,59 +80,70 @@ function getClientId(req, body) {
   return headerId || bodyId || fallbackId;
 }
 
-function getUsageRecord(dateKey, clientId) {
-  const usageKey = `${dateKey}:${clientId}`;
+function createUsageStoreAdapter({ body }) {
+  // Adapter boundary for future persistence backends (database/Redis).
+  // Current implementation trusts client-synced localStorage usage state.
+  const incoming = body && body.usageState && typeof body.usageState === "object"
+    ? body.usageState
+    : {};
 
-  if (!usageByDay.has(usageKey)) {
-    usageByDay.set(usageKey, { count: 0, updatedAt: new Date().toISOString() });
-  }
-
-  return usageByDay.get(usageKey);
-}
-
-function consumeDailyRequest(req, body) {
-  const plan = normalizePlan(body && body.plan, body && body.subscriptionStatus);
-  const dateKey = getDateKey();
-  const clientId = getClientId(req, body);
-  const limit = planLimits[plan] || planLimits.free;
-
-  if (limit === Infinity) {
-    return {
-      ok: true,
-      plan,
-      remaining: Infinity,
-      used: 0,
-      limit,
-      dateKey,
-      clientId
-    };
-  }
-
-  const usage = getUsageRecord(dateKey, clientId);
-
-  if (usage.count >= limit) {
-    return {
-      ok: false,
-      plan,
-      remaining: 0,
-      used: usage.count,
-      limit,
-      dateKey,
-      clientId
-    };
-  }
-
-  usage.count += 1;
-  usage.updatedAt = new Date().toISOString();
+  const rawTotal = Number(
+    typeof incoming.totalCoachUses !== "undefined"
+      ? incoming.totalCoachUses
+      : 0
+  );
+  const totalCoachUses = Number.isFinite(rawTotal) && rawTotal > 0
+    ? Math.floor(rawTotal)
+    : 0;
 
   return {
-    ok: true,
+    backend: "localStorage",
+    getTotalCoachUses() {
+      return totalCoachUses;
+    },
+    buildState(nextTotalCoachUses) {
+      const parsedTotal = Number(nextTotalCoachUses);
+      const normalizedTotal = Number.isFinite(parsedTotal) && parsedTotal > 0
+        ? Math.floor(parsedTotal)
+        : 0;
+
+      return {
+        version: 2,
+        totalCoachUses: normalizedTotal,
+        source: "localStorage",
+        updatedAt: new Date().toISOString()
+      };
+    }
+  };
+}
+
+function getFreePlanAccessControl({ body }) {
+  const plan = normalizePlan(body && body.plan, body && body.subscriptionStatus);
+  const usageStore = createUsageStoreAdapter({ body });
+  const totalCoachUses = usageStore.getTotalCoachUses();
+  const isLocked = plan === "free" && totalCoachUses >= FREE_COACH_TOTAL_LIMIT;
+
+  return {
     plan,
-    remaining: Math.max(0, limit - usage.count),
-    used: usage.count,
-    limit,
-    dateKey,
-    clientId
+    usageStore,
+    totalCoachUses,
+    isLocked,
+    limit: FREE_COACH_TOTAL_LIMIT
+  };
+}
+
+function lockResponsePayload(accessControl) {
+  return {
+    error: "You have used all 3 free AI coaching sessions.",
+    code: "free_ai_limit_reached",
+    plan: accessControl.plan,
+    used: accessControl.totalCoachUses,
+    limit: accessControl.limit,
+    remaining: 0,
+    locked: true,
+    upgradeMessage: "You have used all 3 free AI coaching sessions. Upgrade to unlock unlimited AI coaching, personalized guidance, advanced insights, weekly reports, and premium features.",
+    usageState: accessControl.usageStore.buildState(accessControl.totalCoachUses),
+    usageBackend: accessControl.usageStore.backend
   };
 }
 
@@ -251,27 +262,6 @@ async function requestJsonFromOpenAI(openai, { prompt, jsonShapeHint, fallback }
   throw lastError;
 }
 
-function quotaFailure(res, quota) {
-  return sendJson(res, 429, {
-    error: "Daily AI request limit reached for your plan.",
-    code: "daily_limit_reached",
-    plan: quota.plan,
-    used: quota.used,
-    limit: quota.limit,
-    remaining: quota.remaining
-  });
-}
-
-function quotaSuccessPayload(quota, data) {
-  return {
-    ...data,
-    plan: quota.plan,
-    used: quota.used,
-    limit: quota.limit,
-    remaining: quota.remaining
-  };
-}
-
 async function analyzeJournalHandler(req, res) {
   if (req.method && req.method !== "POST") {
     return methodNotAllowed(res);
@@ -284,10 +274,10 @@ async function analyzeJournalHandler(req, res) {
   }
 
   const body = readBody(req);
-  const quota = consumeDailyRequest(req, body);
+  const accessControl = getFreePlanAccessControl({ body });
 
-  if (!quota.ok) {
-    return quotaFailure(res, quota);
+  if (accessControl.isLocked) {
+    return sendJson(res, 429, lockResponsePayload(accessControl));
   }
 
   const entry = safeString(body.entry, "");
@@ -311,7 +301,18 @@ async function analyzeJournalHandler(req, res) {
       }
     });
 
-    return sendJson(res, 200, quotaSuccessPayload(quota, result));
+    return sendJson(res, 200, {
+      ...result,
+      plan: accessControl.plan,
+      usageState: accessControl.usageStore.buildState(accessControl.totalCoachUses),
+      usageBackend: accessControl.usageStore.backend,
+      used: accessControl.totalCoachUses,
+      limit: accessControl.limit,
+      remaining: accessControl.plan === "free"
+        ? Math.max(0, accessControl.limit - accessControl.totalCoachUses)
+        : Infinity,
+      locked: accessControl.isLocked
+    });
   } catch (error) {
     console.error("analyze-journal failed:", error && error.message ? error.message : error);
     return sendJson(res, 500, {
@@ -333,10 +334,10 @@ async function goalCoachHandler(req, res) {
   }
 
   const body = readBody(req);
-  const quota = consumeDailyRequest(req, body);
+  const accessControl = getFreePlanAccessControl({ body });
 
-  if (!quota.ok) {
-    return quotaFailure(res, quota);
+  if (accessControl.isLocked) {
+    return sendJson(res, 429, lockResponsePayload(accessControl));
   }
 
   const goal = safeString(body.goal, "");
@@ -364,7 +365,18 @@ async function goalCoachHandler(req, res) {
       result.smallMilestones = [String(result.smallMilestones || "Set one small milestone.")];
     }
 
-    return sendJson(res, 200, quotaSuccessPayload(quota, result));
+    return sendJson(res, 200, {
+      ...result,
+      plan: accessControl.plan,
+      usageState: accessControl.usageStore.buildState(accessControl.totalCoachUses),
+      usageBackend: accessControl.usageStore.backend,
+      used: accessControl.totalCoachUses,
+      limit: accessControl.limit,
+      remaining: accessControl.plan === "free"
+        ? Math.max(0, accessControl.limit - accessControl.totalCoachUses)
+        : Infinity,
+      locked: accessControl.isLocked
+    });
   } catch (error) {
     console.error("goal-coach failed:", error && error.message ? error.message : error);
     return sendJson(res, 500, {
@@ -386,10 +398,10 @@ async function weeklyReportHandler(req, res) {
   }
 
   const body = readBody(req);
-  const quota = consumeDailyRequest(req, body);
+  const accessControl = getFreePlanAccessControl({ body });
 
-  if (!quota.ok) {
-    return quotaFailure(res, quota);
+  if (accessControl.isLocked) {
+    return sendJson(res, 429, lockResponsePayload(accessControl));
   }
 
   const summaryData = body.summaryData;
@@ -415,7 +427,18 @@ async function weeklyReportHandler(req, res) {
       }
     });
 
-    return sendJson(res, 200, quotaSuccessPayload(quota, result));
+    return sendJson(res, 200, {
+      ...result,
+      plan: accessControl.plan,
+      usageState: accessControl.usageStore.buildState(accessControl.totalCoachUses),
+      usageBackend: accessControl.usageStore.backend,
+      used: accessControl.totalCoachUses,
+      limit: accessControl.limit,
+      remaining: accessControl.plan === "free"
+        ? Math.max(0, accessControl.limit - accessControl.totalCoachUses)
+        : Infinity,
+      locked: accessControl.isLocked
+    });
   } catch (error) {
     console.error("weekly-report failed:", error && error.message ? error.message : error);
     return sendJson(res, 500, {
@@ -437,15 +460,17 @@ async function personalCoachHandler(req, res) {
   }
 
   const body = readBody(req);
-  const quota = consumeDailyRequest(req, body);
-
-  if (!quota.ok) {
-    return quotaFailure(res, quota);
-  }
-
+  const accessControl = getFreePlanAccessControl({ body });
+  const plan = accessControl.plan;
+  const usageStore = accessControl.usageStore;
   const clientId = getClientId(req, body);
   const message = safeString(body.message, "");
   const context = body.context && typeof body.context === "object" ? body.context : {};
+  const personalCoachUsed = accessControl.totalCoachUses;
+
+  if (accessControl.isLocked) {
+    return sendJson(res, 429, lockResponsePayload(accessControl));
+  }
 
   if (!message) {
     return sendJson(res, 400, {
@@ -521,7 +546,29 @@ async function personalCoachHandler(req, res) {
     const updatedTurns = [...priorTurns, { user: message, assistant: reply, at: new Date().toISOString() }].slice(-20);
     coachMemoryByDevice.set(clientId, updatedTurns);
 
-    return sendJson(res, 200, quotaSuccessPayload(quota, { reply }));
+    const nextUsed = plan === "free"
+      ? personalCoachUsed + 1
+      : personalCoachUsed;
+    const effectiveLimit = plan === "free"
+      ? FREE_COACH_TOTAL_LIMIT
+      : Infinity;
+    const remaining = Number.isFinite(effectiveLimit)
+      ? Math.max(0, effectiveLimit - nextUsed)
+      : Infinity;
+
+    return sendJson(res, 200, {
+      reply,
+      plan,
+      used: nextUsed,
+      limit: effectiveLimit,
+      remaining,
+      locked: plan === "free" && nextUsed >= FREE_COACH_TOTAL_LIMIT,
+      upgradeMessage: plan === "free" && nextUsed >= FREE_COACH_TOTAL_LIMIT
+        ? "You have used all 3 free AI coaching sessions. Upgrade to unlock unlimited AI coaching, personalized guidance, advanced insights, weekly reports, and premium features."
+        : "",
+      usageState: usageStore.buildState(nextUsed),
+      usageBackend: usageStore.backend
+    });
   } catch (error) {
     console.error("personal-coach failed:", error && error.message ? error.message : error);
     return sendJson(res, 500, {

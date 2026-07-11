@@ -314,6 +314,103 @@
     .typing-dot:nth-child(2) { animation-delay: 0.12s; }
     .typing-dot:nth-child(3) { animation-delay: 0.24s; }
 
+    .chat-shell.locked textarea {
+      opacity: 0.74;
+      cursor: not-allowed;
+    }
+
+    .premium-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(31, 12, 24, 0.48);
+      backdrop-filter: blur(7px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.24s ease;
+    }
+
+    .premium-modal-overlay.show {
+      display: flex;
+      opacity: 1;
+      animation: premiumFadeIn 0.26s ease forwards;
+    }
+
+    .premium-modal {
+      width: min(100%, 420px);
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      background: linear-gradient(145deg, rgba(255, 247, 251, 0.76), rgba(240, 196, 216, 0.65));
+      box-shadow: 0 22px 50px rgba(58, 13, 35, 0.35);
+      padding: 22px 18px 16px;
+      transform: translateY(12px) scale(0.98);
+      animation: premiumLift 0.25s ease forwards;
+    }
+
+    .premium-modal h3 {
+      margin: 0 0 12px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 26px;
+      color: #4d1f34;
+      line-height: 1.2;
+    }
+
+    .premium-modal p {
+      margin: 0 0 10px;
+      color: #432632;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .premium-modal-buttons {
+      display: grid;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .premium-action,
+    .premium-later {
+      min-height: 44px;
+      border-radius: 999px;
+      border: 0;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .premium-action {
+      color: #fff;
+      background: linear-gradient(135deg, #d05b90, #aa3f70);
+      box-shadow: 0 10px 18px rgba(126, 41, 77, 0.26);
+    }
+
+    .premium-later {
+      color: #4d1f34;
+      background: rgba(255, 255, 255, 0.84);
+      border: 1px solid rgba(96, 40, 65, 0.25);
+    }
+
+    @keyframes premiumFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes premiumLift {
+      from {
+        transform: translateY(12px) scale(0.98);
+        opacity: 0.2;
+      }
+
+      to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+    }
+
     @keyframes spin {
       to {
         transform: rotate(360deg);
@@ -432,7 +529,7 @@
             <div class="btn-row">
               <button class="pink-button" id="chatButton" type="button">
                 <span class="spinner" aria-hidden="true"></span>
-                Send to Coach
+                <span id="chatButtonLabel">Send to Coach</span>
               </button>
             </div>
           </div>
@@ -441,6 +538,24 @@
     </div>
   </main>
 
+  <div class="premium-modal-overlay" id="premiumModalOverlay" aria-hidden="true">
+    <div class="premium-modal" role="dialog" aria-modal="true" aria-labelledby="premiumModalTitle">
+      <h3 id="premiumModalTitle">🔒 Free AI Limit Reached</h3>
+      <p>
+        You have used all 3 free AI coaching sessions.
+      </p>
+      <p>
+        Unlock unlimited AI coaching, personalized guidance, advanced insights, weekly reports, and premium features by upgrading your plan.
+      </p>
+      <div class="premium-modal-buttons">
+        <button type="button" class="premium-action" id="upgradePremiumButton">✨ Upgrade to Premium</button>
+        <button type="button" class="premium-action" id="upgradePremiumPlusButton">👑 Upgrade to Premium Plus</button>
+        <button type="button" class="premium-action" id="upgradeProButton">🚀 Upgrade to Pro</button>
+        <button type="button" class="premium-later" id="premiumLaterButton">❌ Maybe Later</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const PLAN_LIMITS = {
       free: 3,
@@ -448,9 +563,12 @@
       premium: 100,
       pro: Infinity
     };
+    const FREE_TOTAL_COACH_LIMIT = 3;
+    const SUBSCRIPTION_PAGE = "app-upgrade.html";
 
     const CHAT_STORAGE_KEY = "dailyMindsetCoachChatHistoryV1";
     const DEVICE_ID_KEY = "dailyMindsetDeviceId";
+    const USAGE_STATE_KEY = "dailyMindsetCoachUsageStateV1";
 
     const errorBanner = document.getElementById("errorBanner");
     const planBadge = document.getElementById("planBadge");
@@ -470,7 +588,13 @@
     const chatMessages = document.getElementById("chatMessages");
     const chatInput = document.getElementById("chatInput");
     const chatButton = document.getElementById("chatButton");
+    const chatButtonLabel = document.getElementById("chatButtonLabel");
     const typingIndicator = document.getElementById("typingIndicator");
+    const premiumModalOverlay = document.getElementById("premiumModalOverlay");
+    const upgradePremiumButton = document.getElementById("upgradePremiumButton");
+    const upgradePremiumPlusButton = document.getElementById("upgradePremiumPlusButton");
+    const upgradeProButton = document.getElementById("upgradeProButton");
+    const premiumLaterButton = document.getElementById("premiumLaterButton");
 
     function safeJSON(value, fallback) {
       try {
@@ -685,6 +809,106 @@
       return Array.isArray(stored) ? stored : [];
     }
 
+    function readUsageState() {
+      const stored = readJSONStorage(USAGE_STATE_KEY, {});
+
+      if (!stored || typeof stored !== "object") {
+        return {
+          version: 2,
+          totalCoachUses: 0
+        };
+      }
+
+      const parsedTotal = Number(stored.totalCoachUses || 0);
+
+      return {
+        version: 2,
+        totalCoachUses: Number.isFinite(parsedTotal) && parsedTotal > 0
+          ? Math.floor(parsedTotal)
+          : 0
+      };
+    }
+
+    function saveUsageState(state) {
+      if (!state || typeof state !== "object") {
+        return;
+      }
+
+      localStorage.setItem(USAGE_STATE_KEY, JSON.stringify(state));
+    }
+
+    function getPersonalCoachUsageCount() {
+      return readUsageState().totalCoachUses;
+    }
+
+    function isFreePlanLocked() {
+      return getUserPlan() === "free" && getPersonalCoachUsageCount() >= FREE_TOTAL_COACH_LIMIT;
+    }
+
+    function updatePersonalCoachUsageLabel(plan, usedOverride, remainingOverride) {
+      const normalizedPlan = String(plan || getUserPlan()).toLowerCase();
+      const limit = normalizedPlan === "free"
+        ? FREE_TOTAL_COACH_LIMIT
+        : (PLAN_LIMITS[normalizedPlan] || PLAN_LIMITS.free);
+
+      if (limit === Infinity) {
+        usageNote.textContent = "Daily AI usage: Unlimited (Pro plan)";
+        return;
+      }
+
+      const used = typeof usedOverride === "number"
+        ? usedOverride
+        : getPersonalCoachUsageCount();
+      const remaining = typeof remainingOverride === "number"
+        ? remainingOverride
+        : Math.max(0, limit - used);
+
+      usageNote.textContent = used >= FREE_TOTAL_COACH_LIMIT && normalizedPlan === "free"
+        ? `${FREE_TOTAL_COACH_LIMIT}/${FREE_TOTAL_COACH_LIMIT} Used - Locked`
+        : `${used}/${limit} Used`;
+    }
+
+    function showPremiumModal() {
+      premiumModalOverlay.classList.add("show");
+      premiumModalOverlay.setAttribute("aria-hidden", "false");
+    }
+
+    function hidePremiumModal() {
+      premiumModalOverlay.classList.remove("show");
+      premiumModalOverlay.setAttribute("aria-hidden", "true");
+    }
+
+    function goToSubscriptionPlans() {
+      window.location.href = SUBSCRIPTION_PAGE;
+    }
+
+    function applyCoachLockState() {
+      const locked = isFreePlanLocked();
+      const chatShell = chatInput.closest(".chat-shell");
+
+      if (chatShell) {
+        chatShell.classList.toggle("locked", locked);
+      }
+
+      if (locked) {
+        chatButton.disabled = true;
+        chatInput.setAttribute("readonly", "readonly");
+        chatInput.setAttribute("aria-disabled", "true");
+        if (chatButtonLabel) {
+          chatButtonLabel.textContent = "🔒 AI Coach Locked";
+        }
+      } else {
+        chatButton.disabled = false;
+        chatInput.removeAttribute("readonly");
+        chatInput.removeAttribute("aria-disabled");
+        if (chatButtonLabel) {
+          chatButtonLabel.textContent = "Send to Coach";
+        }
+      }
+
+      updatePersonalCoachUsageLabel();
+    }
+
     function saveChatHistory(history) {
       localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(history.slice(-30)));
     }
@@ -726,7 +950,8 @@
           ...payload,
           plan,
           deviceId,
-          subscriptionStatus: localStorage.getItem("mindsetSubscription") || "free"
+          subscriptionStatus: localStorage.getItem("mindsetSubscription") || "free",
+          usageState: readUsageState()
         })
       });
 
@@ -740,8 +965,8 @@
       }
 
       if (!response.ok) {
-        const limitHint = json && json.code === "daily_limit_reached"
-          ? `Your ${planLabel(plan)} plan reached its daily AI limit.`
+        const limitHint = json && (json.code === "daily_limit_reached" || json.code === "free_ai_limit_reached")
+          ? `Your ${planLabel(plan)} plan reached the free AI coaching limit.`
           : "Could not complete this AI request.";
 
         const textDetail = rawText && !json.error
@@ -752,11 +977,21 @@
           ? json.error
           : (textDetail || `HTTP ${response.status} from ${endpoint}`);
 
-        throw new Error(`${limitHint} ${detail}`.trim());
+        const err = new Error(`${limitHint} ${detail}`.trim());
+        err.code = json && json.code ? json.code : "request_failed";
+        err.upgradeMessage = json && json.upgradeMessage ? json.upgradeMessage : "";
+        err.usageState = json && json.usageState ? json.usageState : null;
+        throw err;
       }
 
       if (typeof json.used === "number") {
-        usageNote.textContent = formatUsage(plan, json.used, json.remaining);
+        updatePersonalCoachUsageLabel(plan, json.used, json.remaining);
+      }
+
+      if (json && json.usageState) {
+        saveUsageState(json.usageState);
+        updatePersonalCoachUsageLabel(plan, json.used, json.remaining);
+        applyCoachLockState();
       }
 
       return json;
@@ -764,6 +999,13 @@
 
     async function handleAnalyzeJournal() {
       clearError();
+
+      if (isFreePlanLocked()) {
+        showPremiumModal();
+        showError("You have used all 3 free AI coaching sessions.");
+        return;
+      }
+
       const entry = journalInput.value.trim();
 
       if (!entry) {
@@ -792,6 +1034,13 @@
 
     async function handleGoalCoach() {
       clearError();
+
+      if (isFreePlanLocked()) {
+        showPremiumModal();
+        showError("You have used all 3 free AI coaching sessions.");
+        return;
+      }
+
       const goal = goalInput.value.trim();
 
       if (!goal) {
@@ -820,6 +1069,13 @@
 
     async function handleWeeklyReport() {
       clearError();
+
+      if (isFreePlanLocked()) {
+        showPremiumModal();
+        showError("You have used all 3 free AI coaching sessions.");
+        return;
+      }
+
       setButtonLoading(weeklyButton, true);
       weeklyResult.innerHTML = "";
 
@@ -844,6 +1100,13 @@
 
     async function handleChat() {
       clearError();
+
+      if (isFreePlanLocked()) {
+        showPremiumModal();
+        showError("You have used all 3 free AI coaching sessions.");
+        return;
+      }
+
       const message = chatInput.value.trim();
 
       if (!message) {
@@ -866,14 +1129,29 @@
         const data = await callCoachApi("/api/personal-coach", {
           message,
           context,
-          conversation: updatedHistory.slice(-12)
+          conversation: updatedHistory.slice(-12),
+          usageState: readUsageState()
         });
 
         const reply = String(data.reply || "I am here for you. What is one small action you can take next?");
         saveChatHistory([...updatedHistory, { role: "assistant", text: reply, at: new Date().toISOString() }]);
         addMessage("assistant", reply);
+        applyCoachLockState();
       } catch (error) {
-        showError(error.message || "Coach chat failed.");
+        if (error && error.usageState) {
+          saveUsageState(error.usageState);
+          applyCoachLockState();
+        }
+
+        const upgradeText = error && (error.code === "daily_limit_reached" || error.code === "free_ai_limit_reached")
+          ? (error.upgradeMessage || "Free plan includes 3 total AI coaching sessions. Upgrade to continue coaching.")
+          : "";
+
+        if (upgradeText) {
+          showPremiumModal();
+        }
+
+        showError(upgradeText || error.message || "Coach chat failed.");
         addMessage("assistant", "I could not reach the AI coach right now. Please try again soon.");
       } finally {
         typingIndicator.style.display = "none";
@@ -888,14 +1166,41 @@
       planBadge.textContent = `Plan: ${planLabel(plan)}`;
       usageNote.textContent = limit === Infinity
         ? "Daily AI usage: Unlimited (Pro plan)"
-        : `Daily AI usage: 0/${limit} used`;
+        : `${getPersonalCoachUsageCount()}/${FREE_TOTAL_COACH_LIMIT} Used`;
 
       renderChatHistory();
+      applyCoachLockState();
+
+      upgradePremiumButton.addEventListener("click", goToSubscriptionPlans);
+      upgradePremiumPlusButton.addEventListener("click", goToSubscriptionPlans);
+      upgradeProButton.addEventListener("click", goToSubscriptionPlans);
+      premiumLaterButton.addEventListener("click", hidePremiumModal);
+      premiumModalOverlay.addEventListener("click", (event) => {
+        if (event.target === premiumModalOverlay) {
+          hidePremiumModal();
+        }
+      });
 
       analyzeButton.addEventListener("click", handleAnalyzeJournal);
       goalButton.addEventListener("click", handleGoalCoach);
       weeklyButton.addEventListener("click", handleWeeklyReport);
       chatButton.addEventListener("click", handleChat);
+
+      chatInput.addEventListener("focus", () => {
+        if (isFreePlanLocked()) {
+          showPremiumModal();
+        }
+      });
+
+      const chatInputRow = chatInput.closest(".chat-input-row");
+
+      if (chatInputRow) {
+        chatInputRow.addEventListener("click", () => {
+          if (isFreePlanLocked()) {
+            showPremiumModal();
+          }
+        });
+      }
 
       chatInput.addEventListener("keydown", (event) => {
         if (event.key === "Enter" && !event.shiftKey) {
