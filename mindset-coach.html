@@ -515,7 +515,7 @@
       <section class="section-card full-width">
         <h2 class="section-title">🧠 Personal AI Coach</h2>
         <p class="section-subtitle">Ask anything. Your coach remembers recent conversations on this device.</p>
-        <p class="usage-note" id="usageNote">Daily AI usage: --</p>
+        <p class="usage-note" id="usageNote">AI Coaching: --</p>
         <div class="chat-shell">
           <div class="chat-messages" id="chatMessages"></div>
           <div class="typing" id="typingIndicator" aria-live="polite">
@@ -561,6 +561,7 @@
       free: 3,
       standard: 30,
       premium: 100,
+      premium_plus: 300,
       pro: Infinity
     };
     const FREE_TOTAL_COACH_LIMIT = 3;
@@ -568,7 +569,7 @@
 
     const CHAT_STORAGE_KEY = "dailyMindsetCoachChatHistoryV1";
     const DEVICE_ID_KEY = "dailyMindsetDeviceId";
-    const USAGE_STATE_KEY = "dailyMindsetCoachUsageStateV1";
+    let freePlanServerLocked = false;
 
     const errorBanner = document.getElementById("errorBanner");
     const planBadge = document.getElementById("planBadge");
@@ -630,9 +631,12 @@
 
     function getUserPlan() {
       const explicitPlan = String(localStorage.getItem("mindsetPlan") || "").toLowerCase();
+      const normalizedPlan = explicitPlan === "premium plus" || explicitPlan === "premiumplus" || explicitPlan === "premium+"
+        ? "premium_plus"
+        : explicitPlan;
 
-      if (["free", "standard", "premium", "pro"].includes(explicitPlan)) {
-        return explicitPlan;
+      if (["free", "standard", "premium", "premium_plus", "pro"].includes(normalizedPlan)) {
+        return normalizedPlan;
       }
 
       if (localStorage.getItem("mindsetSubscription") === "paid") {
@@ -643,7 +647,19 @@
     }
 
     function planLabel(plan) {
-      return String(plan || "free").toUpperCase();
+      const normalized = String(plan || "free").toLowerCase();
+
+      if (normalized === "premium_plus") {
+        return "PREMIUM PLUS";
+      }
+
+      return normalized.toUpperCase();
+    }
+
+    function getAuthenticatedUserId() {
+      const direct = String(localStorage.getItem("mindsetUserId") || "").trim();
+      const email = String(localStorage.getItem("mindsetUserEmail") || "").trim().toLowerCase();
+      return direct || email;
     }
 
     function showError(message) {
@@ -665,14 +681,22 @@
       const limit = PLAN_LIMITS[plan] || PLAN_LIMITS.free;
 
       if (limit === Infinity) {
-        return "Daily AI usage: Unlimited (Pro plan)";
+        return "Unlimited AI Coaching";
       }
 
       if (typeof used === "number") {
-        return `Daily AI usage: ${used}/${limit} used, ${Math.max(0, remaining)} left`;
+        if (plan === "free") {
+          return `${used}/${limit} Used`;
+        }
+
+        return `AI requests this month: ${used}/${limit} used`;
       }
 
-      return `Daily AI usage: 0/${limit} used`;
+      if (plan === "free") {
+        return `0/${limit} Used`;
+      }
+
+      return `AI requests this month: 0/${limit} used`;
     }
 
     function textOrFallback(value, fallback) {
@@ -809,40 +833,12 @@
       return Array.isArray(stored) ? stored : [];
     }
 
-    function readUsageState() {
-      const stored = readJSONStorage(USAGE_STATE_KEY, {});
-
-      if (!stored || typeof stored !== "object") {
-        return {
-          version: 2,
-          totalCoachUses: 0
-        };
-      }
-
-      const parsedTotal = Number(stored.totalCoachUses || 0);
-
-      return {
-        version: 2,
-        totalCoachUses: Number.isFinite(parsedTotal) && parsedTotal > 0
-          ? Math.floor(parsedTotal)
-          : 0
-      };
-    }
-
-    function saveUsageState(state) {
-      if (!state || typeof state !== "object") {
-        return;
-      }
-
-      localStorage.setItem(USAGE_STATE_KEY, JSON.stringify(state));
-    }
-
     function getPersonalCoachUsageCount() {
-      return readUsageState().totalCoachUses;
+      return 0;
     }
 
     function isFreePlanLocked() {
-      return getUserPlan() === "free" && getPersonalCoachUsageCount() >= FREE_TOTAL_COACH_LIMIT;
+      return getUserPlan() === "free" && freePlanServerLocked;
     }
 
     function updatePersonalCoachUsageLabel(plan, usedOverride, remainingOverride) {
@@ -852,7 +848,7 @@
         : (PLAN_LIMITS[normalizedPlan] || PLAN_LIMITS.free);
 
       if (limit === Infinity) {
-        usageNote.textContent = "Daily AI usage: Unlimited (Pro plan)";
+        usageNote.textContent = "Unlimited AI Coaching";
         return;
       }
 
@@ -863,9 +859,14 @@
         ? remainingOverride
         : Math.max(0, limit - used);
 
-      usageNote.textContent = used >= FREE_TOTAL_COACH_LIMIT && normalizedPlan === "free"
-        ? `${FREE_TOTAL_COACH_LIMIT}/${FREE_TOTAL_COACH_LIMIT} Used - Locked`
-        : `${used}/${limit} Used`;
+      if (normalizedPlan === "free") {
+        usageNote.textContent = used >= FREE_TOTAL_COACH_LIMIT
+          ? `${FREE_TOTAL_COACH_LIMIT}/${FREE_TOTAL_COACH_LIMIT} Used - Locked`
+          : `${used}/${limit} Used`;
+        return;
+      }
+
+      usageNote.textContent = `AI requests this month: ${used}/${limit} used`;
     }
 
     function showPremiumModal() {
@@ -939,19 +940,27 @@
     async function callCoachApi(endpoint, payload) {
       const plan = getUserPlan();
       const deviceId = getDeviceId();
+      const userId = getAuthenticatedUserId();
+
+      if (!userId) {
+        const authError = new Error("Authentication required. Please sign in to use AI coaching.");
+        authError.code = "auth_required";
+        throw authError;
+      }
 
       const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-device-id": deviceId
+          "x-device-id": deviceId,
+          "x-user-id": userId
         },
         body: JSON.stringify({
           ...payload,
           plan,
           deviceId,
-          subscriptionStatus: localStorage.getItem("mindsetSubscription") || "free",
-          usageState: readUsageState()
+          userId,
+          subscriptionStatus: localStorage.getItem("mindsetSubscription") || "free"
         })
       });
 
@@ -965,9 +974,38 @@
       }
 
       if (!response.ok) {
-        const limitHint = json && (json.code === "daily_limit_reached" || json.code === "free_ai_limit_reached")
+        const isFreeLimit = json && (json.code === "daily_limit_reached" || json.code === "free_ai_limit_reached");
+        const isMonthlyLimit = json && json.code === "monthly_limit_reached";
+        const isFairUseLimit = json && json.code === "fair_use_limit_reached";
+        const isAuthRequired = json && json.code === "auth_required";
+        const limitHint = isFreeLimit
           ? `Your ${planLabel(plan)} plan reached the free AI coaching limit.`
-          : "Could not complete this AI request.";
+          : (isMonthlyLimit ? `Your ${planLabel(plan)} plan reached its monthly AI request limit.` : "");
+
+        if (isFreeLimit) {
+          freePlanServerLocked = true;
+          applyCoachLockState();
+          showPremiumModal();
+        }
+
+        if (isAuthRequired) {
+          freePlanServerLocked = false;
+          applyCoachLockState();
+        }
+
+        if (isFairUseLimit) {
+          freePlanServerLocked = false;
+          applyCoachLockState();
+        }
+
+        if (isMonthlyLimit) {
+          freePlanServerLocked = false;
+          applyCoachLockState();
+        }
+
+        const limitText = isAuthRequired
+          ? "Authentication required. Please sign in to use AI coaching."
+          : "";
 
         const textDetail = rawText && !json.error
           ? rawText.slice(0, 240)
@@ -977,10 +1015,9 @@
           ? json.error
           : (textDetail || `HTTP ${response.status} from ${endpoint}`);
 
-        const err = new Error(`${limitHint} ${detail}`.trim());
+        const err = new Error(limitText || (isFairUseLimit ? detail : `${limitHint} ${detail}`.trim()));
         err.code = json && json.code ? json.code : "request_failed";
         err.upgradeMessage = json && json.upgradeMessage ? json.upgradeMessage : "";
-        err.usageState = json && json.usageState ? json.usageState : null;
         throw err;
       }
 
@@ -988,23 +1025,14 @@
         updatePersonalCoachUsageLabel(plan, json.used, json.remaining);
       }
 
-      if (json && json.usageState) {
-        saveUsageState(json.usageState);
-        updatePersonalCoachUsageLabel(plan, json.used, json.remaining);
-        applyCoachLockState();
-      }
+      freePlanServerLocked = Boolean(json && json.plan === "free" && json.locked);
+      applyCoachLockState();
 
       return json;
     }
 
     async function handleAnalyzeJournal() {
       clearError();
-
-      if (isFreePlanLocked()) {
-        showPremiumModal();
-        showError("You have used all 3 free AI coaching sessions.");
-        return;
-      }
 
       const entry = journalInput.value.trim();
 
@@ -1035,12 +1063,6 @@
     async function handleGoalCoach() {
       clearError();
 
-      if (isFreePlanLocked()) {
-        showPremiumModal();
-        showError("You have used all 3 free AI coaching sessions.");
-        return;
-      }
-
       const goal = goalInput.value.trim();
 
       if (!goal) {
@@ -1070,12 +1092,6 @@
     async function handleWeeklyReport() {
       clearError();
 
-      if (isFreePlanLocked()) {
-        showPremiumModal();
-        showError("You have used all 3 free AI coaching sessions.");
-        return;
-      }
-
       setButtonLoading(weeklyButton, true);
       weeklyResult.innerHTML = "";
 
@@ -1101,12 +1117,6 @@
     async function handleChat() {
       clearError();
 
-      if (isFreePlanLocked()) {
-        showPremiumModal();
-        showError("You have used all 3 free AI coaching sessions.");
-        return;
-      }
-
       const message = chatInput.value.trim();
 
       if (!message) {
@@ -1129,8 +1139,7 @@
         const data = await callCoachApi("/api/personal-coach", {
           message,
           context,
-          conversation: updatedHistory.slice(-12),
-          usageState: readUsageState()
+          conversation: updatedHistory.slice(-12)
         });
 
         const reply = String(data.reply || "I am here for you. What is one small action you can take next?");
@@ -1138,11 +1147,6 @@
         addMessage("assistant", reply);
         applyCoachLockState();
       } catch (error) {
-        if (error && error.usageState) {
-          saveUsageState(error.usageState);
-          applyCoachLockState();
-        }
-
         const upgradeText = error && (error.code === "daily_limit_reached" || error.code === "free_ai_limit_reached")
           ? (error.upgradeMessage || "Free plan includes 3 total AI coaching sessions. Upgrade to continue coaching.")
           : "";
@@ -1165,8 +1169,8 @@
 
       planBadge.textContent = `Plan: ${planLabel(plan)}`;
       usageNote.textContent = limit === Infinity
-        ? "Daily AI usage: Unlimited (Pro plan)"
-        : `${getPersonalCoachUsageCount()}/${FREE_TOTAL_COACH_LIMIT} Used`;
+        ? "Unlimited AI Coaching"
+        : formatUsage(plan);
 
       renderChatHistory();
       applyCoachLockState();

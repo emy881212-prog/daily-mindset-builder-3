@@ -1,17 +1,29 @@
 const OpenAI = require("openai");
+const {
+  readUsageState,
+  writeUsageState,
+  isDurableStoreConfigured
+} = require("./durable-usage-store");
 
 const planLimits = {
   free: 3,
-  standard: Infinity,
-  premium: Infinity,
+  standard: 30,
+  premium: 100,
+  premium_plus: 300,
   pro: Infinity
 };
 
-const FREE_COACH_TOTAL_LIMIT = 3;
+const FREE_TOTAL_LIMIT = 3;
+const PRO_FAIR_USE_DAILY_LIMIT = 300;
+const PRO_FAIR_USE_MONTHLY_LIMIT = 10000;
 const coachMemoryByDevice = new Map();
 
 function getDateKey() {
   return new Date().toISOString().slice(0, 10);
+}
+
+function getMonthKey() {
+  return new Date().toISOString().slice(0, 7);
 }
 
 function safeString(value, fallback = "") {
@@ -28,9 +40,12 @@ function safeString(value, fallback = "") {
 
 function normalizePlan(rawPlan, legacyPaidFlag) {
   const normalized = safeString(rawPlan, "").toLowerCase();
+  const mapped = normalized === "premium plus" || normalized === "premiumplus" || normalized === "premium+"
+    ? "premium_plus"
+    : normalized;
 
-  if (["free", "standard", "premium", "pro"].includes(normalized)) {
-    return normalized;
+  if (["free", "standard", "premium", "premium_plus", "pro"].includes(mapped)) {
+    return mapped;
   }
 
   if (legacyPaidFlag === true || safeString(legacyPaidFlag, "") === "paid") {
@@ -80,70 +95,197 @@ function getClientId(req, body) {
   return headerId || bodyId || fallbackId;
 }
 
-function createUsageStoreAdapter({ body }) {
-  // Adapter boundary for future persistence backends (database/Redis).
-  // Current implementation trusts client-synced localStorage usage state.
-  const incoming = body && body.usageState && typeof body.usageState === "object"
-    ? body.usageState
-    : {};
+function normalizeUserId(rawUserId) {
+  return safeString(rawUserId, "").toLowerCase();
+}
 
-  const rawTotal = Number(
-    typeof incoming.totalCoachUses !== "undefined"
-      ? incoming.totalCoachUses
-      : 0
-  );
-  const totalCoachUses = Number.isFinite(rawTotal) && rawTotal > 0
-    ? Math.floor(rawTotal)
-    : 0;
+function getAuthenticatedUserId(req, body) {
+  const headerUserId = normalizeUserId(getHeader(req, "x-user-id"));
+  const bodyUserId = normalizeUserId(body && body.userId);
 
+  return headerUserId || bodyUserId;
+}
+
+function authRequiredPayload() {
   return {
-    backend: "localStorage",
-    getTotalCoachUses() {
-      return totalCoachUses;
-    },
-    buildState(nextTotalCoachUses) {
-      const parsedTotal = Number(nextTotalCoachUses);
-      const normalizedTotal = Number.isFinite(parsedTotal) && parsedTotal > 0
-        ? Math.floor(parsedTotal)
-        : 0;
-
-      return {
-        version: 2,
-        totalCoachUses: normalizedTotal,
-        source: "localStorage",
-        updatedAt: new Date().toISOString()
-      };
-    }
+    error: "Authentication required. Please sign in to use AI coaching.",
+    code: "auth_required"
   };
 }
 
-function getFreePlanAccessControl({ body }) {
-  const plan = normalizePlan(body && body.plan, body && body.subscriptionStatus);
-  const usageStore = createUsageStoreAdapter({ body });
-  const totalCoachUses = usageStore.getTotalCoachUses();
-  const isLocked = plan === "free" && totalCoachUses >= FREE_COACH_TOTAL_LIMIT;
+function durableStoreUnavailablePayload() {
+  return {
+    error: "Durable usage store is not configured.",
+    code: "durable_store_not_configured"
+  };
+}
+
+function lockResponsePayload({ plan, used, limit, code, error, upgradeMessage }) {
+  const remaining = Number.isFinite(limit)
+    ? Math.max(0, limit - used)
+    : Infinity;
 
   return {
+    error,
+    code,
     plan,
-    usageStore,
-    totalCoachUses,
-    isLocked,
-    limit: FREE_COACH_TOTAL_LIMIT
+    used,
+    limit,
+    remaining,
+    locked: true,
+    upgradeMessage: upgradeMessage || ""
   };
 }
 
-function lockResponsePayload(accessControl) {
+function getMonthlyCount(usageState, monthKey, plan) {
+  const monthly = usageState.monthly && typeof usageState.monthly === "object"
+    ? usageState.monthly
+    : {};
+  const monthEntry = monthly[monthKey] && typeof monthly[monthKey] === "object"
+    ? monthly[monthKey]
+    : {};
+  const raw = Number(monthEntry[plan] || 0);
+
+  return Number.isFinite(raw) && raw > 0 ? Math.floor(raw) : 0;
+}
+
+function getFairUseDailyCount(usageState, dateKey) {
+  const raw = Number(usageState.fairUseDaily && usageState.fairUseDaily[dateKey]);
+  return Number.isFinite(raw) && raw > 0 ? Math.floor(raw) : 0;
+}
+
+function getFairUseMonthlyCount(usageState, monthKey) {
+  const raw = Number(usageState.fairUseMonthly && usageState.fairUseMonthly[monthKey]);
+  return Number.isFinite(raw) && raw > 0 ? Math.floor(raw) : 0;
+}
+
+function evaluatePlanLimit({ plan, usageState, dateKey, monthKey }) {
+  if (plan === "free") {
+    const used = Number.isFinite(Number(usageState.freeTotal)) && Number(usageState.freeTotal) > 0
+      ? Math.floor(Number(usageState.freeTotal))
+      : 0;
+    const limit = FREE_TOTAL_LIMIT;
+    const blocked = used >= limit;
+
+    return {
+      blocked,
+      code: blocked ? "free_ai_limit_reached" : "",
+      error: "You have used all 3 free AI coaching sessions.",
+      upgradeMessage: "You have used all 3 free AI coaching sessions. Upgrade to unlock unlimited AI coaching, personalized guidance, advanced insights, weekly reports, and premium features.",
+      used,
+      limit
+    };
+  }
+
+  if (plan === "standard" || plan === "premium" || plan === "premium_plus") {
+    const limit = planLimits[plan];
+    const used = getMonthlyCount(usageState, monthKey, plan);
+    const blocked = used >= limit;
+
+    return {
+      blocked,
+      code: blocked ? "monthly_limit_reached" : "",
+      error: "You have reached your monthly AI request limit for this plan.",
+      upgradeMessage: blocked ? "Upgrade your plan to continue AI coaching this month." : "",
+      used,
+      limit
+    };
+  }
+
+  if (plan === "pro") {
+    const usedDaily = getFairUseDailyCount(usageState, dateKey);
+    const usedMonthly = getFairUseMonthlyCount(usageState, monthKey);
+    const blocked = usedDaily >= PRO_FAIR_USE_DAILY_LIMIT || usedMonthly >= PRO_FAIR_USE_MONTHLY_LIMIT;
+
+    return {
+      blocked,
+      code: blocked ? "fair_use_limit_reached" : "",
+      error: "You have reached our fair-use limit. Please contact support if you need additional usage.",
+      upgradeMessage: "",
+      used: Math.max(usedDaily, usedMonthly),
+      limit: Infinity
+    };
+  }
+
   return {
-    error: "You have used all 3 free AI coaching sessions.",
-    code: "free_ai_limit_reached",
-    plan: accessControl.plan,
-    used: accessControl.totalCoachUses,
-    limit: accessControl.limit,
-    remaining: 0,
-    locked: true,
-    upgradeMessage: "You have used all 3 free AI coaching sessions. Upgrade to unlock unlimited AI coaching, personalized guidance, advanced insights, weekly reports, and premium features.",
-    usageState: accessControl.usageStore.buildState(accessControl.totalCoachUses),
-    usageBackend: accessControl.usageStore.backend
+    blocked: false,
+    code: "",
+    error: "",
+    upgradeMessage: "",
+    used: 0,
+    limit: Infinity
+  };
+}
+
+function applyUsageIncrement({ plan, usageState, dateKey, monthKey }) {
+  const next = usageState && typeof usageState === "object" ? usageState : {};
+  next.monthly = next.monthly && typeof next.monthly === "object" ? next.monthly : {};
+  next.fairUseDaily = next.fairUseDaily && typeof next.fairUseDaily === "object" ? next.fairUseDaily : {};
+  next.fairUseMonthly = next.fairUseMonthly && typeof next.fairUseMonthly === "object" ? next.fairUseMonthly : {};
+
+  if (plan === "free") {
+    const current = Number(next.freeTotal || 0);
+    next.freeTotal = Number.isFinite(current) ? Math.max(0, Math.floor(current)) + 1 : 1;
+    return next;
+  }
+
+  if (plan === "standard" || plan === "premium" || plan === "premium_plus") {
+    const monthEntry = next.monthly[monthKey] && typeof next.monthly[monthKey] === "object"
+      ? next.monthly[monthKey]
+      : {};
+    const current = Number(monthEntry[plan] || 0);
+    monthEntry[plan] = Number.isFinite(current) ? Math.max(0, Math.floor(current)) + 1 : 1;
+    next.monthly[monthKey] = monthEntry;
+    return next;
+  }
+
+  if (plan === "pro") {
+    const currentDaily = Number(next.fairUseDaily[dateKey] || 0);
+    const currentMonthly = Number(next.fairUseMonthly[monthKey] || 0);
+    next.fairUseDaily[dateKey] = Number.isFinite(currentDaily) ? Math.max(0, Math.floor(currentDaily)) + 1 : 1;
+    next.fairUseMonthly[monthKey] = Number.isFinite(currentMonthly) ? Math.max(0, Math.floor(currentMonthly)) + 1 : 1;
+    return next;
+  }
+
+  return next;
+}
+
+function usageSummary({ plan, usageState, dateKey, monthKey }) {
+  if (plan === "free") {
+    const used = Number.isFinite(Number(usageState.freeTotal)) && Number(usageState.freeTotal) > 0
+      ? Math.floor(Number(usageState.freeTotal))
+      : 0;
+
+    return {
+      used,
+      limit: FREE_TOTAL_LIMIT,
+      remaining: Math.max(0, FREE_TOTAL_LIMIT - used)
+    };
+  }
+
+  if (plan === "standard" || plan === "premium" || plan === "premium_plus") {
+    const used = getMonthlyCount(usageState, monthKey, plan);
+    const limit = planLimits[plan];
+
+    return {
+      used,
+      limit,
+      remaining: Math.max(0, limit - used)
+    };
+  }
+
+  if (plan === "pro") {
+    return {
+      used: 0,
+      limit: Infinity,
+      remaining: Infinity
+    };
+  }
+
+  return {
+    used: 0,
+    limit: Infinity,
+    remaining: Infinity
   };
 }
 
@@ -262,22 +404,110 @@ async function requestJsonFromOpenAI(openai, { prompt, jsonShapeHint, fallback }
   throw lastError;
 }
 
+function durableStoreErrorPayload(message) {
+  return {
+    error: message || "Durable usage store request failed.",
+    code: "durable_store_error"
+  };
+}
+
+async function getUsageAccessOrRespond(req, res, body) {
+  if (!isDurableStoreConfigured()) {
+    sendJson(res, 500, durableStoreUnavailablePayload());
+    return null;
+  }
+
+  const userId = getAuthenticatedUserId(req, body);
+
+  if (!userId) {
+    sendJson(res, 401, authRequiredPayload());
+    return null;
+  }
+
+  const plan = normalizePlan(body && body.plan, body && body.subscriptionStatus);
+  const dateKey = getDateKey();
+  const monthKey = getMonthKey();
+  let usageState;
+
+  try {
+    usageState = await readUsageState(userId, dateKey, monthKey);
+  } catch (error) {
+    sendJson(res, 500, durableStoreErrorPayload(error && error.message ? error.message : "Failed to read usage state."));
+    return null;
+  }
+
+  const gate = evaluatePlanLimit({
+    plan,
+    usageState,
+    dateKey,
+    monthKey
+  });
+
+  if (gate.blocked) {
+    sendJson(res, 429, lockResponsePayload({
+      plan,
+      used: gate.used,
+      limit: gate.limit,
+      code: gate.code,
+      error: gate.error,
+      upgradeMessage: gate.upgradeMessage
+    }));
+    return null;
+  }
+
+  return {
+    userId,
+    plan,
+    dateKey,
+    monthKey,
+    usageState
+  };
+}
+
+async function incrementUsageAndSummarizeOrRespond(res, access) {
+  const updatedUsage = applyUsageIncrement({
+    plan: access.plan,
+    usageState: access.usageState,
+    dateKey: access.dateKey,
+    monthKey: access.monthKey
+  });
+
+  try {
+    await writeUsageState(access.userId, updatedUsage);
+  } catch (error) {
+    sendJson(res, 500, durableStoreErrorPayload(error && error.message ? error.message : "Failed to persist usage state."));
+    return null;
+  }
+
+  const summary = usageSummary({
+    plan: access.plan,
+    usageState: updatedUsage,
+    dateKey: access.dateKey,
+    monthKey: access.monthKey
+  });
+
+  return {
+    ...summary,
+    locked: access.plan === "free" && Number.isFinite(summary.limit) && summary.used >= summary.limit
+  };
+}
+
 async function analyzeJournalHandler(req, res) {
   if (req.method && req.method !== "POST") {
     return methodNotAllowed(res);
+  }
+
+  const body = readBody(req);
+  const access = await getUsageAccessOrRespond(req, res, body);
+
+  if (!access) {
+    return undefined;
   }
 
   const openai = getOpenAIClient();
 
   if (!openai) {
     return missingApiKeyResponse(res);
-  }
-
-  const body = readBody(req);
-  const accessControl = getFreePlanAccessControl({ body });
-
-  if (accessControl.isLocked) {
-    return sendJson(res, 429, lockResponsePayload(accessControl));
   }
 
   const entry = safeString(body.entry, "");
@@ -300,18 +530,19 @@ async function analyzeJournalHandler(req, res) {
         encouragingMessage: "You are building momentum one honest entry at a time."
       }
     });
+    const summary = await incrementUsageAndSummarizeOrRespond(res, access);
+
+    if (!summary) {
+      return undefined;
+    }
 
     return sendJson(res, 200, {
       ...result,
-      plan: accessControl.plan,
-      usageState: accessControl.usageStore.buildState(accessControl.totalCoachUses),
-      usageBackend: accessControl.usageStore.backend,
-      used: accessControl.totalCoachUses,
-      limit: accessControl.limit,
-      remaining: accessControl.plan === "free"
-        ? Math.max(0, accessControl.limit - accessControl.totalCoachUses)
-        : Infinity,
-      locked: accessControl.isLocked
+      plan: access.plan,
+      used: summary.used,
+      limit: summary.limit,
+      remaining: summary.remaining,
+      locked: summary.locked
     });
   } catch (error) {
     console.error("analyze-journal failed:", error && error.message ? error.message : error);
@@ -327,17 +558,17 @@ async function goalCoachHandler(req, res) {
     return methodNotAllowed(res);
   }
 
+  const body = readBody(req);
+  const access = await getUsageAccessOrRespond(req, res, body);
+
+  if (!access) {
+    return undefined;
+  }
+
   const openai = getOpenAIClient();
 
   if (!openai) {
     return missingApiKeyResponse(res);
-  }
-
-  const body = readBody(req);
-  const accessControl = getFreePlanAccessControl({ body });
-
-  if (accessControl.isLocked) {
-    return sendJson(res, 429, lockResponsePayload(accessControl));
   }
 
   const goal = safeString(body.goal, "");
@@ -364,18 +595,19 @@ async function goalCoachHandler(req, res) {
     if (!Array.isArray(result.smallMilestones)) {
       result.smallMilestones = [String(result.smallMilestones || "Set one small milestone.")];
     }
+    const summary = await incrementUsageAndSummarizeOrRespond(res, access);
+
+    if (!summary) {
+      return undefined;
+    }
 
     return sendJson(res, 200, {
       ...result,
-      plan: accessControl.plan,
-      usageState: accessControl.usageStore.buildState(accessControl.totalCoachUses),
-      usageBackend: accessControl.usageStore.backend,
-      used: accessControl.totalCoachUses,
-      limit: accessControl.limit,
-      remaining: accessControl.plan === "free"
-        ? Math.max(0, accessControl.limit - accessControl.totalCoachUses)
-        : Infinity,
-      locked: accessControl.isLocked
+      plan: access.plan,
+      used: summary.used,
+      limit: summary.limit,
+      remaining: summary.remaining,
+      locked: summary.locked
     });
   } catch (error) {
     console.error("goal-coach failed:", error && error.message ? error.message : error);
@@ -391,17 +623,17 @@ async function weeklyReportHandler(req, res) {
     return methodNotAllowed(res);
   }
 
+  const body = readBody(req);
+  const access = await getUsageAccessOrRespond(req, res, body);
+
+  if (!access) {
+    return undefined;
+  }
+
   const openai = getOpenAIClient();
 
   if (!openai) {
     return missingApiKeyResponse(res);
-  }
-
-  const body = readBody(req);
-  const accessControl = getFreePlanAccessControl({ body });
-
-  if (accessControl.isLocked) {
-    return sendJson(res, 429, lockResponsePayload(accessControl));
   }
 
   const summaryData = body.summaryData;
@@ -426,18 +658,19 @@ async function weeklyReportHandler(req, res) {
         encouragingMessage: "Growth is happening even when it feels gradual. Keep going."
       }
     });
+    const summary = await incrementUsageAndSummarizeOrRespond(res, access);
+
+    if (!summary) {
+      return undefined;
+    }
 
     return sendJson(res, 200, {
       ...result,
-      plan: accessControl.plan,
-      usageState: accessControl.usageStore.buildState(accessControl.totalCoachUses),
-      usageBackend: accessControl.usageStore.backend,
-      used: accessControl.totalCoachUses,
-      limit: accessControl.limit,
-      remaining: accessControl.plan === "free"
-        ? Math.max(0, accessControl.limit - accessControl.totalCoachUses)
-        : Infinity,
-      locked: accessControl.isLocked
+      plan: access.plan,
+      used: summary.used,
+      limit: summary.limit,
+      remaining: summary.remaining,
+      locked: summary.locked
     });
   } catch (error) {
     console.error("weekly-report failed:", error && error.message ? error.message : error);
@@ -453,23 +686,22 @@ async function personalCoachHandler(req, res) {
     return methodNotAllowed(res);
   }
 
+  const body = readBody(req);
+  const access = await getUsageAccessOrRespond(req, res, body);
+
+  if (!access) {
+    return undefined;
+  }
+
+  const plan = access.plan;
+  const clientId = getClientId(req, body);
+  const message = safeString(body.message, "");
+  const context = body.context && typeof body.context === "object" ? body.context : {};
+
   const openai = getOpenAIClient();
 
   if (!openai) {
     return missingApiKeyResponse(res);
-  }
-
-  const body = readBody(req);
-  const accessControl = getFreePlanAccessControl({ body });
-  const plan = accessControl.plan;
-  const usageStore = accessControl.usageStore;
-  const clientId = getClientId(req, body);
-  const message = safeString(body.message, "");
-  const context = body.context && typeof body.context === "object" ? body.context : {};
-  const personalCoachUsed = accessControl.totalCoachUses;
-
-  if (accessControl.isLocked) {
-    return sendJson(res, 429, lockResponsePayload(accessControl));
   }
 
   if (!message) {
@@ -546,28 +778,22 @@ async function personalCoachHandler(req, res) {
     const updatedTurns = [...priorTurns, { user: message, assistant: reply, at: new Date().toISOString() }].slice(-20);
     coachMemoryByDevice.set(clientId, updatedTurns);
 
-    const nextUsed = plan === "free"
-      ? personalCoachUsed + 1
-      : personalCoachUsed;
-    const effectiveLimit = plan === "free"
-      ? FREE_COACH_TOTAL_LIMIT
-      : Infinity;
-    const remaining = Number.isFinite(effectiveLimit)
-      ? Math.max(0, effectiveLimit - nextUsed)
-      : Infinity;
+    const summary = await incrementUsageAndSummarizeOrRespond(res, access);
+
+    if (!summary) {
+      return undefined;
+    }
 
     return sendJson(res, 200, {
       reply,
       plan,
-      used: nextUsed,
-      limit: effectiveLimit,
-      remaining,
-      locked: plan === "free" && nextUsed >= FREE_COACH_TOTAL_LIMIT,
-      upgradeMessage: plan === "free" && nextUsed >= FREE_COACH_TOTAL_LIMIT
+      used: summary.used,
+      limit: summary.limit,
+      remaining: summary.remaining,
+      locked: summary.locked,
+      upgradeMessage: plan === "free" && summary.locked
         ? "You have used all 3 free AI coaching sessions. Upgrade to unlock unlimited AI coaching, personalized guidance, advanced insights, weekly reports, and premium features."
-        : "",
-      usageState: usageStore.buildState(nextUsed),
-      usageBackend: usageStore.backend
+        : ""
     });
   } catch (error) {
     console.error("personal-coach failed:", error && error.message ? error.message : error);

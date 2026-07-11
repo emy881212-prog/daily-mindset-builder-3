@@ -11,9 +11,12 @@ The Mindset Coach page now uses backend API routes powered by the OpenAI Respons
 	cp .env.example .env
 3. Set your OpenAI key in `.env`:
 	OPENAI_API_KEY=your_key_here
-4. Start the server:
+4. Configure durable usage storage (required):
+	UPSTASH_REDIS_REST_URL=your_upstash_url
+	UPSTASH_REDIS_REST_TOKEN=your_upstash_token
+5. Start the server:
 	npm start
-5. Open the app:
+6. Open the app:
 	http://localhost:3000/mindset-coach.html
 
 ### API Routes
@@ -39,7 +42,15 @@ If the key is missing, endpoints return:
 
 ### AI Request Limits By Plan
 
-- Free: 3 per day
-- Standard: 30 per day
-- Premium: 100 per day
-- Pro: unlimited
+- Free: 3 total requests
+- Standard: 30 requests per month
+- Premium: 100 requests per month
+- Premium Plus: 300 requests per month
+- Pro: Unlimited AI Coaching (hidden backend fair-use policy)
+
+### Usage Tracking Requirements
+
+- Usage counters are stored in durable Redis storage (Upstash), not localStorage or in-memory maps.
+- All usage is tracked by authenticated account user id via `x-user-id` header (or `userId` in request body).
+- If user id is missing, AI endpoints return:
+	`{"error":"Authentication required. Please sign in to use AI coaching.","code":"auth_required"}`
