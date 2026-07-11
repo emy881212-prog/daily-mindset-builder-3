@@ -172,6 +172,36 @@
       justify-content: flex-end;
     }
 
+    .save-row {
+      margin-top: 8px;
+    }
+
+    .save-button {
+      border: 1px solid rgba(133, 56, 91, 0.3);
+      border-radius: 999px;
+      background: linear-gradient(140deg, #fff6fa, #f8dce8);
+      color: #7a2f52;
+      min-height: 38px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      box-shadow: 0 8px 14px rgba(124, 41, 75, 0.14);
+      transition: transform 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .save-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 18px rgba(124, 41, 75, 0.22);
+    }
+
+    .save-button:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     .pink-button {
       border: 0;
       border-radius: 999px;
@@ -280,6 +310,112 @@
       border: 1px solid rgba(132, 63, 91, 0.21);
       justify-self: start;
       width: 94%;
+    }
+
+    .message-save-row {
+      margin-top: 8px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .message-save-button {
+      border: 1px solid rgba(126, 53, 87, 0.28);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.94);
+      color: #813358;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 11px;
+      cursor: pointer;
+    }
+
+    .saved-toolbar {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .saved-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .saved-empty {
+      border-radius: 14px;
+      border: 1px dashed rgba(122, 52, 84, 0.35);
+      background: rgba(255, 255, 255, 0.72);
+      padding: 14px;
+      color: #6f4b5a;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .saved-entry {
+      border-radius: 16px;
+      border: 1px solid rgba(122, 52, 84, 0.24);
+      background: rgba(255, 255, 255, 0.88);
+      padding: 12px;
+      box-shadow: 0 10px 16px rgba(88, 34, 58, 0.12);
+    }
+
+    .saved-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+      font-size: 11px;
+      color: #76515f;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .saved-content {
+      margin: 0;
+      white-space: pre-wrap;
+      font-size: 13px;
+      line-height: 1.46;
+      color: #2d1f26;
+    }
+
+    .saved-actions {
+      margin-top: 10px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .delete-saved-button {
+      border: 1px solid rgba(147, 38, 68, 0.24);
+      border-radius: 999px;
+      background: #fff1f6;
+      color: #8e2f55;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+
+    .save-toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%) translateY(12px);
+      background: linear-gradient(140deg, #fff6fb, #f3d4e3);
+      border: 1px solid rgba(110, 44, 72, 0.27);
+      color: #6f2f4e;
+      border-radius: 999px;
+      padding: 9px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 12px 22px rgba(99, 35, 64, 0.22);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.24s ease, transform 0.24s ease;
+      z-index: 10001;
+    }
+
+    .save-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
     }
 
     .chat-input-row {
@@ -451,6 +587,11 @@
       .chat-messages {
         max-height: 320px;
       }
+
+      .saved-toolbar {
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+      }
     }
   </style>
 </head>
@@ -483,6 +624,9 @@
           </button>
         </div>
         <div class="result-grid" id="journalResult"></div>
+        <div class="btn-row save-row">
+          <button class="save-button" id="saveAnalyzeButton" type="button" hidden>💾 Save</button>
+        </div>
       </section>
 
       <section class="section-card">
@@ -496,6 +640,9 @@
           </button>
         </div>
         <div class="result-grid" id="goalResult"></div>
+        <div class="btn-row save-row">
+          <button class="save-button" id="saveGoalButton" type="button" hidden>💾 Save</button>
+        </div>
       </section>
 
       <section class="section-card full-width">
@@ -510,6 +657,9 @@
           </button>
         </div>
         <div class="result-grid" id="weeklyResult"></div>
+        <div class="btn-row save-row">
+          <button class="save-button" id="saveWeeklyButton" type="button" hidden>💾 Save</button>
+        </div>
       </section>
 
       <section class="section-card full-width">
@@ -535,8 +685,23 @@
           </div>
         </div>
       </section>
+
+      <section class="section-card full-width">
+        <h2 class="section-title">📚 Saved Insights</h2>
+        <p class="section-subtitle">View and manage your saved AI coaching responses across devices.</p>
+        <div class="saved-toolbar">
+          <button class="save-button" id="viewSavedButton" type="button">View Saved</button>
+          <input id="savedSearchInput" type="text" maxlength="120" placeholder="Search saved insights..." />
+          <button class="save-button" id="searchSavedButton" type="button">Search</button>
+        </div>
+        <div class="saved-list" id="savedInsightsList">
+          <div class="saved-empty">No saved insights yet.</div>
+        </div>
+      </section>
     </div>
   </main>
+
+  <div class="save-toast" id="saveToast" role="status" aria-live="polite">✅ Saved successfully</div>
 
   <div class="premium-modal-overlay" id="premiumModalOverlay" aria-hidden="true">
     <div class="premium-modal" role="dialog" aria-modal="true" aria-labelledby="premiumModalTitle">
@@ -578,13 +743,16 @@
     const journalInput = document.getElementById("journalInput");
     const analyzeButton = document.getElementById("analyzeButton");
     const journalResult = document.getElementById("journalResult");
+    const saveAnalyzeButton = document.getElementById("saveAnalyzeButton");
 
     const goalInput = document.getElementById("goalInput");
     const goalButton = document.getElementById("goalButton");
     const goalResult = document.getElementById("goalResult");
+    const saveGoalButton = document.getElementById("saveGoalButton");
 
     const weeklyButton = document.getElementById("weeklyButton");
     const weeklyResult = document.getElementById("weeklyResult");
+    const saveWeeklyButton = document.getElementById("saveWeeklyButton");
 
     const chatMessages = document.getElementById("chatMessages");
     const chatInput = document.getElementById("chatInput");
@@ -596,6 +764,15 @@
     const upgradePremiumPlusButton = document.getElementById("upgradePremiumPlusButton");
     const upgradeProButton = document.getElementById("upgradeProButton");
     const premiumLaterButton = document.getElementById("premiumLaterButton");
+    const viewSavedButton = document.getElementById("viewSavedButton");
+    const savedSearchInput = document.getElementById("savedSearchInput");
+    const searchSavedButton = document.getElementById("searchSavedButton");
+    const savedInsightsList = document.getElementById("savedInsightsList");
+    const saveToast = document.getElementById("saveToast");
+
+    let latestAnalyzeContent = "";
+    let latestGoalContent = "";
+    let latestWeeklyContent = "";
 
     function safeJSON(value, fallback) {
       try {
@@ -702,6 +879,147 @@
     function textOrFallback(value, fallback) {
       const cleaned = String(value || "").trim();
       return cleaned || fallback;
+    }
+
+    function buildStructuredResponseText(cards) {
+      return cards.map((card) => {
+        const title = textOrFallback(card.title, "Insight");
+        const content = Array.isArray(card.value)
+          ? card.value.map((item) => `- ${textOrFallback(item, "")}`).join("\n")
+          : textOrFallback(card.value, "No response available yet.");
+
+        return `${title}\n${content}`;
+      }).join("\n\n");
+    }
+
+    function showSaveConfirmation() {
+      saveToast.textContent = "✅ Saved successfully";
+      saveToast.classList.add("show");
+
+      setTimeout(() => {
+        saveToast.classList.remove("show");
+      }, 1700);
+    }
+
+    async function callAccountApi(endpoint, payload) {
+      const deviceId = getDeviceId();
+      const userId = getAuthenticatedUserId();
+
+      if (!userId) {
+        const authError = new Error("Authentication required. Please sign in to use AI coaching.");
+        authError.code = "auth_required";
+        throw authError;
+      }
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-device-id": deviceId,
+          "x-user-id": userId
+        },
+        body: JSON.stringify({
+          ...(payload || {}),
+          userId
+        })
+      });
+
+      const json = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        const err = new Error((json && json.error) || `HTTP ${response.status}`);
+        err.code = json && json.code ? json.code : "request_failed";
+        throw err;
+      }
+
+      return json;
+    }
+
+    async function saveInsight(featureType, responseContent) {
+      const content = String(responseContent || "").trim();
+
+      if (!content) {
+        showError("Nothing to save yet.");
+        return;
+      }
+
+      try {
+        await callAccountApi("/api/save-insight", {
+          featureType,
+          responseContent: content
+        });
+        showSaveConfirmation();
+      } catch (error) {
+        showError(error.message || "Could not save insight right now.");
+      }
+    }
+
+    function formatSavedDate(isoText) {
+      const parsed = new Date(isoText || "");
+
+      if (Number.isNaN(parsed.getTime())) {
+        return "Unknown date";
+      }
+
+      return parsed.toLocaleString();
+    }
+
+    function renderSavedInsights(entries) {
+      const list = Array.isArray(entries) ? entries : [];
+
+      if (!list.length) {
+        savedInsightsList.innerHTML = '<div class="saved-empty">No saved insights found.</div>';
+        return;
+      }
+
+      savedInsightsList.innerHTML = list.map((entry) => {
+        const featureType = escapeHTML(textOrFallback(entry.featureType, "Personal AI Coach"));
+        const createdAt = escapeHTML(formatSavedDate(entry.createdAt));
+        const userId = escapeHTML(textOrFallback(entry.userId, "unknown"));
+        const responseContent = escapeHTML(textOrFallback(entry.responseContent, ""));
+        const id = escapeHTML(textOrFallback(entry.id, ""));
+
+        return `
+          <article class="saved-entry" data-saved-id="${id}">
+            <div class="saved-meta">
+              <span>${featureType}</span>
+              <span>${createdAt}</span>
+              <span>User: ${userId}</span>
+            </div>
+            <p class="saved-content">${responseContent}</p>
+            <div class="saved-actions">
+              <button class="delete-saved-button" type="button" data-delete-id="${id}">Delete Saved Entry</button>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    async function loadSavedInsights(queryText) {
+      const query = String(queryText || "").trim();
+
+      try {
+        const data = await callAccountApi("/api/list-saved-insights", { query });
+        renderSavedInsights(data && data.entries ? data.entries : []);
+      } catch (error) {
+        showError(error.message || "Could not load saved insights.");
+      }
+    }
+
+    async function deleteSavedInsight(entryId) {
+      const id = String(entryId || "").trim();
+
+      if (!id) {
+        return;
+      }
+
+      try {
+        await callAccountApi("/api/delete-saved-insight", { id });
+        showSaveConfirmation();
+        await loadSavedInsights(savedSearchInput.value);
+      } catch (error) {
+        showError(error.message || "Could not delete saved insight.");
+      }
     }
 
     function renderCards(container, cards) {
@@ -914,10 +1232,27 @@
       localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(history.slice(-30)));
     }
 
-    function addMessage(role, text) {
+    function addMessage(role, text, options = {}) {
       const div = document.createElement("div");
       div.className = `message ${role}`;
       div.textContent = text;
+
+      if (role === "assistant" && options && options.allowSave) {
+        const saveRow = document.createElement("div");
+        saveRow.className = "message-save-row";
+
+        const saveButton = document.createElement("button");
+        saveButton.type = "button";
+        saveButton.className = "message-save-button";
+        saveButton.textContent = "💾 Save";
+        saveButton.addEventListener("click", () => {
+          saveInsight("personal_ai_coach", String(text || ""));
+        });
+
+        saveRow.appendChild(saveButton);
+        div.appendChild(saveRow);
+      }
+
       chatMessages.appendChild(div);
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
@@ -928,12 +1263,14 @@
       const history = readChatHistory();
 
       if (!history.length) {
-        addMessage("assistant", "I am your mindset coach. Tell me what you want to improve this week.");
+        addMessage("assistant", "I am your mindset coach. Tell me what you want to improve this week.", { allowSave: false });
         return;
       }
 
       history.forEach((item) => {
-        addMessage(item.role === "user" ? "user" : "assistant", String(item.text || ""));
+        addMessage(item.role === "user" ? "user" : "assistant", String(item.text || ""), {
+          allowSave: item.role === "assistant"
+        });
       });
     }
 
@@ -1043,16 +1380,22 @@
 
       setButtonLoading(analyzeButton, true);
       journalResult.innerHTML = "";
+      saveAnalyzeButton.hidden = true;
+      latestAnalyzeContent = "";
 
       try {
         const data = await callCoachApi("/api/analyze-journal", { entry });
 
-        renderCards(journalResult, [
+        const cards = [
           { title: "Positive Observation", value: data.positiveObservation },
           { title: "Mindset Insight", value: data.mindsetInsight },
           { title: "Small Action Step", value: data.smallActionStep },
           { title: "Encouraging Message", value: data.encouragingMessage }
-        ]);
+        ];
+
+        renderCards(journalResult, cards);
+        latestAnalyzeContent = buildStructuredResponseText(cards);
+        saveAnalyzeButton.hidden = false;
       } catch (error) {
         showError(error.message || "Journal analysis failed.");
       } finally {
@@ -1072,16 +1415,22 @@
 
       setButtonLoading(goalButton, true);
       goalResult.innerHTML = "";
+      saveGoalButton.hidden = true;
+      latestGoalContent = "";
 
       try {
         const data = await callCoachApi("/api/goal-coach", { goal });
 
-        renderCards(goalResult, [
+        const cards = [
           { title: "Weekly Plan", value: data.weeklyPlan },
           { title: "Small Milestones", value: Array.isArray(data.smallMilestones) ? data.smallMilestones : [String(data.smallMilestones || "") ] },
           { title: "Motivational Reminder", value: data.motivationalReminder },
           { title: "Progress Check-In Question", value: data.progressCheckInQuestion }
-        ]);
+        ];
+
+        renderCards(goalResult, cards);
+        latestGoalContent = buildStructuredResponseText(cards);
+        saveGoalButton.hidden = false;
       } catch (error) {
         showError(error.message || "Goal coaching failed.");
       } finally {
@@ -1094,19 +1443,25 @@
 
       setButtonLoading(weeklyButton, true);
       weeklyResult.innerHTML = "";
+      saveWeeklyButton.hidden = true;
+      latestWeeklyContent = "";
 
       try {
         const summaryData = buildWeeklySummaryData();
         const data = await callCoachApi("/api/weekly-report", { summaryData });
 
-        renderCards(weeklyResult, [
+        const cards = [
           { title: "Main Strength", value: data.mainStrength },
           { title: "Growth Area", value: data.growthArea },
           { title: "Mood Trend", value: data.moodTrend },
           { title: "Achievement Summary", value: data.achievementSummary },
           { title: "Focus For Next Week", value: data.focusForNextWeek },
           { title: "Encouraging Message", value: data.encouragingMessage }
-        ]);
+        ];
+
+        renderCards(weeklyResult, cards);
+        latestWeeklyContent = buildStructuredResponseText(cards);
+        saveWeeklyButton.hidden = false;
       } catch (error) {
         showError(error.message || "Weekly report generation failed.");
       } finally {
@@ -1144,7 +1499,7 @@
 
         const reply = String(data.reply || "I am here for you. What is one small action you can take next?");
         saveChatHistory([...updatedHistory, { role: "assistant", text: reply, at: new Date().toISOString() }]);
-        addMessage("assistant", reply);
+        addMessage("assistant", reply, { allowSave: true });
         applyCoachLockState();
       } catch (error) {
         const upgradeText = error && (error.code === "daily_limit_reached" || error.code === "free_ai_limit_reached")
@@ -1190,6 +1545,47 @@
       weeklyButton.addEventListener("click", handleWeeklyReport);
       chatButton.addEventListener("click", handleChat);
 
+      saveAnalyzeButton.addEventListener("click", () => {
+        saveInsight("analyze_journal", latestAnalyzeContent);
+      });
+
+      saveGoalButton.addEventListener("click", () => {
+        saveInsight("goal_coach", latestGoalContent);
+      });
+
+      saveWeeklyButton.addEventListener("click", () => {
+        saveInsight("weekly_growth_report", latestWeeklyContent);
+      });
+
+      viewSavedButton.addEventListener("click", () => {
+        loadSavedInsights(savedSearchInput.value);
+      });
+
+      searchSavedButton.addEventListener("click", () => {
+        loadSavedInsights(savedSearchInput.value);
+      });
+
+      savedSearchInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          loadSavedInsights(savedSearchInput.value);
+        }
+      });
+
+      savedInsightsList.addEventListener("click", (event) => {
+        const target = event.target;
+
+        if (!target || !(target instanceof HTMLElement)) {
+          return;
+        }
+
+        const deleteId = String(target.getAttribute("data-delete-id") || "").trim();
+
+        if (deleteId) {
+          deleteSavedInsight(deleteId);
+        }
+      });
+
       chatInput.addEventListener("focus", () => {
         if (isFreePlanLocked()) {
           showPremiumModal();
@@ -1216,6 +1612,8 @@
       if (window.location.protocol === "file:") {
         showError("Open this app through the backend server so AI features can call /api routes. Run: npm start");
       }
+
+      loadSavedInsights("");
     }
 
     init();

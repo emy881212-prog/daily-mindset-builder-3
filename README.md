@@ -25,6 +25,15 @@ The Mindset Coach page now uses backend API routes powered by the OpenAI Respons
 - `POST /api/goal-coach`
 - `POST /api/weekly-report`
 - `POST /api/personal-coach`
+- `POST /api/save-insight`
+- `GET|POST /api/list-saved-insights`
+- `POST /api/delete-saved-insight`
+
+### Saved Insights
+
+- Saving AI responses is optional and user-controlled.
+- Each saved entry stores: response content, feature type, user id, and created date/time.
+- Saved entries are stored in durable backend storage and persist across refreshes, devices, and deployments for the same authenticated account.
 
 ### Vercel Deployment Checklist
 

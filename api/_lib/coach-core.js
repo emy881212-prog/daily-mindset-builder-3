@@ -4,6 +4,12 @@ const {
   writeUsageState,
   isDurableStoreConfigured
 } = require("./durable-usage-store");
+const {
+  readSavedInsights,
+  writeSavedInsights,
+  isInsightsStoreConfigured,
+  MAX_INSIGHTS_PER_USER
+} = require("./durable-insights-store");
 
 const planLimits = {
   free: 3,
@@ -287,6 +293,183 @@ function usageSummary({ plan, usageState, dateKey, monthKey }) {
     limit: Infinity,
     remaining: Infinity
   };
+}
+
+function createInsightId(userId) {
+  const randomPart = Math.random().toString(36).slice(2, 10);
+  return `ins-${Date.now()}-${randomPart}-${safeString(userId, "user")}`;
+}
+
+function insightsStoreUnavailablePayload() {
+  return {
+    error: "Durable saved-insights store is not configured.",
+    code: "saved_insights_store_not_configured"
+  };
+}
+
+function normalizeFeatureType(rawType) {
+  const normalized = safeString(rawType, "").toLowerCase();
+  const map = {
+    analyze_journal: "Analyze Journal Entry",
+    goal_coach: "Goal Coach",
+    weekly_growth_report: "Weekly Growth Report",
+    personal_ai_coach: "Personal AI Coach"
+  };
+
+  return map[normalized] || "Personal AI Coach";
+}
+
+function normalizeResponseContent(rawContent) {
+  return safeString(rawContent, "").slice(0, 10000);
+}
+
+function getSearchQuery(req, body) {
+  const queryFromBody = safeString(body && body.query, "");
+  if (queryFromBody) {
+    return queryFromBody.toLowerCase();
+  }
+
+  const queryFromReq = safeString(req && req.query && req.query.q, "");
+  return queryFromReq.toLowerCase();
+}
+
+async function saveInsightHandler(req, res) {
+  if (req.method && req.method !== "POST") {
+    return methodNotAllowed(res);
+  }
+
+  if (!isInsightsStoreConfigured()) {
+    return sendJson(res, 500, insightsStoreUnavailablePayload());
+  }
+
+  const body = readBody(req);
+  const userId = getAuthenticatedUserId(req, body);
+
+  if (!userId) {
+    return sendJson(res, 401, authRequiredPayload());
+  }
+
+  const featureType = normalizeFeatureType(body && body.featureType);
+  const responseContent = normalizeResponseContent(body && body.responseContent);
+
+  if (!responseContent) {
+    return sendJson(res, 400, {
+      error: "responseContent is required.",
+      code: "missing_response_content"
+    });
+  }
+
+  try {
+    const currentEntries = await readSavedInsights(userId);
+    const newEntry = {
+      id: createInsightId(userId),
+      userId,
+      featureType,
+      responseContent,
+      createdAt: new Date().toISOString()
+    };
+
+    const nextEntries = [newEntry, ...currentEntries].slice(0, MAX_INSIGHTS_PER_USER);
+    await writeSavedInsights(userId, nextEntries);
+
+    return sendJson(res, 200, {
+      ok: true,
+      message: "✅ Saved successfully",
+      entry: newEntry
+    });
+  } catch (error) {
+    console.error("save-insight failed:", error && error.message ? error.message : error);
+    return sendJson(res, 500, {
+      error: "Could not save insight right now.",
+      code: "save_insight_error"
+    });
+  }
+}
+
+async function listSavedInsightsHandler(req, res) {
+  const method = safeString(req && req.method, "GET").toUpperCase();
+
+  if (method !== "GET" && method !== "POST") {
+    return methodNotAllowed(res);
+  }
+
+  if (!isInsightsStoreConfigured()) {
+    return sendJson(res, 500, insightsStoreUnavailablePayload());
+  }
+
+  const body = readBody(req);
+  const userId = getAuthenticatedUserId(req, body);
+
+  if (!userId) {
+    return sendJson(res, 401, authRequiredPayload());
+  }
+
+  const query = getSearchQuery(req, body);
+
+  try {
+    const entries = await readSavedInsights(userId);
+    const filtered = query
+      ? entries.filter((entry) => {
+        const haystack = `${entry.featureType}\n${entry.responseContent}`.toLowerCase();
+        return haystack.includes(query);
+      })
+      : entries;
+
+    return sendJson(res, 200, {
+      ok: true,
+      entries: filtered
+    });
+  } catch (error) {
+    console.error("list-saved-insights failed:", error && error.message ? error.message : error);
+    return sendJson(res, 500, {
+      error: "Could not load saved insights right now.",
+      code: "list_saved_insights_error"
+    });
+  }
+}
+
+async function deleteSavedInsightHandler(req, res) {
+  if (req.method && req.method !== "POST" && req.method !== "DELETE") {
+    return methodNotAllowed(res);
+  }
+
+  if (!isInsightsStoreConfigured()) {
+    return sendJson(res, 500, insightsStoreUnavailablePayload());
+  }
+
+  const body = readBody(req);
+  const userId = getAuthenticatedUserId(req, body);
+
+  if (!userId) {
+    return sendJson(res, 401, authRequiredPayload());
+  }
+
+  const entryId = safeString(body && body.id, "");
+
+  if (!entryId) {
+    return sendJson(res, 400, {
+      error: "id is required.",
+      code: "missing_saved_entry_id"
+    });
+  }
+
+  try {
+    const entries = await readSavedInsights(userId);
+    const nextEntries = entries.filter((entry) => entry.id !== entryId);
+    await writeSavedInsights(userId, nextEntries);
+
+    return sendJson(res, 200, {
+      ok: true,
+      deleted: entries.length !== nextEntries.length,
+      id: entryId
+    });
+  } catch (error) {
+    console.error("delete-saved-insight failed:", error && error.message ? error.message : error);
+    return sendJson(res, 500, {
+      error: "Could not delete saved insight right now.",
+      code: "delete_saved_insight_error"
+    });
+  }
 }
 
 function extractFirstJsonObject(rawText) {
@@ -819,5 +1002,8 @@ module.exports = {
   goalCoachHandler,
   weeklyReportHandler,
   personalCoachHandler,
-  healthHandler
+  healthHandler,
+  saveInsightHandler,
+  listSavedInsightsHandler,
+  deleteSavedInsightHandler
 };
