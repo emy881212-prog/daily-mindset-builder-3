@@ -23,6 +23,20 @@ The Mindset Coach page now uses backend API routes powered by the OpenAI Respons
 - `POST /api/weekly-report`
 - `POST /api/personal-coach`
 
+### Vercel Deployment Checklist
+
+To run AI features on Vercel production:
+
+1. Ensure this repository includes the `api/` folder with serverless routes.
+2. In Vercel Project Settings -> Environment Variables, set:
+	`OPENAI_API_KEY`
+3. Redeploy after adding/changing the environment variable.
+4. Verify health route on production:
+	`https://<your-vercel-domain>/api/health`
+
+If the key is missing, endpoints return:
+`{"error":"OPENAI_API_KEY is not configured on the server.","code":"missing_api_key"}`
+
 ### AI Request Limits By Plan
 
 - Free: 3 per day

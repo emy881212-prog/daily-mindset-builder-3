@@ -730,14 +730,28 @@
         })
       });
 
-      const json = await response.json().catch(() => ({}));
+      const rawText = await response.text().catch(() => "");
+      let json = {};
+
+      try {
+        json = rawText ? JSON.parse(rawText) : {};
+      } catch (_error) {
+        json = {};
+      }
 
       if (!response.ok) {
         const limitHint = json && json.code === "daily_limit_reached"
           ? `Your ${planLabel(plan)} plan reached its daily AI limit.`
           : "Could not complete this AI request.";
 
-        const detail = json && json.error ? json.error : "Please try again in a moment.";
+        const textDetail = rawText && !json.error
+          ? rawText.slice(0, 240)
+          : "";
+
+        const detail = json && json.error
+          ? json.error
+          : (textDetail || `HTTP ${response.status} from ${endpoint}`);
+
         throw new Error(`${limitHint} ${detail}`.trim());
       }
 
