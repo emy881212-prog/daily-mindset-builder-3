@@ -3174,6 +3174,51 @@
   updateAnimeMenuWords();
   setTimeout(updateAnimeMenuWords, 500);
 </script><style>
+<script>
+  (function openMenuFromQueryFlag() {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get("openMenu") !== "1") {
+      return;
+    }
+
+    let attempts = 0;
+    const maxAttempts = 18;
+
+    const timer = window.setInterval(() => {
+      attempts = attempts + 1;
+
+      const panel = document.getElementById("animeMenuPanel");
+      const overlay = document.getElementById("animeMenuOverlay");
+      const trigger =
+        document.getElementById("fixedAnimeMenuBtn") ||
+        document.getElementById("animeMenuBtn");
+
+      if (panel && panel.classList.contains("show")) {
+        window.clearInterval(timer);
+        return;
+      }
+
+      if (panel && overlay) {
+        panel.classList.add("show");
+        overlay.classList.add("show");
+        if (trigger) {
+          trigger.classList.add("open");
+        }
+        window.clearInterval(timer);
+        return;
+      }
+
+      if (attempts >= maxAttempts) {
+        window.clearInterval(timer);
+      }
+    }, 120);
+
+    if (window.history && typeof window.history.replaceState === "function") {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  })();
+</script><style>
   /* FIX MENU NOT COVERING ACCOUNT BUTTON */
   .anime-menu-btn {
     top: 82px !important;
