@@ -28,11 +28,12 @@ html::before,
 html::after {
   content: "";
   position: fixed;
-  z-index: 0;
+  z-index: 900;
   inset: -14vh -10vw;
   width: 120vw;
   height: 128vh;
   pointer-events: none;
+  mix-blend-mode: screen;
   transform: translateZ(0);
   will-change: transform, opacity;
 }
@@ -44,7 +45,7 @@ html::before {
     radial-gradient(circle, rgba(139,196,255,.58) 0 .8px, transparent 1.5px);
   background-position: 9px 13px, 48px 67px, 91px 29px;
   background-size: 97px 103px, 139px 151px, 181px 167px;
-  opacity: .43;
+  opacity: .56;
   animation:
     appStarsDrift 52s linear infinite,
     appStarsTwinkle 7s ease-in-out infinite;
@@ -56,7 +57,7 @@ html::after {
     radial-gradient(circle, rgba(206,126,255,.6) 0 1px, transparent 1.8px);
   background-position: 31px 43px, 108px 82px;
   background-size: 157px 173px, 223px 211px;
-  opacity: .27;
+  opacity: .38;
   filter: drop-shadow(0 0 3px rgba(169,101,255,.42));
   animation:
     appStarsDriftFar 78s linear infinite,
