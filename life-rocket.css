@@ -177,3 +177,79 @@ font-size:24px;
 }
 
 }
+.space-path{
+position:relative;
+padding:10px 0;
+}
+
+.planet-node{
+display:flex;
+align-items:center;
+gap:16px;
+margin:12px 0;
+}
+
+.planet-circle{
+width:62px;
+height:62px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:30px;
+background:rgba(255,255,255,.08);
+border:1px solid rgba(255,255,255,.15);
+}
+
+.path-line{
+width:4px;
+height:45px;
+margin-left:29px;
+background:linear-gradient(
+to bottom,
+#b44cff,
+#6f32ff
+);
+border-radius:999px;
+box-shadow:0 0 12px #b44cff;
+}
+
+.current .planet-circle{
+background:linear-gradient(
+135deg,
+#a34cff,
+#d66dff
+);
+box-shadow:0 0 25px #c65dff;
+animation:pulsePlanet 2s infinite;
+}
+
+.unlocked .planet-circle{
+box-shadow:0 0 18px rgba(100,255,180,.8);
+}
+
+.locked{
+opacity:.55;
+}
+
+.planet-label h4{
+margin:0;
+font-size:18px;
+}
+
+.planet-label p{
+margin:3px 0 0;
+font-size:13px;
+opacity:.8;
+}
+
+@keyframes pulsePlanet{
+0%{
+transform:scale(1);
+}
+50%{
+transform:scale(1.08);
+}
+100%{
+transform:scale(1);
+}
