@@ -429,10 +429,6 @@
     const signupPasswordInput = document.getElementById("signupPasswordInput");
 
     function authClient() {
-      if (typeof window.authClient === "function") {
-        return window.authClient();
-      }
-
       return window.MindsetAuth || null;
     }
     window.authClient = authClient;
