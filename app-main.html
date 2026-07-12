@@ -1721,7 +1721,7 @@
 
       if (upgradeBtn) {
         upgradeBtn.addEventListener("click", () => {
-          alert("Subscription page coming soon.");
+          openSubscriptionPage();
         });
       }
     }
@@ -2937,6 +2937,10 @@
 </aside>
 
 <script>
+  function openSubscriptionPage() {
+    window.location.href = "app-upgrade.html";
+  }
+
   function addAnimeInspiredMenu() {
     const menuBtn = document.getElementById("animeMenuBtn");
     const menuPanel = document.getElementById("animeMenuPanel");
@@ -2999,7 +3003,7 @@
         }
 
         if (action === "subscription") {
-          alert("Subscription page coming soon.");
+          openSubscriptionPage();
         }
 
         if (action === "settings") {
@@ -3097,7 +3101,7 @@
         }
 
         if (action === "subscription") {
-          alert("Subscription page coming soon.");
+          openSubscriptionPage();
         }
 
         if (action === "settings") {

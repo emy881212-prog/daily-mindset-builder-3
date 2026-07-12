@@ -274,6 +274,10 @@
 </div>
 
 <script>
+  function openSubscriptionPage() {
+    window.location.href = "app-upgrade.html";
+  }
+
   function applyResultPageUpgrades() {
     const FREE_QUOTE_LIMIT = 10;
 
@@ -473,7 +477,7 @@
 
       if (upgradeButton) {
         upgradeButton.addEventListener("click", () => {
-          alert("Subscription page coming soon.");
+          openSubscriptionPage();
         });
       }
     }

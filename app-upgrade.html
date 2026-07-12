@@ -1,487 +1,857 @@
-<style>
-  /* Slow white bubbles on the whole app */
-  .screen {
-    position: relative !important;
-    overflow: hidden !important;
-  }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Choose Your Journey - Daily Mindset Builder</title>
+  <link rel="stylesheet" href="performance.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-  .soft-bubbles-upgrade {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    overflow: hidden;
-    z-index: 1;
-  }
+    :root {
+      --bg-top: #fff9fb;
+      --bg-middle: #f7e7ee;
+      --bg-bottom: #d4bfcd;
+      --ink: #251821;
+      --muted: #604a57;
+      --card-border: rgba(255, 255, 255, 0.66);
+      --glass: rgba(255, 255, 255, 0.55);
+      --glass-strong: rgba(255, 255, 255, 0.72);
+      --ring: rgba(222, 188, 122, 0.7);
+      --pink-cta-start: #eb8fac;
+      --pink-cta-end: #c96e90;
+      --gold-soft: #f1d8a4;
+      --gold-deep: #d0a861;
+    }
 
-  .soft-bubbles-upgrade span {
-    position: absolute;
-    bottom: -50px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.42);
-    box-shadow: 0 0 16px rgba(255, 255, 255, 0.75);
-    animation: softBubbleFloat 18s linear infinite;
-  }
+    html {
+      min-height: 100%;
+      background: var(--bg-bottom);
+    }
 
-  .soft-bubbles-upgrade span:nth-child(1) { left: 7%; width: 6px; height: 6px; animation-delay: 0s; }
-  .soft-bubbles-upgrade span:nth-child(2) { left: 18%; width: 10px; height: 10px; animation-delay: 3s; }
-  .soft-bubbles-upgrade span:nth-child(3) { left: 30%; width: 7px; height: 7px; animation-delay: 6s; }
-  .soft-bubbles-upgrade span:nth-child(4) { left: 43%; width: 12px; height: 12px; animation-delay: 1s; }
-  .soft-bubbles-upgrade span:nth-child(5) { left: 56%; width: 8px; height: 8px; animation-delay: 5s; }
-  .soft-bubbles-upgrade span:nth-child(6) { left: 69%; width: 11px; height: 11px; animation-delay: 2s; }
-  .soft-bubbles-upgrade span:nth-child(7) { left: 81%; width: 6px; height: 6px; animation-delay: 8s; }
-  .soft-bubbles-upgrade span:nth-child(8) { left: 93%; width: 9px; height: 9px; animation-delay: 4s; }
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: hidden;
+      color: var(--ink);
+      font-family: "Avenir Next", "Segoe UI", Tahoma, sans-serif;
+      background:
+        radial-gradient(circle at 12% 10%, rgba(255, 255, 255, 0.9), transparent 33%),
+        radial-gradient(circle at 88% 15%, rgba(255, 226, 236, 0.95), transparent 31%),
+        linear-gradient(180deg, var(--bg-top) 0%, var(--bg-middle) 46%, var(--bg-bottom) 100%);
+      animation: pageFadeIn 520ms ease both;
+    }
 
-  @keyframes softBubbleFloat {
-    0% {
-      transform: translateY(0) translateX(0) scale(0.7);
+    .bubbles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .bubble {
+      position: absolute;
+      bottom: -70px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.18);
+      box-shadow:
+        inset 0 0 14px rgba(255, 255, 255, 0.3),
+        0 5px 20px rgba(255, 255, 255, 0.14);
+      width: var(--size);
+      height: var(--size);
+      left: var(--left);
+      animation: rise var(--duration) linear infinite;
+      animation-delay: var(--delay);
+    }
+
+    .bubble:nth-child(1) { --size: 11px; --left: 6%; --duration: 20s; --delay: -4s; }
+    .bubble:nth-child(2) { --size: 18px; --left: 16%; --duration: 24s; --delay: -8s; }
+    .bubble:nth-child(3) { --size: 8px; --left: 29%; --duration: 19s; --delay: -11s; }
+    .bubble:nth-child(4) { --size: 16px; --left: 40%; --duration: 22s; --delay: -6s; }
+    .bubble:nth-child(5) { --size: 22px; --left: 52%; --duration: 25s; --delay: -13s; }
+    .bubble:nth-child(6) { --size: 9px; --left: 65%; --duration: 18s; --delay: -10s; }
+    .bubble:nth-child(7) { --size: 14px; --left: 76%; --duration: 23s; --delay: -5s; }
+    .bubble:nth-child(8) { --size: 20px; --left: 88%; --duration: 26s; --delay: -15s; }
+    .bubble:nth-child(9) { --size: 12px; --left: 95%; --duration: 21s; --delay: -7s; }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 430px;
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0 auto;
+      padding: max(14px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom));
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-btn {
+      border: 1px solid rgba(46, 31, 39, 0.16);
+      background: rgba(255, 255, 255, 0.76);
+      color: var(--ink);
+      min-height: 40px;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+      backdrop-filter: blur(6px);
+    }
+
+    .nav-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(62, 34, 48, 0.13);
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .hero {
+      border-radius: 28px;
+      background: linear-gradient(150deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.52));
+      border: 1px solid var(--card-border);
+      box-shadow:
+        0 16px 30px rgba(66, 37, 52, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.58);
+      backdrop-filter: blur(14px);
+      padding: 22px 18px;
+    }
+
+    h1 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(34px, 9vw, 40px);
+      line-height: 1.04;
+      font-style: italic;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--muted);
+      max-width: 95%;
+    }
+
+    .billing-card {
+      border-radius: 26px;
+      border: 1px solid var(--card-border);
+      background: var(--glass);
+      box-shadow: 0 12px 24px rgba(66, 36, 50, 0.12);
+      backdrop-filter: blur(14px);
+      padding: 14px;
+    }
+
+    .billing-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 10px;
+    }
+
+    .billing-title {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 23px;
+      font-style: italic;
+      font-weight: 500;
+    }
+
+    .save-badge {
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: linear-gradient(140deg, #ffedf3, #ffd9e6);
+      border: 1px solid rgba(208, 103, 147, 0.3);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #8a3f64;
       opacity: 0;
+      transform: scale(0.94);
+      transition: opacity 200ms ease, transform 200ms ease;
+      pointer-events: none;
     }
 
-    15% {
-      opacity: 0.55;
-    }
-
-    50% {
-      transform: translateY(-48vh) translateX(18px) scale(1);
-      opacity: 0.45;
-    }
-
-    100% {
-      transform: translateY(-110vh) translateX(-18px) scale(1.25);
-      opacity: 0;
-    }
-  }
-
-  .screen > *:not(.soft-bubbles-upgrade) {
-    position: relative;
-    z-index: 3;
-  }
-
-  /* Correct arrows */
-  .arrows {
-    position: absolute !important;
-    bottom: 26px !important;
-    left: 34px !important;
-    right: 34px !important;
-    height: 34px !important;
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    z-index: 30 !important;
-    pointer-events: none !important;
-  }
-
-  .arrow-btn {
-    width: 95px !important;
-    height: 34px !important;
-    border: none !important;
-    background: transparent !important;
-    cursor: pointer !important;
-    position: relative !important;
-    pointer-events: auto !important;
-    font-size: 0 !important;
-    color: transparent !important;
-    box-shadow: none !important;
-  }
-
-  .arrow-btn::before {
-    content: "" !important;
-    position: absolute !important;
-    top: 50% !important;
-    width: 70px !important;
-    height: 2px !important;
-    background: white !important;
-    box-shadow: 0 0 8px rgba(255,255,255,0.95) !important;
-  }
-
-  .arrow-btn.left::before {
-    left: 22px !important;
-  }
-
-  .arrow-btn.right::before {
-    right: 22px !important;
-  }
-
-  .arrow-btn.left::after {
-    content: "←" !important;
-    position: absolute !important;
-    left: 0 !important;
-    top: -8px !important;
-    color: white !important;
-    font-size: 34px !important;
-    font-family: Arial, Helvetica, sans-serif !important;
-    text-shadow: 0 0 8px rgba(255,255,255,0.95) !important;
-  }
-
-  .arrow-btn.right::after {
-    content: "→" !important;
-    position: absolute !important;
-    right: 0 !important;
-    top: -8px !important;
-    color: white !important;
-    font-size: 34px !important;
-    font-family: Arial, Helvetica, sans-serif !important;
-    text-shadow: 0 0 8px rgba(255,255,255,0.95) !important;
-  }
-
-  .arrow-btn.left:hover {
-    transform: translateX(-8px) scale(1.08) !important;
-  }
-
-  .arrow-btn.right:hover {
-    transform: translateX(8px) scale(1.08) !important;
-  }
-
-  .quote-mini-text {
-    position: absolute !important;
-    left: 50% !important;
-    bottom: 6px !important;
-    transform: translateX(-50%) !important;
-    font-family: Arial, Helvetica, sans-serif !important;
-    font-size: 10px !important;
-    letter-spacing: 0.4px !important;
-    color: rgba(255, 255, 255, 0.95) !important;
-    text-shadow: 0 0 8px rgba(255,255,255,0.9) !important;
-    white-space: nowrap !important;
-    pointer-events: none !important;
-  }
-
-  /* Back button */
-  .result-back-fixed {
-    font-size: 28px !important;
-    line-height: 1 !important;
-  }
-
-  /* 10 free quotes popup */
-  .quote-limit-popup {
-    position: fixed;
-    inset: 0;
-    background: rgba(20, 18, 22, 0.55);
-    backdrop-filter: blur(12px);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 5000;
-    padding: 20px;
-  }
-
-  .quote-limit-box {
-    width: 340px;
-    max-width: 92vw;
-    border-radius: 32px;
-    background:
-      radial-gradient(circle at top left, rgba(255,255,255,0.95), transparent 35%),
-      linear-gradient(180deg, rgba(250,247,248,0.98), rgba(219,194,199,0.98));
-    box-shadow:
-      0 28px 60px rgba(0,0,0,0.38),
-      inset 0 0 22px rgba(255,255,255,0.35);
-    padding: 30px 24px;
-    text-align: center;
-    border: 1px solid rgba(255,255,255,0.6);
-    animation: limitPopupOpen 0.45s ease forwards;
-  }
-
-  @keyframes limitPopupOpen {
-    from {
-      opacity: 0;
-      transform: translateY(22px) scale(0.96);
-    }
-
-    to {
+    .save-badge.active {
       opacity: 1;
-      transform: translateY(0) scale(1);
+      transform: scale(1);
     }
-  }
 
-  .quote-limit-icon {
-    width: 56px;
-    height: 56px;
-    margin: 0 auto 14px;
-    border-radius: 16px;
-    background: #111;
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 28px;
-    box-shadow: 0 0 0 10px rgba(255,255,255,0.45);
-  }
+    .toggle-wrap {
+      position: relative;
+      border-radius: 999px;
+      padding: 4px;
+      border: 1px solid rgba(84, 50, 68, 0.2);
+      background: rgba(255, 255, 255, 0.72);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      isolation: isolate;
+    }
 
-  .quote-limit-box h2 {
-    font-size: 29px;
-    font-style: italic;
-    font-weight: 400;
-    margin-bottom: 10px;
-  }
+    .toggle-pill {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: calc(50% - 6px);
+      height: calc(100% - 8px);
+      border-radius: 999px;
+      background: linear-gradient(135deg, #f6bfd0, #e59db8);
+      box-shadow: 0 8px 18px rgba(180, 97, 133, 0.26);
+      z-index: 1;
+      transform: translateX(0);
+      transition: transform 250ms cubic-bezier(.22, .81, .36, 1);
+    }
 
-  .quote-limit-box p {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 14px;
-    line-height: 1.5;
-    opacity: 0.78;
-    margin-bottom: 20px;
-  }
+    .toggle-wrap.yearly .toggle-pill {
+      transform: translateX(calc(100% + 8px));
+    }
 
-  .upgrade-btn,
-  .close-limit-btn {
-    width: 100%;
-    border: none;
-    border-radius: 999px;
-    padding: 14px 16px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.25s ease;
-    font-family: Arial, Helvetica, sans-serif;
-    margin-top: 10px;
-  }
+    .toggle-btn {
+      border: 0;
+      background: transparent;
+      min-height: 44px;
+      border-radius: 999px;
+      position: relative;
+      z-index: 2;
+      font-size: 14px;
+      font-weight: 700;
+      color: #6a5360;
+      cursor: pointer;
+      transition: color 220ms ease;
+    }
 
-  .upgrade-btn {
-    background: #111;
-    color: white;
-  }
+    .toggle-btn.active {
+      color: #fff;
+      text-shadow: 0 1px 6px rgba(0, 0, 0, 0.15);
+    }
 
-  .close-limit-btn {
-    background: rgba(255,255,255,0.65);
-    color: #111;
-    border: 1px solid rgba(0,0,0,0.16);
-  }
+    .best-value {
+      margin-top: 9px;
+      font-size: 12px;
+      color: #8b6175;
+      min-height: 18px;
+      opacity: 0;
+      transform: translateY(5px);
+      transition: opacity 220ms ease, transform 220ms ease;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
 
-  .upgrade-btn:hover,
-  .close-limit-btn:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 18px rgba(0,0,0,0.20);
-  }
-</style>
+    .best-value.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
-<div class="quote-limit-popup" id="quoteLimitPopup">
-  <div class="quote-limit-box">
-    <div class="quote-limit-icon">✦</div>
+    .plans {
+      display: grid;
+      gap: 12px;
+      padding-bottom: 8px;
+    }
 
-    <h2>Free Limit Reached</h2>
+    .plan-card {
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--card-border);
+      border-radius: 26px;
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.48));
+      box-shadow:
+        0 12px 24px rgba(72, 39, 53, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(12px);
+      padding: 16px;
+      cursor: pointer;
+      transform: scale(1);
+      transition:
+        transform 210ms ease,
+        border-color 210ms ease,
+        box-shadow 210ms ease,
+        background-color 210ms ease;
+      position: relative;
+      overflow: hidden;
+    }
 
-    <p>
-      You used your 10 free quotes. Upgrade your subscription to unlock unlimited daily mindset quotes.
-    </p>
+    .plan-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(130deg, rgba(255, 255, 255, 0.35), transparent 30%);
+      pointer-events: none;
+      opacity: 0.8;
+    }
 
-    <button class="upgrade-btn" type="button">
-      Upgrade Subscription
-    </button>
+    .plan-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 26px rgba(72, 39, 53, 0.16);
+    }
 
-    <button class="close-limit-btn" id="closeLimitPopup" type="button">
-      Maybe Later
-    </button>
+    .plan-card.selected {
+      border-color: rgba(210, 162, 92, 0.72);
+      box-shadow:
+        0 0 0 1px rgba(255, 239, 209, 0.75),
+        0 16px 30px rgba(185, 132, 74, 0.3),
+        0 0 26px rgba(219, 177, 98, 0.35);
+      transform: translateY(-2px) scale(1.014);
+      animation: selectedGlow 2.8s ease-in-out infinite;
+    }
+
+    .plan-card.pro-plan {
+      border-color: rgba(210, 166, 98, 0.5);
+      box-shadow:
+        0 14px 30px rgba(72, 39, 53, 0.14),
+        0 0 18px rgba(211, 170, 99, 0.3);
+    }
+
+    .plan-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .plan-name {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 25px;
+      font-style: italic;
+      line-height: 1.05;
+      font-weight: 500;
+      color: #2a1e26;
+    }
+
+    .plan-badge {
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border: 1px solid rgba(86, 48, 64, 0.23);
+      background: rgba(255, 255, 255, 0.84);
+      color: #6a4f5e;
+      white-space: nowrap;
+    }
+
+    .price-wrap {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 8px;
+      min-height: 31px;
+    }
+
+    .price {
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #281820;
+      transition: transform 210ms ease, opacity 210ms ease;
+    }
+
+    .price-cycle {
+      font-size: 13px;
+      color: #705764;
+      font-weight: 600;
+    }
+
+    .price-wrap.updating .price,
+    .price-wrap.updating .price-cycle {
+      opacity: 0.35;
+      transform: translateY(2px);
+    }
+
+    .description {
+      font-size: 13px;
+      color: #5e4956;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    .features {
+      list-style: none;
+      display: grid;
+      gap: 6px;
+      color: #382931;
+      font-size: 13px;
+      line-height: 1.35;
+      font-weight: 500;
+    }
+
+    .features li::before {
+      content: "•";
+      margin-right: 7px;
+      color: #815566;
+    }
+
+    .bottom {
+      position: sticky;
+      bottom: 0;
+      background: linear-gradient(180deg, rgba(247, 231, 238, 0.1), rgba(247, 231, 238, 0.95) 28%, rgba(247, 231, 238, 0.98));
+      backdrop-filter: blur(8px);
+      padding: 8px 0 4px;
+      margin-top: auto;
+    }
+
+    .cta {
+      width: 100%;
+      min-height: 56px;
+      border: 0;
+      border-radius: 20px;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--pink-cta-start), var(--pink-cta-end));
+      box-shadow: 0 14px 24px rgba(172, 80, 122, 0.32);
+      transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+    }
+
+    .cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 17px 28px rgba(172, 80, 122, 0.37);
+      filter: brightness(1.03);
+    }
+
+    .cta:active {
+      transform: translateY(1px) scale(0.998);
+    }
+
+    .meta {
+      margin-top: 9px;
+      text-align: center;
+      color: #725865;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    @keyframes rise {
+      0% {
+        transform: translate3d(0, 0, 0);
+        opacity: 0;
+      }
+
+      12% {
+        opacity: 0.72;
+      }
+
+      50% {
+        transform: translate3d(10px, -55vh, 0);
+      }
+
+      100% {
+        transform: translate3d(-9px, -120vh, 0);
+        opacity: 0;
+      }
+    }
+
+    @keyframes pageFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes selectedGlow {
+      0%,
+      100% {
+        box-shadow:
+          0 0 0 1px rgba(255, 239, 209, 0.75),
+          0 16px 30px rgba(185, 132, 74, 0.3),
+          0 0 20px rgba(219, 177, 98, 0.3);
+      }
+
+      50% {
+        box-shadow:
+          0 0 0 1px rgba(255, 239, 209, 0.92),
+          0 18px 34px rgba(185, 132, 74, 0.38),
+          0 0 28px rgba(224, 186, 115, 0.46);
+      }
+    }
+
+    @media (min-width: 700px) {
+      .app {
+        max-width: 760px;
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .plans {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .plan-card.free-plan {
+        grid-column: span 2;
+      }
+
+      .plan-card.pro-plan {
+        grid-column: span 2;
+      }
+
+      .description {
+        max-width: 95%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bubbles" aria-hidden="true">
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
   </div>
-</div>
 
-<script>
-  function applyResultPageUpgrades() {
-    const FREE_QUOTE_LIMIT = 10;
+  <main class="app">
+    <nav class="nav" aria-label="Top navigation">
+      <button class="nav-btn" type="button" id="backButton">← Back</button>
+      <button class="nav-btn" type="button" id="closeButton">✕ Close</button>
+    </nav>
 
-    function isPaidUser() {
-      return localStorage.getItem("mindsetSubscription") === "paid";
-    }
+    <section class="hero">
+      <h1>Choose Your Journey</h1>
+      <p class="subtitle">Unlock personalized growth, powerful AI guidance, and daily mindset tools designed to help you become your best self.</p>
+    </section>
 
-    function getUsedQuotes() {
-      return Number(localStorage.getItem("freeQuotesUsed") || "0");
-    }
+    <section class="billing-card" aria-label="Billing frequency">
+      <div class="billing-head">
+        <p class="billing-title">Billing</p>
+        <span class="save-badge active" id="saveBadge">Save 33%</span>
+      </div>
 
-    function setUsedQuotes(count) {
-      localStorage.setItem("freeQuotesUsed", String(count));
-    }
+      <div class="toggle-wrap yearly" id="billingToggle">
+        <span class="toggle-pill" aria-hidden="true"></span>
+        <button class="toggle-btn" id="monthlyButton" type="button" data-cycle="monthly">Monthly</button>
+        <button class="toggle-btn active" id="yearlyButton" type="button" data-cycle="yearly">Yearly</button>
+      </div>
 
-    function showLimitPopup() {
-      const popup = document.getElementById("quoteLimitPopup");
+      <p class="best-value show" id="bestValueText">Best Value</p>
+    </section>
 
-      if (popup) {
-        popup.style.display = "flex";
+    <section class="plans" id="plansContainer" aria-label="Subscription plans"></section>
+
+    <section class="bottom">
+      <button class="cta" id="continueButton" type="button">Continue</button>
+      <p class="meta">Cancel anytime • Secure payments • No hidden fees</p>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      const MAIN_MENU_PAGE = "app-main.html";
+      const DEFAULT_CYCLE = "yearly";
+      const PLAN_STORAGE_KEY = "mindsetPlan";
+      const SUBSCRIPTION_STORAGE_KEY = "mindsetSubscription";
+      const BILLING_STORAGE_KEY = "mindsetBillingCycle";
+
+      const plans = [
+        {
+          key: "free",
+          emoji: "🌱",
+          name: "FREE",
+          description: "Perfect for getting started.",
+          badge: "Current Plan",
+          monthly: null,
+          yearly: null,
+          features: [
+            "10 Personalized Quotes Daily",
+            "Basic Journal",
+            "Mood Tracking",
+            "Calendar View",
+            "Basic Insights"
+          ]
+        },
+        {
+          key: "standard",
+          emoji: "✨",
+          name: "STANDARD",
+          description: "Build consistency every day.",
+          badge: "Best for Daily Use",
+          monthly: "$9.99",
+          yearly: "$79.99",
+          features: [
+            "50 Personalized Quotes Daily",
+            "Unlimited Journal Entries",
+            "Gratitude Journal",
+            "Enhanced Mood Tracking",
+            "Goal Tracking",
+            "Progress Statistics"
+          ]
+        },
+        {
+          key: "premium",
+          emoji: "⭐",
+          name: "PREMIUM",
+          description: "Unlock more growth tools.",
+          badge: "Most Popular",
+          monthly: "$16.99",
+          yearly: "$139.99",
+          features: [
+            "100 Personalized Quotes Daily",
+            "Advanced Insights",
+            "Premium Themes",
+            "Smart Progress Tracking",
+            "Advanced Goal Features",
+            "Motivational Reminders"
+          ]
+        },
+        {
+          key: "premium_plus",
+          emoji: "💎",
+          name: "PREMIUM PLUS",
+          description: "Advanced AI-powered growth.",
+          badge: "AI Powered",
+          monthly: "$26.99",
+          yearly: "$219.99",
+          features: [
+            "Everything in Premium",
+            "AI Reflection Assistant",
+            "AI Goal Planner",
+            "Smart Self-Reminders",
+            "AI Action Recommendations",
+            "Mood Pattern Analysis"
+          ]
+        },
+        {
+          key: "pro",
+          emoji: "👑",
+          name: "PRO",
+          description: "Unlimited access to everything.",
+          badge: "Unlimited Everything",
+          monthly: "$36.99",
+          yearly: "$299.99",
+          features: [
+            "Everything in Premium Plus",
+            "Unlimited Quotes",
+            "Unlimited AI Mindset Coach",
+            "Unlimited AI Reflection Assistant",
+            "Unlimited AI Goal Planning",
+            "Unlimited AI Recommendations",
+            "Deep Personal Growth Analysis",
+            "Priority Support",
+            "Early Access Features"
+          ]
+        }
+      ];
+
+      const plansContainer = document.getElementById("plansContainer");
+      const billingToggle = document.getElementById("billingToggle");
+      const monthlyButton = document.getElementById("monthlyButton");
+      const yearlyButton = document.getElementById("yearlyButton");
+      const saveBadge = document.getElementById("saveBadge");
+      const bestValueText = document.getElementById("bestValueText");
+      const continueButton = document.getElementById("continueButton");
+      const backButton = document.getElementById("backButton");
+      const closeButton = document.getElementById("closeButton");
+
+      let billingCycle = DEFAULT_CYCLE;
+      let selectedPlan = "premium";
+
+      function toMainMenu() {
+        window.location.href = MAIN_MENU_PAGE;
       }
-    }
 
-    function updateQuoteMiniText() {
-      const miniText = document.getElementById("quoteMiniText");
+      function getSavedPlan() {
+        const existing = String(localStorage.getItem(PLAN_STORAGE_KEY) || "").toLowerCase();
 
-      if (!miniText) return;
+        if (["free", "standard", "premium", "premium_plus", "pro"].includes(existing)) {
+          return existing;
+        }
 
-      if (isPaidUser()) {
-        miniText.textContent = "Unlimited quotes";
-        return;
+        if (String(localStorage.getItem(SUBSCRIPTION_STORAGE_KEY) || "").toLowerCase() === "paid") {
+          return "premium";
+        }
+
+        return "premium";
       }
 
-      const used = getUsedQuotes();
-      miniText.textContent = `${used} / ${FREE_QUOTE_LIMIT} free quotes`;
-    }
-
-    function canUseQuote() {
-      if (isPaidUser()) return true;
-
-      const used = getUsedQuotes();
-
-      if (used >= FREE_QUOTE_LIMIT) {
-        showLimitPopup();
-        updateQuoteMiniText();
-        return false;
+      function getSavedCycle() {
+        const stored = String(localStorage.getItem(BILLING_STORAGE_KEY) || "").toLowerCase();
+        return stored === "monthly" || stored === "yearly" ? stored : DEFAULT_CYCLE;
       }
 
-      setUsedQuotes(used + 1);
-      updateQuoteMiniText();
-      return true;
-    }
+      function renderPlans() {
+        plansContainer.innerHTML = plans.map((plan) => {
+          const isFree = plan.key === "free";
+          const cardClasses = ["plan-card"];
 
-    const screen = document.querySelector(".screen");
-
-    if (screen && !document.querySelector(".soft-bubbles-upgrade")) {
-      screen.insertAdjacentHTML(
-        "afterbegin",
-        `
-        <div class="soft-bubbles-upgrade">
-          <span></span><span></span><span></span><span></span>
-          <span></span><span></span><span></span><span></span>
-        </div>
-        `
-      );
-    }
-
-    const arrows = document.querySelector(".arrows");
-
-    if (arrows) {
-      const leftArrow = document.getElementById("prevQuoteBtn");
-      const rightArrow = document.getElementById("nextQuoteBtn");
-
-      if (leftArrow) {
-        leftArrow.classList.add("left");
-        leftArrow.innerHTML = "";
-      }
-
-      if (rightArrow) {
-        rightArrow.classList.add("right");
-        rightArrow.innerHTML = "";
-      }
-
-      if (!document.getElementById("quoteMiniText")) {
-        arrows.insertAdjacentHTML(
-          "beforeend",
-          '<span class="quote-mini-text" id="quoteMiniText">0 / 10 free quotes</span>'
-        );
-      }
-    }
-
-    document.querySelectorAll("button").forEach(button => {
-      const text = button.innerText.trim().toLowerCase();
-
-      if (text.includes("start") && text.includes("again")) {
-        const newButton = button.cloneNode(true);
-        newButton.textContent = "Back";
-        newButton.classList.add("result-back-fixed");
-
-        button.parentNode.replaceChild(newButton, button);
-
-        newButton.addEventListener("click", () => {
-          if (typeof resultScreen !== "undefined") {
-            resultScreen.style.display = "none";
+          if (plan.key === "free") {
+            cardClasses.push("free-plan");
           }
 
-          if (typeof quizScreen !== "undefined") {
-            quizScreen.style.display = "block";
+          if (plan.key === "pro") {
+            cardClasses.push("pro-plan");
           }
 
-          if (typeof currentQuestion !== "undefined" && typeof questions !== "undefined") {
-            currentQuestion = questions.length - 1;
+          if (plan.key === selectedPlan) {
+            cardClasses.push("selected");
           }
 
-          if (typeof loadQuestion === "function") {
-            loadQuestion();
+          const priceMarkup = isFree
+            ? '<div class="price-wrap"><span class="price" aria-label="Always free">Free</span></div>'
+            : '<div class="price-wrap" data-price-wrap>' +
+                '<span class="price" data-price>' + (billingCycle === "monthly" ? plan.monthly : plan.yearly) + '</span>' +
+                '<span class="price-cycle" data-price-cycle>' + (billingCycle === "monthly" ? "/month" : "/year") + '</span>' +
+              '</div>';
+
+          return '<button class="' + cardClasses.join(" ") + '" type="button" data-plan="' + plan.key + '">' +
+            '<div class="plan-top">' +
+              '<h3 class="plan-name">' + plan.emoji + ' ' + plan.name + '</h3>' +
+              '<span class="plan-badge">' + plan.badge + '</span>' +
+            '</div>' +
+            priceMarkup +
+            '<p class="description">' + plan.description + '</p>' +
+            '<ul class="features">' +
+              plan.features.map((feature) => '<li>' + feature + '</li>').join("") +
+            '</ul>' +
+          '</button>';
+        }).join("");
+      }
+
+      function syncToggleUi() {
+        const yearly = billingCycle === "yearly";
+
+        billingToggle.classList.toggle("yearly", yearly);
+        monthlyButton.classList.toggle("active", !yearly);
+        yearlyButton.classList.toggle("active", yearly);
+        saveBadge.classList.toggle("active", yearly);
+        bestValueText.classList.toggle("show", yearly);
+      }
+
+      function updatePricesOnly() {
+        document.querySelectorAll(".plan-card").forEach((card) => {
+          const key = card.dataset.plan;
+          const plan = plans.find((item) => item.key === key);
+          const wrap = card.querySelector("[data-price-wrap]");
+          const price = card.querySelector("[data-price]");
+          const cycle = card.querySelector("[data-price-cycle]");
+
+          if (!plan || !wrap || !price || !cycle) {
+            return;
           }
 
-          window.scrollTo(0, 0);
+          wrap.classList.add("updating");
+          window.setTimeout(() => {
+            price.textContent = billingCycle === "monthly" ? plan.monthly : plan.yearly;
+            cycle.textContent = billingCycle === "monthly" ? "/month" : "/year";
+            wrap.classList.remove("updating");
+          }, 120);
         });
       }
-    });
 
-    if (!window.quoteLimitUpgradeAdded) {
-      window.quoteLimitUpgradeAdded = true;
+      function savePlanSelection() {
+        localStorage.setItem(PLAN_STORAGE_KEY, selectedPlan);
+        localStorage.setItem(BILLING_STORAGE_KEY, billingCycle);
 
-      const originalShowQuote = typeof showQuote === "function" ? showQuote : null;
-
-      if (originalShowQuote) {
-        showQuote = function(index) {
-          if (!canUseQuote()) return;
-          originalShowQuote(index);
-          setTimeout(updateQuoteMiniText, 350);
-        };
+        if (selectedPlan === "free") {
+          localStorage.setItem(SUBSCRIPTION_STORAGE_KEY, "free");
+        } else {
+          localStorage.setItem(SUBSCRIPTION_STORAGE_KEY, "paid");
+        }
       }
 
-      const oldNextQuoteBtn = document.getElementById("nextQuoteBtn");
-      const oldPrevQuoteBtn = document.getElementById("prevQuoteBtn");
+      function setBilling(cycle) {
+        if (cycle !== "monthly" && cycle !== "yearly") {
+          return;
+        }
 
-      if (oldNextQuoteBtn) {
-        const newNextQuoteBtn = oldNextQuoteBtn.cloneNode(true);
-        oldNextQuoteBtn.parentNode.replaceChild(newNextQuoteBtn, oldNextQuoteBtn);
+        if (billingCycle === cycle) {
+          return;
+        }
 
-        newNextQuoteBtn.classList.add("right");
-        newNextQuoteBtn.addEventListener("click", () => {
-          if (!canUseQuote()) return;
+        billingCycle = cycle;
+        syncToggleUi();
+        updatePricesOnly();
+      }
 
-          if (typeof currentQuote !== "undefined" && typeof quoteResults !== "undefined") {
-            currentQuote++;
+      function setPlan(planKey) {
+        if (!plans.some((plan) => plan.key === planKey)) {
+          return;
+        }
 
-            if (currentQuote >= quoteResults.length) {
-              currentQuote = 0;
-            }
+        selectedPlan = planKey;
 
-            if (originalShowQuote) {
-              originalShowQuote(currentQuote);
-            }
-
-            setTimeout(updateQuoteMiniText, 350);
-          }
+        document.querySelectorAll(".plan-card").forEach((card) => {
+          card.classList.toggle("selected", card.dataset.plan === selectedPlan);
         });
       }
 
-      if (oldPrevQuoteBtn) {
-        const newPrevQuoteBtn = oldPrevQuoteBtn.cloneNode(true);
-        oldPrevQuoteBtn.parentNode.replaceChild(newPrevQuoteBtn, oldPrevQuoteBtn);
+      function handlePlanClicks(event) {
+        const card = event.target.closest(".plan-card");
 
-        newPrevQuoteBtn.classList.add("left");
-        newPrevQuoteBtn.addEventListener("click", () => {
-          if (!canUseQuote()) return;
+        if (!card) {
+          return;
+        }
 
-          if (typeof currentQuote !== "undefined" && typeof quoteResults !== "undefined") {
-            currentQuote--;
-
-            if (currentQuote < 0) {
-              currentQuote = quoteResults.length - 1;
-            }
-
-            if (originalShowQuote) {
-              originalShowQuote(currentQuote);
-            }
-
-            setTimeout(updateQuoteMiniText, 350);
-          }
-        });
+        setPlan(card.dataset.plan);
       }
 
-      const closeLimitPopup = document.getElementById("closeLimitPopup");
+      function init() {
+        selectedPlan = getSavedPlan();
+        billingCycle = getSavedCycle();
 
-      if (closeLimitPopup) {
-        closeLimitPopup.addEventListener("click", () => {
-          document.getElementById("quoteLimitPopup").style.display = "none";
+        renderPlans();
+        syncToggleUi();
+
+        plansContainer.addEventListener("click", handlePlanClicks);
+
+        monthlyButton.addEventListener("click", function () {
+          setBilling("monthly");
         });
+
+        yearlyButton.addEventListener("click", function () {
+          setBilling("yearly");
+        });
+
+        continueButton.addEventListener("click", function () {
+          savePlanSelection();
+          toMainMenu();
+        });
+
+        backButton.addEventListener("click", toMainMenu);
+        closeButton.addEventListener("click", toMainMenu);
       }
 
-      const upgradeButton = document.querySelector(".upgrade-btn");
-
-      if (upgradeButton) {
-        upgradeButton.addEventListener("click", () => {
-          alert("Subscription page coming soon.");
-        });
-      }
-    }
-
-    updateQuoteMiniText();
-  }
-
-  applyResultPageUpgrades();
-  setTimeout(applyResultPageUpgrades, 300);
-  setTimeout(applyResultPageUpgrades, 1000);
-</script>
+      init();
+    })();
+  </script>
+  <script src="performance.js"></script>
+</body>
+</html>
