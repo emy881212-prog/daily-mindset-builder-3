@@ -12,19 +12,32 @@
       box-sizing: border-box;
     }
 
+    html,
     body {
-      min-height: 100vh;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
       display: flex;
       justify-content: center;
-      background: #1f1f1f;
+      background: #f7eaf0;
       font-family: Georgia, "Times New Roman", serif;
       overflow-x: hidden;
     }
 
+    .app-container {
+      height: 100dvh;
+      min-height: 100dvh;
+      overflow-y: auto;
+      overscroll-behavior-y: contain;
+    }
+
     .screen {
-      width: 412px;
-      min-height: 917px;
-      padding: 18px 10px 66px;
+      width: min(412px, 100vw);
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: 18px 10px max(24px, env(safe-area-inset-bottom));
       background:
         radial-gradient(circle at 20% 10%, rgba(255,255,255,0.95), transparent 27%),
         radial-gradient(circle at 88% 32%, rgba(255,221,229,0.55), transparent 30%),
@@ -188,6 +201,23 @@
       z-index: 3;
     }
 
+    .quiz-screen {
+      min-height: calc(100dvh - 170px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .quiz-screen[style*="display: block"] {
+      display: flex !important;
+      flex-direction: column;
+    }
+
+    .result-screen[style*="display: block"] {
+      display: flex !important;
+      flex-direction: column;
+      min-height: calc(100dvh - 170px);
+    }
+
     .question-title {
       width: 315px;
       min-height: 118px;
@@ -276,7 +306,7 @@
       display: flex;
       justify-content: space-between;
       width: 315px;
-      margin: 24px auto 0;
+      margin: auto auto 0;
     }
 
     .small-btn {
@@ -458,7 +488,7 @@
     .explanation {
       width: 300px;
       min-height: 106px;
-      margin: 22px auto 74px;
+      margin: 22px auto 24px;
       background: rgba(224, 170, 160, 0.82);
       box-shadow:
         0 8px 15px rgba(0, 0, 0, 0.28),
@@ -488,6 +518,7 @@
       display: flex;
       justify-content: space-between;
       padding: 0 18px;
+      margin-top: auto;
     }
 
     .btn {
@@ -721,12 +752,13 @@
         font-size: 36px;
       }
     }
+
   </style>
   <link rel="stylesheet" href="performance.css">
 </head>
 
 <body>
-  <main class="screen">
+  <main class="screen app-container">
     <div class="sparkle one"></div>
     <div class="sparkle two"></div>
     <div class="sparkle three"></div>
