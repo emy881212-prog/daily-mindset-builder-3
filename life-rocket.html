@@ -1,140 +1,31 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Life Rocket</title>
-
-<link rel="stylesheet" href="life-rocket.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#070a1d">
+  <title>Life Rocket</title>
+  <link rel="preload" href="rocket.png" as="image" type="image/png">
+  <link rel="stylesheet" href="life-rocket.css">
 </head>
-
 <body>
-
-<div class="space-bg"></div>
-
-<div class="container">
-
-    <div class="header-card">
-        <h1>🚀 Life Rocket</h1>
-        <p>Your personal growth journey through the universe</p>
-    </div>
-<div class="rocket-card">
-
-<div class="rocket">🚀</div>
-    <h2>Confidence Moon</h2>
-
-
-
-        <div class="fuel">
-            ⛽ Fuel: <span id="fuel">720</span>
-        </div>
-
-        <div class="progress-bar">
-            <div class="progress-fill"></div>
-        </div>
-
-        <div class="progress-text">
-            72% to next planet
-        </div>
-    </div>
-
-    <div class="mission-card">
-        <h3>Daily Missions</h3>
-
-        <div class="mission">✅ Read 3 Quotes (+15 Fuel)</div>
-        <div class="mission">✅ Journal Entry (+20 Fuel)</div>
-        <div class="mission">⬜ Complete Goal (+50 Fuel)</div>
-        <div class="mission">⬜ Mood Check-In (+10 Fuel)</div>
-    </div>
-<div class="planet-card">
-
-<h3>Journey Through Space</h3>
-
-<div class="space-path">
-
-<div class="planet-node unlocked">
-<div class="planet-circle">🌍</div>
-<div class="planet-label">
-<h4>Earth</h4>
-<p>Journey Started</p>
-</div>
-</div>
-
-<div class="path-line"></div>
-
-<div class="planet-node current">
-<div class="planet-circle">🌙</div>
-<div class="planet-label">
-<h4>Confidence Moon</h4>
-<p>72% Complete</p>
-</div>
-</div>
-
-<div class="path-line"></div>
-
-<div class="planet-node locked">
-<div class="planet-circle">🪐</div>
-<div class="planet-label">
-<h4>Motivation Planet</h4>
-<p>Locked</p>
-</div>
-</div>
-
-<div class="path-line"></div>
-
-<div class="planet-node locked">
-<div class="planet-circle">🌌</div>
-<div class="planet-label">
-<h4>Focus Planet</h4>
-<p>Locked</p>
-</div>
-</div>
-
-<div class="path-line"></div>
-
-<div class="planet-node locked">
-<div class="planet-circle">💎</div>
-<div class="planet-label">
-<h4>Gratitude Planet</h4>
-<p>Locked</p>
-</div>
-</div>
-
-<div class="path-line"></div>
-
-<div class="planet-node locked">
-<div class="planet-circle">👑</div>
-<div class="planet-label">
-<h4>Success Planet</h4>
-<p>Locked</p>
-</div>
-</div>
-
-<div class="path-line"></div>
-
-<div class="planet-node locked">
-<div class="planet-circle">✨</div>
-<div class="planet-label">
-<h4>Mastery Galaxy</h4>
-<p>Pro Only</p>
-</div>
-</div>
-
-</div>
-
-</div>
-
-
-    <div class="reward-card">
-        <h3>Next Rewards</h3>
-
-        <div>🏆 Confidence Badge</div>
-        <div>🎨 New Theme</div>
-        <div>💬 Exclusive Quotes</div>
-        <div>🚀 Rocket Skin</div>
-    </div>
-
-</div>
-
+  <div class="space-bg" aria-hidden="true"></div>
+  <main class="container">
+    <section class="header-card"><button class="back-button" type="button" onclick="location.href='menu.html'">← Menu</button><h1>🚀 Life Rocket</h1><p>Your personal growth journey through the universe</p></section>
+    <section class="rocket-card">
+      <div class="flight-stage" aria-label="Astronaut flying beside a rocket">
+        <div id="astronaut" class="astronaut" aria-hidden="true"><span class="helmet"></span><span class="visor"></span><span class="body"></span><span class="pack"></span><span class="arm left"></span><span class="arm right"></span><span class="leg left"></span><span class="leg right"></span></div>
+        <img class="rocket" src="rocket.png" alt="Life Rocket" width="190" height="250" decoding="async">
+      </div>
+      <h2 id="levelName">Confidence Moon</h2>
+      <div class="fuel">⛽ Fuel: <span id="fuel">720</span></div>
+      <div class="progress-bar" role="progressbar" aria-label="Progress to next destination" aria-valuemin="0" aria-valuemax="100" aria-valuenow="72"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-text" id="progressText">72% to next planet</div>
+    </section>
+    <section class="mission-card"><h3>Daily Missions</h3><div class="mission">✅ Read 3 Quotes (+15 Fuel)</div><div class="mission">✅ Journal Entry (+20 Fuel)</div><div class="mission">⬜ Complete Goal (+50 Fuel)</div><div class="mission">⬜ Mood Check-In (+10 Fuel)</div></section>
+    <section class="planet-card"><h3>Journey Through Space</h3><div class="space-path" id="spacePath"></div></section>
+    <section class="reward-card"><h3>Next Rewards</h3><div>🏆 Confidence Badge</div><div>🎨 New Theme</div><div>💬 Exclusive Quotes</div><div>🚀 Rocket Skin</div></section>
+  </main>
+  <script src="life-rocket.js" defer></script>
 </body>
 </html>

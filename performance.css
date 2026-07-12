@@ -1,5 +1,8 @@
 html {
   scroll-behavior: smooth;
+  min-height: 100%;
+  background: #817e8c;
+  overflow-x: clip;
 }
 
 body {
@@ -7,6 +10,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   overscroll-behavior-y: none;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: clip;
 }
 
 button,

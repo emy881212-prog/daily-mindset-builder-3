@@ -709,10 +709,10 @@
         <h2 class="card-title">Subscription</h2>
         <div class="field-label" style="margin-top:0;">💎 Current Plan</div>
         <div class="plan-grid" id="planGrid">
-          <button class="plan-option active" type="button" data-plan="Free">Free</button>
-          <button class="plan-option" type="button" data-plan="Premium">Premium</button>
-          <button class="plan-option" type="button" data-plan="Premium Plus">Premium Plus</button>
-          <button class="plan-option" type="button" data-plan="Pro">Pro</button>
+          <button class="plan-option active" type="button" data-plan="Free" disabled>Free</button>
+          <button class="plan-option" type="button" data-plan="Premium" disabled>Premium</button>
+          <button class="plan-option" type="button" data-plan="Premium Plus" disabled>Premium Plus</button>
+          <button class="plan-option" type="button" data-plan="Pro" disabled>Pro</button>
         </div>
         <button class="gradient-btn" type="button" data-route="app-upgrade.html">Manage Subscription</button>
         <button class="gradient-btn" type="button" id="restorePurchases">Restore Purchases</button>
@@ -821,7 +821,6 @@
           categories: Array.from(selectedCategories),
           motivationLevel: Number(motivationRange.value),
           notificationTime: notificationTime.value,
-          plan: selectedPlan,
           updatedAt: new Date().toISOString()
         };
 
@@ -857,9 +856,7 @@
             notificationTime.value = data.notificationTime;
           }
 
-          if (typeof data.plan === "string") {
-            selectedPlan = data.plan;
-          }
+          selectedPlan = localStorage.getItem("mindsetVerifiedPlan") || "Free";
         } catch (error) {
           console.error("Could not load settings", error);
         }
@@ -920,7 +917,7 @@
         haptic(10);
         document.body.classList.add("page-leaving");
         window.setTimeout(() => {
-          window.location.href = "/";
+          window.location.href = "menu.html";
         }, 240);
       });
 
@@ -952,15 +949,6 @@
 
         syncUiState();
         haptic(6);
-      });
-
-      document.getElementById("planGrid").addEventListener("click", (event) => {
-        const plan = event.target.closest(".plan-option");
-        if (!plan) return;
-
-        selectedPlan = plan.dataset.plan;
-        syncUiState();
-        haptic(8);
       });
 
       motivationRange.addEventListener("input", () => {
