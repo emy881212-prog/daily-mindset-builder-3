@@ -4,7 +4,32 @@ document.addEventListener("DOMContentLoaded", () => {
   connectAppMenuLinks();
   initializeJournalHistoryCalendarNotes();
   initializeQuoteCollectionLabels();
+  initializeMainPageStars();
 });
+
+function initializeMainPageStars() {
+  const screen = document.querySelector("main.screen.app-container");
+  if (!screen || screen.querySelector(".main-space-stars")) return;
+
+  const layer = document.createElement("div");
+  layer.className = "main-space-stars";
+  layer.setAttribute("aria-hidden", "true");
+
+  for (let index = 0; index < 58; index += 1) {
+    const star = document.createElement("i");
+    const size = 1 + Math.random() * 2.2;
+    star.style.setProperty("--star-x", (2 + Math.random() * 96).toFixed(2) + "%");
+    star.style.setProperty("--star-y", (2 + Math.random() * 96).toFixed(2) + "%");
+    star.style.setProperty("--star-size", size.toFixed(2) + "px");
+    star.style.setProperty("--star-alpha", (0.28 + Math.random() * 0.58).toFixed(2));
+    star.style.setProperty("--star-delay", (-Math.random() * 12).toFixed(2) + "s");
+    star.style.setProperty("--star-speed", (8 + Math.random() * 14).toFixed(2) + "s");
+    star.className = index % 7 === 0 ? "lavender" : index % 11 === 0 ? "blue" : "";
+    layer.appendChild(star);
+  }
+
+  screen.prepend(layer);
+}
 
 function bootstrapCloudAuthPersistence() {
   const firebaseConfigScript = "/firebase-config.js";

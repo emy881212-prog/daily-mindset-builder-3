@@ -99,6 +99,49 @@ html::after {
   }
 }
 
+.main-space-stars {
+  position: absolute !important;
+  z-index: 5 !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+  contain: strict;
+}
+
+.main-space-stars i {
+  position: absolute;
+  left: var(--star-x);
+  top: var(--star-y);
+  width: var(--star-size);
+  height: var(--star-size);
+  border-radius: 50%;
+  background: rgba(255,255,255,var(--star-alpha));
+  box-shadow: 0 0 5px rgba(255,255,255,.72);
+  animation: mainStarFloat var(--star-speed) var(--star-delay) ease-in-out infinite alternate;
+}
+
+.main-space-stars i.lavender {
+  background: rgba(212,163,255,var(--star-alpha));
+  box-shadow: 0 0 7px rgba(180,96,255,.85);
+}
+
+.main-space-stars i.blue {
+  background: rgba(151,205,255,var(--star-alpha));
+  box-shadow: 0 0 6px rgba(105,171,255,.75);
+}
+
+@keyframes mainStarFloat {
+  0% { transform: translate3d(-2px,5px,0) scale(.78); opacity: .38; }
+  47% { opacity: 1; }
+  100% { transform: translate3d(7px,-16px,0) scale(1.18); opacity: .56; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .main-space-stars i { animation: none !important; }
+}
+
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
