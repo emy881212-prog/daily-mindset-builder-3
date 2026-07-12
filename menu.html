@@ -2,82 +2,125 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Journal</title>
-
-<style>
-
-body{
-    margin:0;
-    min-height:100vh;
-    background:#fdf3f7;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-family:Georgia, serif;
-}
-
-.journal-card{
-    width:340px;
-    padding:30px;
-    border-radius:35px;
-    background:rgba(255,255,255,0.45);
-    backdrop-filter:blur(10px);
-    box-shadow:0 10px 30px rgba(0,0,0,0.08);
-}
-
-.title{
-    text-align:center;
-    font-size:36px;
-    font-style:italic;
-    margin-bottom:25px;
-}
-
-.menu-btn{
-    width:100%;
-    padding:14px;
-    margin:10px 0;
-    border-radius:999px;
-    border:1px solid #777;
-    background:white;
-    font-size:22px;
-    font-style:italic;
-    cursor:pointer;
-    transition:.3s;
-}
-
-.menu-btn:hover{
-    transform:translateY(-2px);
-    box-shadow:0 5px 15px rgba(0,0,0,.08);
-}
-
-.logout{
-    margin-top:25px;
-    border:1px solid #d68ea6;
-}
-
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Mindset Menu</title>
 <link rel="stylesheet" href="performance.css">
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: Georgia, "Times New Roman", serif;
+  color: #2f222b;
+  background: linear-gradient(180deg, #fffdfd 0%, #fdf4f7 20%, #f8edef 50%, #fdf1f4 80%, #fffdfd 100%);
+}
+
+.menu-shell {
+  height: 100dvh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: max(16px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom));
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.menu-card {
+  width: min(640px, 100%);
+  border-radius: 30px;
+  padding: 18px;
+  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 12px 34px rgba(214, 174, 191, 0.14);
+}
+
+.title {
+  text-align: center;
+  font-size: clamp(42px, 11vw, 56px);
+  font-style: italic;
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  text-align: center;
+  font-family: "Segoe UI", Arial, sans-serif;
+  font-size: 13px;
+  color: #7a616f;
+  margin-bottom: 16px;
+}
+
+.menu-list {
+  display: grid;
+  gap: 10px;
+}
+
+.menu-btn {
+  width: 100%;
+  min-height: 52px;
+  border-radius: 18px;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  background: rgba(255, 255, 255, 0.74);
+  font-size: 22px;
+  font-style: italic;
+  color: #2f222b;
+  cursor: pointer;
+  transition: transform 200ms ease, box-shadow 200ms ease, background 200ms ease;
+}
+
+.menu-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.menu-btn:active {
+  transform: scale(0.985);
+}
+
+.settings-btn {
+  background: linear-gradient(135deg, #fceef3, #f8e4eb, #fdf7f9);
+  border-color: rgba(191, 136, 158, 0.35);
+}
+</style>
 </head>
 <body>
+<main class="menu-shell">
+  <section class="menu-card">
+    <h1 class="title">Mindset Menu</h1>
+    <p class="subtitle">Choose where to continue your growth journey.</p>
 
-<div class="journal-card">
+    <div class="menu-list">
+      <button class="menu-btn" type="button" onclick="go('app-main.html')">✦ Main Page</button>
+      <button class="menu-btn" type="button" onclick="go('journal.html')">☾ Journal</button>
+      <button class="menu-btn" type="button" onclick="go('insights.html')">✧ Insights</button>
+      <button class="menu-btn" type="button" onclick="go('mindset-coach.html')">🤖 Mindset Coach</button>
+      <button class="menu-btn" type="button" onclick="go('saved-quotes.html')">♡ Saved Quotes</button>
+      <button class="menu-btn" type="button" onclick="go('app-upgrade.html')">◇ Subscription</button>
+      <button class="menu-btn settings-btn" type="button" onclick="go('settings.html')">⚙ Settings</button>
+    </div>
+  </section>
+</main>
 
-<div class="title">Journal</div>
-
-<button class="menu-btn">New Entry</button>
-<button class="menu-btn">Mood Tracker</button>
-<button class="menu-btn">Gratitude Journal</button>
-<button class="menu-btn">Goals & Dreams</button>
-<button class="menu-btn">Daily Reflection</button>
-<button class="menu-btn">Journal History</button>
-<button class="menu-btn">Saved Notes</button>
-<button class="menu-btn">Export Journal</button>
-<button class="menu-btn">🤖 Mindset Coach</button>
-<button class="menu-btn logout" onclick="window.location.href='app-main.html'">← Back</button>
-
-</div>
-
+<script>
+function go(destination) {
+  if (!destination) return;
+  document.body.classList.add('app-page-leaving');
+  window.setTimeout(() => {
+    window.location.href = destination;
+  }, 250);
+}
+</script>
 <script src="performance.js"></script>
 </body>
 </html>
