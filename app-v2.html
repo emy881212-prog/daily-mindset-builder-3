@@ -307,20 +307,36 @@
     </div>
 
     <div class="auth-form" id="loginForm">
-      <input class="auth-input" type="email" placeholder="Email" />
-      <input class="auth-input" type="password" placeholder="Password" />
+      <input class="auth-input" id="loginEmailInput" type="email" placeholder="Email" />
+      <input class="auth-input" id="loginPasswordInput" type="password" placeholder="Password" />
       <button class="auth-main-btn" id="loginBtn" type="button">Log In</button>
+      <button class="auth-main-btn" id="resetPasswordBtn" type="button" style="margin-top:8px;background:#ffffff;color:#1f1f1f;">Reset Password</button>
     </div>
 
     <div class="auth-form" id="signupForm">
-      <input class="auth-input" type="text" placeholder="Your name" />
-      <input class="auth-input" type="email" placeholder="Email" />
-      <input class="auth-input" type="password" placeholder="Create password" />
+      <input class="auth-input" id="signupNameInput" type="text" placeholder="Your name" />
+      <input class="auth-input" id="signupEmailInput" type="email" placeholder="Email" />
+      <input class="auth-input" id="signupPasswordInput" type="password" placeholder="Create password" />
       <button class="auth-main-btn" id="signupBtn" type="button">Create Account</button>
     </div>
+
+    <p id="authStatusText" style="margin-top:12px;font-size:13px;opacity:.75;text-align:center;">Signed out</p>
+    <button class="auth-main-btn" id="verifyEmailBtn" type="button" style="display:none;margin-top:8px;background:#ffffff;color:#1f1f1f;">Send Verification Email</button>
+    <button class="auth-main-btn" id="logoutBtn" type="button" style="display:none;margin-top:8px;">Log Out</button>
   </div>
 </section>
 
+<script>
+  window.__AUTH_BOOT_STATUS__ = window.__AUTH_BOOT_STATUS__ || {
+    scripts: {},
+    startedAt: new Date().toISOString()
+  };
+</script>
+<script src="/firebase-config.js" onload="window.__AUTH_BOOT_STATUS__.scripts.firebaseConfig='loaded'" onerror="window.__AUTH_BOOT_STATUS__.scripts.firebaseConfig='error'"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js" onload="window.__AUTH_BOOT_STATUS__.scripts.firebaseApp='loaded'" onerror="window.__AUTH_BOOT_STATUS__.scripts.firebaseApp='error'"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js" onload="window.__AUTH_BOOT_STATUS__.scripts.firebaseAuth='loaded'" onerror="window.__AUTH_BOOT_STATUS__.scripts.firebaseAuth='error'"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js" onload="window.__AUTH_BOOT_STATUS__.scripts.firebaseFirestore='loaded'" onerror="window.__AUTH_BOOT_STATUS__.scripts.firebaseFirestore='error'"></script>
+<script src="/auth-persistence.js" onload="window.__AUTH_BOOT_STATUS__.scripts.authPersistence='loaded'" onerror="window.__AUTH_BOOT_STATUS__.scripts.authPersistence='error'"></script>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const brand = document.querySelector(".brand");
@@ -402,6 +418,56 @@
       window.loadQuestion();
     }
 
+    const authStatusText = document.getElementById("authStatusText");
+    const verifyEmailBtn = document.getElementById("verifyEmailBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const resetPasswordBtn = document.getElementById("resetPasswordBtn");
+    const loginEmailInput = document.getElementById("loginEmailInput");
+    const loginPasswordInput = document.getElementById("loginPasswordInput");
+    const signupNameInput = document.getElementById("signupNameInput");
+    const signupEmailInput = document.getElementById("signupEmailInput");
+    const signupPasswordInput = document.getElementById("signupPasswordInput");
+
+    function authClient() {
+      if (typeof window.authClient === "function") {
+        return window.authClient();
+      }
+
+      return window.MindsetAuth || null;
+    }
+    window.authClient = authClient;
+
+    function updateAuthUi() {
+      const auth = authClient();
+      const user = auth && typeof auth.getCurrentUser === "function" ? auth.getCurrentUser() : null;
+      const signedIn = Boolean(user);
+
+      if (authStatusText) {
+        authStatusText.textContent = signedIn
+          ? `Signed in as ${user.email}${user.emailVerified ? " (verified)" : " (verification pending)"}`
+          : "Signed out";
+      }
+
+      if (verifyEmailBtn) {
+        verifyEmailBtn.style.display = signedIn && !user.emailVerified ? "block" : "none";
+      }
+
+      if (logoutBtn) {
+        logoutBtn.style.display = signedIn ? "block" : "none";
+      }
+
+      const accountButton = document.getElementById("accountBtn");
+      if (accountButton) {
+        accountButton.textContent = signedIn ? "Account ✓" : "Account";
+      }
+    }
+
+    const auth = authClient();
+    if (auth && typeof auth.initialize === "function") {
+      auth.initialize();
+    }
+    updateAuthUi();
+
     document.querySelectorAll(".auth-tab").forEach(tab => {
       tab.addEventListener("click", () => {
         document.querySelectorAll(".auth-tab").forEach(t => t.classList.remove("active"));
@@ -429,9 +495,151 @@
       }
     }
 
-    document.getElementById("guestBtn").addEventListener("click", () => closeAuth("guest"));
-    document.getElementById("loginBtn").addEventListener("click", () => closeAuth("login"));
-    document.getElementById("signupBtn").addEventListener("click", () => closeAuth("signup"));
+    document.getElementById("guestBtn").addEventListener("click", () => {
+      const client = authClient();
+
+      if (client && typeof client.isAuthenticated === "function" && client.isAuthenticated()) {
+        client.logout();
+      }
+
+      updateAuthUi();
+      closeAuth("guest");
+    });
+    const loginBtn = document.getElementById("loginBtn");
+    const loginBtnBound = loginBtn.cloneNode(true);
+    loginBtn.replaceWith(loginBtnBound);
+
+    loginBtnBound.addEventListener("click", async () => {
+      const client = authClient();
+
+      if (!client || typeof client.login !== "function") {
+        alert("Cloud authentication is unavailable. Check Firebase initialization and try again.");
+        return;
+      }
+
+      try {
+        await client.login({
+          email: loginEmailInput.value,
+          password: loginPasswordInput.value
+        });
+        if (typeof client.assertFirebaseSession === "function") {
+          await client.assertFirebaseSession(null, "login");
+        }
+        loginPasswordInput.value = "";
+        updateAuthUi();
+        closeAuth("login");
+      } catch (error) {
+        alert(error && error.message ? error.message : "Login failed.");
+      }
+    });
+
+    resetPasswordBtn.addEventListener("click", async () => {
+      const client = authClient();
+
+      if (!client || typeof client.resetPassword !== "function") {
+        alert("Password reset is unavailable.");
+        return;
+      }
+
+      try {
+        await client.resetPassword(loginEmailInput.value);
+        closeAuth("login");
+      } catch (error) {
+        alert(error && error.message ? error.message : "Password reset failed.");
+      }
+    });
+
+    const signupBtn = document.getElementById("signupBtn");
+    const signupBtnBound = signupBtn.cloneNode(true);
+    signupBtn.replaceWith(signupBtnBound);
+
+    signupBtnBound.addEventListener("click", async () => {
+      const client = authClient();
+
+      if (!client || typeof client.signup !== "function") {
+        alert("Cloud authentication is unavailable. Check Firebase initialization and try again.");
+        return;
+      }
+
+      try {
+        await client.signup({
+          name: signupNameInput.value,
+          email: signupEmailInput.value,
+          password: signupPasswordInput.value
+        });
+        if (typeof client.assertFirebaseSession === "function") {
+          await client.assertFirebaseSession(null, "signup");
+        }
+        signupPasswordInput.value = "";
+        updateAuthUi();
+        closeAuth("signup");
+      } catch (error) {
+        console.error("[signup-error][app-v2]", {
+          code: error && error.code ? error.code : "",
+          message: error && error.message ? error.message : "",
+          stack: error && error.stack ? error.stack : ""
+        });
+        alert((error && error.code ? `${error.code}: ` : "") + (error && error.message ? error.message : "Sign up failed."));
+      }
+    });
+
+    logoutBtn.addEventListener("click", () => {
+      const client = authClient();
+
+      if (client && typeof client.logout === "function") {
+        client.logout();
+      }
+
+      updateAuthUi();
+      document.getElementById("authOverlay").style.display = "flex";
+
+      const savedMessage = document.getElementById("savedMessage");
+      if (savedMessage) {
+        savedMessage.textContent = "Logged out ✦";
+        savedMessage.classList.add("show");
+        setTimeout(() => {
+          savedMessage.classList.remove("show");
+        }, 1800);
+      }
+    });
+
+    verifyEmailBtn.addEventListener("click", async () => {
+      const client = authClient();
+
+      if (!client || typeof client.resendVerificationEmail !== "function") {
+        alert("Email verification is unavailable.");
+        return;
+      }
+
+      try {
+        const result = await client.resendVerificationEmail();
+
+        if (result && result.alreadyVerified) {
+          const savedMessage = document.getElementById("savedMessage");
+          if (savedMessage) {
+            savedMessage.textContent = "Email already verified ✦";
+            savedMessage.classList.add("show");
+            setTimeout(() => savedMessage.classList.remove("show"), 1800);
+          }
+        } else {
+          const savedMessage = document.getElementById("savedMessage");
+          if (savedMessage) {
+            savedMessage.textContent = "Verification email sent ✦";
+            savedMessage.classList.add("show");
+            setTimeout(() => savedMessage.classList.remove("show"), 1800);
+          }
+        }
+
+        if (typeof client.refreshCurrentUser === "function") {
+          await client.refreshCurrentUser();
+        }
+
+        updateAuthUi();
+      } catch (error) {
+        alert(error && error.message ? error.message : "Could not send verification email.");
+      }
+    });
+
     document.getElementById("authClose").addEventListener("click", () => closeAuth("guest"));
 
     setTimeout(() => {
@@ -439,6 +647,7 @@
 
       if (accountBtn) {
         accountBtn.addEventListener("click", () => {
+          updateAuthUi();
           document.getElementById("authOverlay").style.display = "flex";
         });
       }

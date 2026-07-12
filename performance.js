@@ -1,9 +1,68 @@
 document.addEventListener("DOMContentLoaded", () => {
+  bootstrapCloudAuthPersistence();
   optimizePagePerformance();
   connectAppMenuLinks();
   initializeJournalHistoryCalendarNotes();
   initializeQuoteCollectionLabels();
 });
+
+function bootstrapCloudAuthPersistence() {
+  const firebaseConfigScript = "/firebase-config.js";
+  const authScript = "/auth-persistence.js";
+
+  function normalizeScriptPath(src) {
+    try {
+      return new URL(src, window.location.origin).pathname;
+    } catch (_error) {
+      return src;
+    }
+  }
+
+  function ensureScript(src) {
+    return new Promise((resolve, reject) => {
+      const targetPath = normalizeScriptPath(src);
+      const existing = Array.from(document.scripts || []).find((script) => {
+        const currentPath = normalizeScriptPath(script.getAttribute("src") || script.src || "");
+        return currentPath === targetPath;
+      });
+
+      if (existing) {
+        if (existing.dataset.loaded === "true" || existing.readyState === "complete") {
+          resolve();
+          return;
+        }
+
+        existing.addEventListener("load", () => {
+          existing.dataset.loaded = "true";
+          resolve();
+        }, { once: true });
+        existing.addEventListener("error", () => reject(new Error(`Could not load ${src}`)), { once: true });
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src = src;
+      script.async = true;
+      script.addEventListener("load", () => {
+        script.dataset.loaded = "true";
+        resolve();
+      }, { once: true });
+      script.addEventListener("error", () => reject(new Error(`Could not load ${src}`)), { once: true });
+      document.head.appendChild(script);
+    });
+  }
+
+  ensureScript(firebaseConfigScript)
+    .then(() => ensureScript(authScript))
+    .then(() => {
+      if (window.MindsetAuth && typeof window.MindsetAuth.initialize === "function") {
+        window.MindsetAuth.initialize();
+      }
+    })
+    .catch((error) => {
+      console.warn("[cloud-auth] Bootstrap skipped:", error && error.message ? error.message : error);
+    });
+}
 
 function optimizePagePerformance() {
   const processorCores = navigator.hardwareConcurrency || 8;

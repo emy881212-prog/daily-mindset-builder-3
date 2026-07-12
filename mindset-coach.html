@@ -721,6 +721,11 @@
     </div>
   </div>
 
+  <script src="/firebase-config.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <script src="/auth-persistence.js"></script>
   <script>
     const PLAN_LIMITS = {
       free: 3,
@@ -735,6 +740,10 @@
     const CHAT_STORAGE_KEY = "dailyMindsetCoachChatHistoryV1";
     const DEVICE_ID_KEY = "dailyMindsetDeviceId";
     let freePlanServerLocked = false;
+
+    if (window.MindsetAuth && typeof window.MindsetAuth.initialize === "function") {
+      window.MindsetAuth.initialize();
+    }
 
     const errorBanner = document.getElementById("errorBanner");
     const planBadge = document.getElementById("planBadge");
