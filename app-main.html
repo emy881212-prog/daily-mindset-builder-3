@@ -3649,9 +3649,12 @@
     width: min(412px, 100vw) !important;
     min-height: 100vh !important;
     min-height: 100dvh !important;
+    max-height: 100dvh !important;
     margin: 0 auto !important;
     overflow-x: hidden !important;
-    overflow-y: visible !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior-y: contain !important;
     touch-action: pan-y !important;
     contain: none !important;
   }
