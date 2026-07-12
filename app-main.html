@@ -3630,6 +3630,42 @@
   setTimeout(finalMenuNeverMovesFix, 300);
   setTimeout(finalMenuNeverMovesFix, 1000);
 </script>
+<style>
+  html,
+  body {
+    width: 100% !important;
+    min-height: 100vh !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  body {
+    display: block !important;
+  }
+
+  main.screen.app-container {
+    width: min(412px, 100vw) !important;
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
+    margin: 0 auto !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    touch-action: pan-y !important;
+    contain: none !important;
+  }
+
+  #quizScreen,
+  #resultScreen,
+  #answersCard,
+  .answer-btn {
+    touch-action: pan-y !important;
+  }
+
+  #authOverlay {
+    display: none !important;
+  }
+</style>
   <script src="performance.js"></script>
 </body>
 
