@@ -253,10 +253,15 @@ transform:scale(1.08);
 100%{
 transform:scale(1);
 }
-.rocket img{
-width:140px;
-height:auto;
-filter:
-drop-shadow(0 0 20px #c65dff)
-drop-shadow(0 0 40px #c65dff);
+.rocket{
+    font-size:120px;
+    text-align:center;
+    animation: floatRocket 3s ease-in-out infinite;
 }
+
+@keyframes floatRocket{
+    0%{transform:translateY(0px);}
+    50%{transform:translateY(-12px);}
+    100%{transform:translateY(0px);}
+}
+
