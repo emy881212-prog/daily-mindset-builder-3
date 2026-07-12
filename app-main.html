@@ -14,8 +14,11 @@
 
     html,
     body {
-      height: 100%;
-      overflow: hidden;
+      width: 100%;
+      min-height: 100vh;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     body {
@@ -23,18 +26,21 @@
       justify-content: center;
       background: #f7eaf0;
       font-family: Georgia, "Times New Roman", serif;
-      overflow-x: hidden;
+      min-height: 100vh;
+      min-height: 100dvh;
     }
 
     .app-container {
-      height: 100dvh;
+      width: min(412px, 100vw);
+      min-height: 100vh;
       min-height: 100dvh;
-      overflow-y: auto;
-      overscroll-behavior-y: contain;
+      margin: 0 auto;
+      overflow: visible;
+      overscroll-behavior-y: auto;
     }
 
     .screen {
-      width: min(412px, 100vw);
+      width: 100%;
       min-height: 100vh;
       min-height: 100dvh;
       padding: 18px 10px max(24px, env(safe-area-inset-bottom));
