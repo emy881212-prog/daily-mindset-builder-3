@@ -264,4 +264,32 @@ transform:scale(1);
     50%{transform:translateY(-12px);}
     100%{transform:translateY(0px);}
 }
+.rocket{
+    filter: drop-shadow(0 0 25px rgba(255,120,255,.8));
+}
 
+.rocket-card{
+    position:relative;
+    overflow:hidden;
+}
+
+.rocket-card::before{
+    content:"";
+    position:absolute;
+    top:-50%;
+    left:-50%;
+    width:200%;
+    height:200%;
+    background:
+    radial-gradient(
+    circle,
+    rgba(255,255,255,.08) 0%,
+    transparent 70%
+    );
+    animation: rotateGlow 12s linear infinite;
+}
+
+@keyframes rotateGlow{
+    from{transform:rotate(0deg);}
+    to{transform:rotate(360deg);}
+}
