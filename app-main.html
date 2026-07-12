@@ -953,6 +953,18 @@
     const savedMessage = document.getElementById("savedMessage");
     const authOverlay = document.getElementById("authOverlay");
 
+    function notifyUser(message) {
+      const text = String(message || "").trim();
+      if (!text) return;
+
+      if (typeof window.showToast === "function") {
+        window.showToast(text, 3000);
+        return;
+      }
+
+      showMessage(text);
+    }
+
     function loadQuestion() {
       const q = questions[currentQuestion];
 
@@ -998,7 +1010,7 @@
 
     nextBtn.addEventListener("click", () => {
       if (!userAnswers[currentQuestion]) {
-        alert("Please choose one answer.");
+        notifyUser("Please choose one answer.");
         return;
       }
 
@@ -1169,7 +1181,7 @@
       const client = authClient();
 
       if (!client || typeof client.login !== "function") {
-        alert("Cloud authentication is unavailable. Check Firebase initialization and try again.");
+        notifyUser("Cloud authentication is unavailable. Check Firebase initialization and try again.");
         return;
       }
 
@@ -1185,7 +1197,7 @@
         updateAuthUi();
         closeAuth("login");
       } catch (error) {
-        alert(error && error.message ? error.message : "Login failed.");
+        notifyUser(error && error.message ? error.message : "Login failed.");
       }
     });
 
@@ -1193,7 +1205,7 @@
       const client = authClient();
 
       if (!client || typeof client.resetPassword !== "function") {
-        alert("Password reset is unavailable.");
+        notifyUser("Password reset is unavailable.");
         return;
       }
 
@@ -1201,7 +1213,7 @@
         await client.resetPassword(loginEmailInput.value);
         showMessage("Password reset email sent ✦");
       } catch (error) {
-        alert(error && error.message ? error.message : "Password reset failed.");
+        notifyUser(error && error.message ? error.message : "Password reset failed.");
       }
     });
 
@@ -1213,7 +1225,7 @@
       const client = authClient();
 
       if (!client || typeof client.signup !== "function") {
-        alert("Cloud authentication is unavailable. Check Firebase initialization and try again.");
+        notifyUser("Cloud authentication is unavailable. Check Firebase initialization and try again.");
         return;
       }
 
@@ -1235,7 +1247,7 @@
           message: error && error.message ? error.message : "",
           stack: error && error.stack ? error.stack : ""
         });
-        alert((error && error.code ? `${error.code}: ` : "") + (error && error.message ? error.message : "Sign up failed."));
+        notifyUser((error && error.code ? `${error.code}: ` : "") + (error && error.message ? error.message : "Sign up failed."));
       }
     });
 
@@ -1255,7 +1267,7 @@
       const client = authClient();
 
       if (!client || typeof client.resendVerificationEmail !== "function") {
-        alert("Email verification is unavailable.");
+        notifyUser("Email verification is unavailable.");
         return;
       }
 
@@ -1274,7 +1286,7 @@
 
         updateAuthUi();
       } catch (error) {
-        alert(error && error.message ? error.message : "Could not send verification email.");
+        notifyUser(error && error.message ? error.message : "Could not send verification email.");
       }
     });
 
@@ -2969,8 +2981,16 @@
 </aside>
 
 <script>
+  function navigateWithPageTransition(destination) {
+    if (!destination) return;
+    document.body.classList.add("app-page-leaving");
+    window.setTimeout(() => {
+      window.location.href = destination;
+    }, 280);
+  }
+
   function openSubscriptionPage() {
-    window.location.href = "app-upgrade.html";
+    navigateWithPageTransition("app-upgrade.html");
   }
 
   function addAnimeInspiredMenu() {
@@ -3027,11 +3047,11 @@
         }
 
         if (action === "saved") {
-          alert("Saved Quotes page coming soon.");
+          navigateWithPageTransition("saved-quotes.html");
         }
 
         if (action === "progress") {
-          alert("Progress page coming soon.");
+          navigateWithPageTransition("mood-energy-trends.html");
         }
 
         if (action === "subscription") {
@@ -3039,7 +3059,7 @@
         }
 
         if (action === "settings") {
-          alert("Settings page coming soon.");
+          navigateWithPageTransition("settings.html");
         }
 
         closeMenu();
@@ -3116,20 +3136,20 @@
         }
 
         if (action === "journal") {
-    window.location.href = "journal.html";
+    navigateWithPageTransition("journal.html");
 
         }
 
         if (action === "insights") {
-          alert("Insights page coming soon.");
+          navigateWithPageTransition("insights.html");
         }
 
         if (action === "mindsetcoach") {
-          window.location.href = "mindset-coach.html";
+          navigateWithPageTransition("mindset-coach.html");
         }
 
         if (action === "saved") {
-          alert("Saved Quotes page coming soon.");
+          navigateWithPageTransition("saved-quotes.html");
         }
 
         if (action === "subscription") {
@@ -3137,7 +3157,7 @@
         }
 
         if (action === "settings") {
-          alert("Settings page coming soon.");
+          navigateWithPageTransition("settings.html");
         }
 
         const menuBtn = document.getElementById("animeMenuBtn");

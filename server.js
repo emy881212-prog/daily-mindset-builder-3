@@ -20,6 +20,14 @@ const port = Number(process.env.PORT || 3000);
 app.use(express.json({ limit: "1mb" }));
 app.use(express.static(path.join(__dirname)));
 
+app.get("/menu", (req, res) => {
+  res.sendFile(path.join(__dirname, "menu.html"));
+});
+
+app.get("/settings", (req, res) => {
+  res.sendFile(path.join(__dirname, "settings.html"));
+});
+
 app.get("/api/health", (req, res) => healthHandler(req, res));
 app.post("/api/analyze-journal", (req, res) => analyzeJournalHandler(req, res));
 app.post("/api/goal-coach", (req, res) => goalCoachHandler(req, res));

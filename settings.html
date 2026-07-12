@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Settings | Daily Mindset</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="performance.css" />
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(180deg, #fffdfd 0%, #fdf4f7 20%, #f8edef 50%, #fdf1f4 80%, #fffdfd 100%);
+      --glass-bg: rgba(255, 255, 255, 0.55);
+      --glass-border: 1px solid rgba(255, 255, 255, 0.4);
+      --glass-shadow: 0 8px 32px rgba(214, 174, 191, 0.12);
+      --text-main: #3f2a34;
+      --text-soft: #7c5f6d;
+      --accent: #c47c99;
+      --accent-soft: #f7dce7;
+      --danger: #cb5b6d;
+      --radius-xl: 28px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --safe-bottom: max(14px, env(safe-area-inset-bottom));
+      --safe-top: max(14px, env(safe-area-inset-top));
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+      overflow-x: hidden;
+      background: #fffdfd;
+    }
+
+    body {
+      font-family: "Manrope", "Segoe UI", sans-serif;
+      color: var(--text-main);
+      background: var(--bg-gradient);
+    }
+
+    .settings-shell {
+      position: relative;
+      height: 100dvh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior-y: contain;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(196, 124, 153, 0.3) transparent;
+      padding: calc(var(--safe-top) + 12px) 16px calc(var(--safe-bottom) + 110px);
+      scroll-behavior: smooth;
+      isolation: isolate;
+    }
+
+    .settings-shell::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: var(--bg-gradient);
+      z-index: -3;
+    }
+
+    .bubble-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    .bubble {
+      position: absolute;
+      bottom: -140px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.14);
+      filter: blur(1.6px);
+      animation: floatUp linear infinite;
+      will-change: transform, opacity;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translate3d(0, 0, 0);
+        opacity: 0;
+      }
+      8% {
+        opacity: var(--bubble-opacity);
+      }
+      88% {
+        opacity: var(--bubble-opacity);
+      }
+      100% {
+        transform: translate3d(var(--drift-x), -122vh, 0);
+        opacity: 0;
+      }
+    }
+
+    .header {
+      animation: cardFade 500ms ease both;
+      margin-bottom: 16px;
+    }
+
+    .back-btn {
+      border: none;
+      background: rgba(255, 255, 255, 0.65);
+      border: var(--glass-border);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: var(--glass-shadow);
+      color: var(--text-main);
+      font-weight: 600;
+      font-size: 14px;
+      border-radius: 999px;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: transform 200ms ease, box-shadow 200ms ease, background 200ms ease;
+      margin-bottom: 14px;
+    }
+
+    .back-btn:active {
+      transform: scale(0.98);
+    }
+
+    .back-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 26px rgba(214, 174, 191, 0.2);
+      background: rgba(255, 255, 255, 0.75);
+    }
+
+    .header h1 {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-style: italic;
+      font-size: clamp(42px, 10vw, 56px);
+      line-height: 0.95;
+      letter-spacing: 0.4px;
+      margin-bottom: 10px;
+      text-wrap: balance;
+    }
+
+    .header p {
+      color: var(--text-soft);
+      font-size: 14px;
+      line-height: 1.55;
+      max-width: 520px;
+      min-height: 44px;
+    }
+
+    .section-stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .glass-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: var(--glass-border);
+      box-shadow: var(--glass-shadow);
+      border-radius: var(--radius-xl);
+      padding: 18px 16px;
+      animation: cardFade 540ms ease both;
+      transform-origin: center bottom;
+    }
+
+    .glass-card:nth-child(1) { animation-delay: 50ms; }
+    .glass-card:nth-child(2) { animation-delay: 100ms; }
+    .glass-card:nth-child(3) { animation-delay: 140ms; }
+    .glass-card:nth-child(4) { animation-delay: 180ms; }
+    .glass-card:nth-child(5) { animation-delay: 220ms; }
+    .glass-card:nth-child(6) { animation-delay: 260ms; }
+    .glass-card:nth-child(7) { animation-delay: 300ms; }
+
+    @keyframes cardFade {
+      from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.995);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .card-title {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-style: italic;
+      font-size: 31px;
+      letter-spacing: 0.2px;
+      margin-bottom: 13px;
+      min-height: 38px;
+    }
+
+    .row-btn {
+      width: 100%;
+      border: none;
+      background: rgba(255, 255, 255, 0.56);
+      border-radius: var(--radius-md);
+      padding: 14px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--text-main);
+      font-size: 15px;
+      font-weight: 600;
+      margin-top: 10px;
+      cursor: pointer;
+      transition: transform 220ms ease, background 220ms ease, box-shadow 220ms ease;
+      text-align: left;
+    }
+
+    .row-btn:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.72);
+      box-shadow: 0 14px 24px rgba(190, 146, 165, 0.15);
+    }
+
+    .row-btn:active {
+      transform: scale(0.986);
+    }
+
+    .row-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .row-chevron {
+      font-size: 18px;
+      color: #aa7e90;
+      line-height: 1;
+    }
+
+    .field-label {
+      display: block;
+      margin: 14px 2px 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #765664;
+      letter-spacing: 0.2px;
+      text-transform: uppercase;
+    }
+
+    .select-wrap {
+      position: relative;
+    }
+
+    .select-wrap select {
+      width: 100%;
+      appearance: none;
+      border: var(--glass-border);
+      background: rgba(255, 255, 255, 0.66);
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      font-weight: 600;
+      font-size: 15px;
+      padding: 14px 44px 14px 14px;
+      outline: none;
+      cursor: pointer;
+      transition: box-shadow 220ms ease, border-color 220ms ease;
+    }
+
+    .select-wrap select:focus {
+      border-color: rgba(196, 124, 153, 0.65);
+      box-shadow: 0 0 0 3px rgba(196, 124, 153, 0.16);
+    }
+
+    .select-wrap::after {
+      content: "▾";
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9c7485;
+      font-size: 15px;
+      pointer-events: none;
+    }
+
+    .segmented {
+      background: rgba(255, 255, 255, 0.56);
+      border-radius: 18px;
+      border: var(--glass-border);
+      padding: 4px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+    }
+
+    .segment-btn {
+      border: none;
+      background: transparent;
+      border-radius: 14px;
+      height: 42px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #7e6070;
+      cursor: pointer;
+      transition: background 220ms ease, color 220ms ease, transform 220ms ease;
+    }
+
+    .segment-btn.active {
+      background: rgba(255, 255, 255, 0.9);
+      color: #4a313d;
+      box-shadow: 0 8px 18px rgba(196, 124, 153, 0.2);
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .chip {
+      border: none;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.65);
+      border: var(--glass-border);
+      color: #6f4d5d;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: all 220ms ease;
+    }
+
+    .chip.active {
+      background: linear-gradient(135deg, rgba(255, 239, 245, 0.96), rgba(255, 255, 255, 0.78));
+      color: #4f3040;
+      box-shadow: 0 0 0 1px rgba(219, 162, 184, 0.45), 0 10px 22px rgba(214, 174, 191, 0.26);
+    }
+
+    .chip:active {
+      transform: scale(0.96);
+    }
+
+    .range-box {
+      background: rgba(255, 255, 255, 0.58);
+      border: var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 13px 12px;
+      margin-top: 8px;
+    }
+
+    .motivation-level {
+      font-size: 13px;
+      font-weight: 700;
+      color: #7f6170;
+      margin-bottom: 8px;
+    }
+
+    .range-box input[type="range"] {
+      width: 100%;
+      accent-color: #c47c99;
+      cursor: pointer;
+    }
+
+    .range-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #866573;
+      margin-top: 6px;
+      gap: 5px;
+    }
+
+    .plan-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .plan-option {
+      border: var(--glass-border);
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.64);
+      padding: 10px 8px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: #704f5f;
+      cursor: pointer;
+      transition: all 220ms ease;
+      user-select: none;
+    }
+
+    .plan-option.active {
+      background: linear-gradient(140deg, rgba(252, 238, 243, 0.95), rgba(248, 228, 235, 0.95), rgba(253, 247, 249, 0.95));
+      color: #4f3040;
+      box-shadow: 0 10px 24px rgba(198, 139, 165, 0.25);
+      border-color: rgba(228, 183, 201, 0.78);
+    }
+
+    .gradient-btn {
+      width: 100%;
+      border: var(--glass-border);
+      border-radius: 16px;
+      background: linear-gradient(135deg, #fceef3, #f8e4eb, #fdf7f9);
+      color: #4a2d3a;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 13px 14px;
+      cursor: pointer;
+      transition: transform 220ms ease, box-shadow 220ms ease;
+      margin-top: 8px;
+    }
+
+    .gradient-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 22px rgba(196, 124, 153, 0.2);
+    }
+
+    .danger-wrap {
+      display: grid;
+      gap: 10px;
+    }
+
+    .btn-logout,
+    .btn-delete {
+      border-radius: 16px;
+      padding: 13px 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 220ms ease, box-shadow 220ms ease;
+    }
+
+    .btn-logout {
+      border: 1px solid rgba(203, 91, 109, 0.5);
+      background: rgba(255, 255, 255, 0.66);
+      color: #b0475e;
+    }
+
+    .btn-delete {
+      border: 1px solid transparent;
+      background: rgba(203, 91, 109, 0.92);
+      color: #fff;
+      box-shadow: 0 12px 22px rgba(203, 91, 109, 0.22);
+    }
+
+    .btn-logout:active,
+    .btn-delete:active {
+      transform: scale(0.985);
+    }
+
+    .save-wrap {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 12px 16px calc(var(--safe-bottom) + 10px);
+      z-index: 20;
+      pointer-events: none;
+      background: linear-gradient(180deg, rgba(255, 252, 253, 0), rgba(255, 247, 250, 0.82) 60%, rgba(255, 244, 248, 0.94));
+    }
+
+    .save-btn {
+      pointer-events: auto;
+      width: min(680px, 100%);
+      margin: 0 auto;
+      display: block;
+      border: var(--glass-border);
+      border-radius: 18px;
+      background: linear-gradient(135deg, #fceef3, #f8e4eb, #fdf7f9);
+      color: #3f2832;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      padding: 16px 16px;
+      box-shadow: 0 18px 30px rgba(196, 124, 153, 0.23);
+      cursor: pointer;
+      transition: transform 220ms ease, box-shadow 220ms ease, filter 220ms ease;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .save-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 22px 34px rgba(196, 124, 153, 0.26);
+      filter: brightness(1.02);
+    }
+
+    .save-btn:active {
+      transform: scale(0.99);
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(var(--safe-bottom) + 88px);
+      transform: translateX(-50%) translateY(12px);
+      border: 1px solid rgba(255, 255, 255, 0.48);
+      border-radius: 999px;
+      background: rgba(60, 40, 49, 0.84);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 11px 16px;
+      box-shadow: 0 10px 28px rgba(35, 18, 27, 0.36);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 240ms ease, transform 240ms ease;
+      z-index: 40;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(38, 24, 31, 0.38);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      z-index: 45;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 220ms ease;
+    }
+
+    .modal-backdrop.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      width: min(440px, 100%);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.86);
+      border: var(--glass-border);
+      box-shadow: 0 24px 38px rgba(60, 34, 46, 0.2);
+      padding: 18px;
+      transform: translateY(8px) scale(0.98);
+      transition: transform 220ms ease;
+    }
+
+    .modal-backdrop.show .modal {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal h3 {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-size: 31px;
+      font-style: italic;
+      margin-bottom: 8px;
+    }
+
+    .modal p {
+      color: #644b57;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+
+    .modal-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .modal-actions button {
+      border-radius: 14px;
+      border: none;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 12px 12px;
+      cursor: pointer;
+    }
+
+    .btn-cancel {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(121, 81, 98, 0.26) !important;
+      color: #573845;
+    }
+
+    .btn-confirm-delete {
+      background: #c74f66;
+      color: #fff;
+      box-shadow: 0 10px 18px rgba(199, 79, 102, 0.24);
+    }
+
+    .page-enter {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    .page-enter.ready {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 320ms ease, transform 320ms ease;
+    }
+
+    .page-leaving {
+      opacity: 0;
+      transform: translateY(-6px);
+      transition: opacity 260ms ease, transform 260ms ease;
+    }
+
+    @media (min-width: 760px) {
+      .settings-shell {
+        max-width: 760px;
+        margin: 0 auto;
+        padding-left: 22px;
+        padding-right: 22px;
+      }
+
+      .section-stack {
+        gap: 16px;
+      }
+
+      .glass-card {
+        padding: 20px 20px;
+      }
+    }
+  </style>
+</head>
+<body class="page-enter">
+  <main class="settings-shell" id="settingsShell">
+    <div class="bubble-layer" id="bubbleLayer" aria-hidden="true"></div>
+
+    <header class="header">
+      <button class="back-btn" id="backButton" type="button">← Back</button>
+      <h1>⚙ Settings</h1>
+      <p>Customize your mindset experience, preferences, and account.</p>
+    </header>
+
+    <section class="section-stack">
+      <article class="glass-card">
+        <h2 class="card-title">Account</h2>
+        <button class="row-btn" type="button" data-route="account-profile.html">
+          <span class="row-main"><span>👤</span><span>Profile</span></span><span class="row-chevron">›</span>
+        </button>
+        <button class="row-btn" type="button" data-route="account-email.html">
+          <span class="row-main"><span>📧</span><span>Email</span></span><span class="row-chevron">›</span>
+        </button>
+        <button class="row-btn" type="button" data-route="account-password.html">
+          <span class="row-main"><span>🔒</span><span>Change Password</span></span><span class="row-chevron">›</span>
+        </button>
+      </article>
+
+      <article class="glass-card">
+        <h2 class="card-title">Preferences</h2>
+        <label class="field-label" for="languageSelect">🌍 Language</label>
+        <div class="select-wrap">
+          <select id="languageSelect">
+            <option value="English">English</option>
+            <option value="Hebrew">Hebrew</option>
+            <option value="Russian">Russian</option>
+            <option value="German">German</option>
+          </select>
+        </div>
+
+        <div class="field-label">🌙 Theme</div>
+        <div class="segmented" id="themeSegmented" role="tablist" aria-label="Theme">
+          <button class="segment-btn active" type="button" data-theme="Light">Light</button>
+          <button class="segment-btn" type="button" data-theme="Dark">Dark</button>
+          <button class="segment-btn" type="button" data-theme="System">System</button>
+        </div>
+      </article>
+
+      <article class="glass-card">
+        <h2 class="card-title">Mindset Experience</h2>
+
+        <div class="field-label">✨ Favorite Quote Categories</div>
+        <div class="chips" id="categoryChips">
+          <button class="chip" type="button" data-chip="Motivation">Motivation</button>
+          <button class="chip" type="button" data-chip="Success">Success</button>
+          <button class="chip" type="button" data-chip="Confidence">Confidence</button>
+          <button class="chip" type="button" data-chip="Self-Love">Self-Love</button>
+          <button class="chip" type="button" data-chip="Happiness">Happiness</button>
+          <button class="chip" type="button" data-chip="Gratitude">Gratitude</button>
+          <button class="chip" type="button" data-chip="Discipline">Discipline</button>
+          <button class="chip" type="button" data-chip="Growth">Growth</button>
+        </div>
+
+        <div class="field-label">🔥 Motivation Level</div>
+        <div class="range-box">
+          <div class="motivation-level" id="motivationLabel">2 — Balanced</div>
+          <input id="motivationRange" type="range" min="1" max="4" step="1" value="2" />
+          <div class="range-labels">
+            <span>1 Gentle</span>
+            <span>2 Balanced</span>
+            <span>3 Strong</span>
+            <span>4 Intense</span>
+          </div>
+        </div>
+
+        <label class="field-label" for="notificationTime">⏰ Notification Time</label>
+        <div class="select-wrap">
+          <input id="notificationTime" type="time" value="08:30" style="width:100%;border:var(--glass-border);background:rgba(255,255,255,0.66);border-radius:18px;color:var(--text-main);font-weight:600;font-size:15px;padding:14px 14px;outline:none;" />
+        </div>
+      </article>
+
+      <article class="glass-card">
+        <h2 class="card-title">Subscription</h2>
+        <div class="field-label" style="margin-top:0;">💎 Current Plan</div>
+        <div class="plan-grid" id="planGrid">
+          <button class="plan-option active" type="button" data-plan="Free">Free</button>
+          <button class="plan-option" type="button" data-plan="Premium">Premium</button>
+          <button class="plan-option" type="button" data-plan="Premium Plus">Premium Plus</button>
+          <button class="plan-option" type="button" data-plan="Pro">Pro</button>
+        </div>
+        <button class="gradient-btn" type="button" data-route="app-upgrade.html">Manage Subscription</button>
+        <button class="gradient-btn" type="button" id="restorePurchases">Restore Purchases</button>
+      </article>
+
+      <article class="glass-card">
+        <h2 class="card-title">Privacy &amp; Security</h2>
+        <button class="row-btn" type="button" data-route="privacy-policy.html">
+          <span class="row-main"><span>🔐</span><span>Privacy Policy</span></span><span class="row-chevron">›</span>
+        </button>
+        <button class="row-btn" type="button" data-route="terms-and-conditions.html">
+          <span class="row-main"><span>📜</span><span>Terms &amp; Conditions</span></span><span class="row-chevron">›</span>
+        </button>
+        <button class="row-btn" type="button" data-route="data-storage.html">
+          <span class="row-main"><span>💾</span><span>Data &amp; Storage</span></span><span class="row-chevron">›</span>
+        </button>
+      </article>
+
+      <article class="glass-card">
+        <h2 class="card-title">Support</h2>
+        <button class="row-btn" type="button" data-route="contact-support.html">
+          <span class="row-main"><span>💬</span><span>Contact Support</span></span><span class="row-chevron">›</span>
+        </button>
+        <button class="row-btn" type="button" data-route="report-bug.html">
+          <span class="row-main"><span>🐞</span><span>Report a Bug</span></span><span class="row-chevron">›</span>
+        </button>
+        <button class="row-btn" type="button" data-route="rate-app.html">
+          <span class="row-main"><span>⭐</span><span>Rate the App</span></span><span class="row-chevron">›</span>
+        </button>
+      </article>
+
+      <article class="glass-card">
+        <h2 class="card-title">Account Actions</h2>
+        <div class="danger-wrap">
+          <button class="btn-logout" id="logoutButton" type="button">🚪 Log Out</button>
+          <button class="btn-delete" id="deleteButton" type="button">🗑 Delete Account</button>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <div class="save-wrap">
+    <button class="save-btn" id="saveSettingsButton" type="button">✔ Save Settings</button>
+  </div>
+
+  <div class="toast" id="settingsToast">Settings Saved Successfully</div>
+
+  <div class="modal-backdrop" id="deleteModal" aria-hidden="true">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="deleteTitle">
+      <h3 id="deleteTitle">Confirm Delete</h3>
+      <p>Are you sure you want to permanently delete your account?</p>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="cancelDelete" type="button">Cancel</button>
+        <button class="btn-confirm-delete" id="confirmDelete" type="button">Delete</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      const SETTINGS_KEY = "mindset.settings.v1";
+      const shell = document.getElementById("settingsShell");
+      const toast = document.getElementById("settingsToast");
+      const languageSelect = document.getElementById("languageSelect");
+      const motivationRange = document.getElementById("motivationRange");
+      const motivationLabel = document.getElementById("motivationLabel");
+      const notificationTime = document.getElementById("notificationTime");
+      const deleteModal = document.getElementById("deleteModal");
+
+      const levelMap = {
+        "1": "Gentle",
+        "2": "Balanced",
+        "3": "Strong",
+        "4": "Intense"
+      };
+
+      let selectedTheme = "Light";
+      let selectedPlan = "Free";
+      let selectedCategories = new Set(["Motivation", "Confidence", "Growth"]);
+      let toastTimer = null;
+
+      function haptic(ms) {
+        if (window.navigator && typeof window.navigator.vibrate === "function") {
+          window.navigator.vibrate(ms);
+        }
+      }
+
+      function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add("show");
+        window.clearTimeout(toastTimer);
+        toastTimer = window.setTimeout(() => {
+          toast.classList.remove("show");
+        }, 2200);
+      }
+
+      function updateMotivationLabel() {
+        const value = motivationRange.value;
+        motivationLabel.textContent = value + " — " + levelMap[value];
+      }
+
+      function saveSettings() {
+        const payload = {
+          language: languageSelect.value,
+          theme: selectedTheme,
+          categories: Array.from(selectedCategories),
+          motivationLevel: Number(motivationRange.value),
+          notificationTime: notificationTime.value,
+          plan: selectedPlan,
+          updatedAt: new Date().toISOString()
+        };
+
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(payload));
+        showToast("Settings Saved Successfully");
+        haptic(16);
+      }
+
+      function loadSettings() {
+        const raw = localStorage.getItem(SETTINGS_KEY);
+        if (!raw) return;
+
+        try {
+          const data = JSON.parse(raw);
+
+          if (typeof data.language === "string") {
+            languageSelect.value = data.language;
+          }
+
+          if (typeof data.theme === "string") {
+            selectedTheme = data.theme;
+          }
+
+          if (Array.isArray(data.categories)) {
+            selectedCategories = new Set(data.categories);
+          }
+
+          if (typeof data.motivationLevel === "number") {
+            motivationRange.value = String(data.motivationLevel);
+          }
+
+          if (typeof data.notificationTime === "string") {
+            notificationTime.value = data.notificationTime;
+          }
+
+          if (typeof data.plan === "string") {
+            selectedPlan = data.plan;
+          }
+        } catch (error) {
+          console.error("Could not load settings", error);
+        }
+      }
+
+      function syncUiState() {
+        document.querySelectorAll(".segment-btn").forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.theme === selectedTheme);
+        });
+
+        document.querySelectorAll(".chip").forEach((chip) => {
+          chip.classList.toggle("active", selectedCategories.has(chip.dataset.chip));
+        });
+
+        document.querySelectorAll(".plan-option").forEach((plan) => {
+          plan.classList.toggle("active", plan.dataset.plan === selectedPlan);
+        });
+
+        updateMotivationLabel();
+      }
+
+      function navigateWithTransition(target) {
+        if (!target) return;
+        document.body.classList.add("page-leaving");
+        window.setTimeout(() => {
+          window.location.href = target;
+        }, 240);
+      }
+
+      function initializeBubbles() {
+        const layer = document.getElementById("bubbleLayer");
+        const total = 24;
+
+        for (let i = 0; i < total; i++) {
+          const bubble = document.createElement("span");
+          bubble.className = "bubble";
+
+          const size = Math.floor(16 + Math.random() * 88);
+          const left = Math.random() * 100;
+          const delay = Math.random() * 18;
+          const duration = 19 + Math.random() * 24;
+          const opacity = (0.08 + Math.random() * 0.1).toFixed(2);
+          const driftX = (Math.random() * 44 - 22).toFixed(0) + "px";
+
+          bubble.style.width = size + "px";
+          bubble.style.height = size + "px";
+          bubble.style.left = left + "%";
+          bubble.style.animationDelay = -delay + "s";
+          bubble.style.animationDuration = duration + "s";
+          bubble.style.setProperty("--bubble-opacity", opacity);
+          bubble.style.setProperty("--drift-x", driftX);
+
+          layer.appendChild(bubble);
+        }
+      }
+
+      document.getElementById("backButton").addEventListener("click", () => {
+        haptic(10);
+        navigateWithTransition("menu.html");
+      });
+
+      document.querySelectorAll(".row-btn[data-route], .gradient-btn[data-route]").forEach((button) => {
+        button.addEventListener("click", () => {
+          haptic(8);
+          navigateWithTransition(button.dataset.route);
+        });
+      });
+
+      document.querySelectorAll(".segment-btn").forEach((button) => {
+        button.addEventListener("click", () => {
+          selectedTheme = button.dataset.theme;
+          syncUiState();
+          haptic(7);
+        });
+      });
+
+      document.getElementById("categoryChips").addEventListener("click", (event) => {
+        const chip = event.target.closest(".chip");
+        if (!chip) return;
+
+        const key = chip.dataset.chip;
+        if (selectedCategories.has(key)) {
+          selectedCategories.delete(key);
+        } else {
+          selectedCategories.add(key);
+        }
+
+        syncUiState();
+        haptic(6);
+      });
+
+      document.getElementById("planGrid").addEventListener("click", (event) => {
+        const plan = event.target.closest(".plan-option");
+        if (!plan) return;
+
+        selectedPlan = plan.dataset.plan;
+        syncUiState();
+        haptic(8);
+      });
+
+      motivationRange.addEventListener("input", () => {
+        updateMotivationLabel();
+      });
+
+      document.getElementById("restorePurchases").addEventListener("click", () => {
+        haptic(12);
+        showToast("Purchases restored");
+      });
+
+      document.getElementById("logoutButton").addEventListener("click", () => {
+        haptic(10);
+        showToast("Logged out successfully");
+      });
+
+      document.getElementById("deleteButton").addEventListener("click", () => {
+        haptic(10);
+        deleteModal.classList.add("show");
+        deleteModal.setAttribute("aria-hidden", "false");
+      });
+
+      document.getElementById("cancelDelete").addEventListener("click", () => {
+        deleteModal.classList.remove("show");
+        deleteModal.setAttribute("aria-hidden", "true");
+      });
+
+      document.getElementById("confirmDelete").addEventListener("click", () => {
+        deleteModal.classList.remove("show");
+        deleteModal.setAttribute("aria-hidden", "true");
+        showToast("Account deletion request submitted");
+        haptic(22);
+      });
+
+      deleteModal.addEventListener("click", (event) => {
+        if (event.target === deleteModal) {
+          deleteModal.classList.remove("show");
+          deleteModal.setAttribute("aria-hidden", "true");
+        }
+      });
+
+      document.getElementById("saveSettingsButton").addEventListener("click", () => {
+        haptic(14);
+        saveSettings();
+      });
+
+      loadSettings();
+      syncUiState();
+      initializeBubbles();
+
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.finally(() => {
+          requestAnimationFrame(() => {
+            document.body.classList.add("ready");
+          });
+        });
+      } else {
+        requestAnimationFrame(() => {
+          document.body.classList.add("ready");
+        });
+      }
+
+      shell.scrollTop = 0;
+    })();
+  </script>
+  <script src="performance.js"></script>
+</body>
+</html>
