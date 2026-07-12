@@ -40,12 +40,15 @@ html::after {
 
 html::before {
   background-image:
-    radial-gradient(circle, rgba(255,255,255,.92) 0 1px, transparent 1.7px),
-    radial-gradient(circle, rgba(196,163,255,.72) 0 1.2px, transparent 1.9px),
-    radial-gradient(circle, rgba(139,196,255,.58) 0 .8px, transparent 1.5px);
-  background-position: 9px 13px, 48px 67px, 91px 29px;
-  background-size: 97px 103px, 139px 151px, 181px 167px;
-  opacity: .56;
+    radial-gradient(circle at 17% 29%, rgba(255,255,255,.96) 0 .8px, transparent 1.6px),
+    radial-gradient(circle at 71% 13%, rgba(196,163,255,.76) 0 1.15px, transparent 2px),
+    radial-gradient(circle at 43% 82%, rgba(139,196,255,.62) 0 .65px, transparent 1.45px),
+    radial-gradient(circle at 89% 61%, rgba(255,255,255,.74) 0 .5px, transparent 1.25px),
+    radial-gradient(circle at 8% 74%, rgba(218,174,255,.68) 0 .9px, transparent 1.7px),
+    radial-gradient(circle at 56% 46%, rgba(166,215,255,.55) 0 .45px, transparent 1.1px);
+  background-position: 11px 19px, 73px 41px, 29px 97px, 133px 17px, 51px 121px, 109px 77px;
+  background-size: 113px 127px, 173px 191px, 229px 211px, 307px 283px, 397px 359px, 487px 443px;
+  opacity: .58;
   animation:
     appStarsDrift 52s linear infinite,
     appStarsTwinkle 7s ease-in-out infinite;
@@ -53,10 +56,12 @@ html::before {
 
 html::after {
   background-image:
-    radial-gradient(circle, rgba(255,255,255,.78) 0 .7px, transparent 1.4px),
-    radial-gradient(circle, rgba(206,126,255,.6) 0 1px, transparent 1.8px);
-  background-position: 31px 43px, 108px 82px;
-  background-size: 157px 173px, 223px 211px;
+    radial-gradient(circle at 23% 67%, rgba(255,255,255,.8) 0 .65px, transparent 1.35px),
+    radial-gradient(circle at 78% 31%, rgba(206,126,255,.64) 0 .95px, transparent 1.8px),
+    radial-gradient(circle at 52% 91%, rgba(125,183,255,.48) 0 .5px, transparent 1.2px),
+    radial-gradient(circle at 94% 8%, rgba(255,255,255,.65) 0 .4px, transparent 1px);
+  background-position: 37px 59px, 149px 23px, 83px 137px, 191px 101px;
+  background-size: 197px 181px, 269px 251px, 353px 331px, 461px 419px;
   opacity: .38;
   filter: drop-shadow(0 0 3px rgba(169,101,255,.42));
   animation:
