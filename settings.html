@@ -918,7 +918,10 @@
 
       document.getElementById("backButton").addEventListener("click", () => {
         haptic(10);
-        navigateWithTransition("menu.html");
+        document.body.classList.add("page-leaving");
+        window.setTimeout(() => {
+          window.location.href = "/";
+        }, 240);
       });
 
       document.querySelectorAll(".row-btn[data-route], .gradient-btn[data-route]").forEach((button) => {
