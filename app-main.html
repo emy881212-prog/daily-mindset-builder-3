@@ -3638,6 +3638,7 @@
     overflow-x: hidden !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-y !important;
   }
 
   body {
@@ -3655,9 +3656,13 @@
     contain: none !important;
   }
 
+  main.screen.app-container,
+  main.screen.app-container *,
   #quizScreen,
   #resultScreen,
   #answersCard,
+  .question-title,
+  .question-card,
   .answer-btn {
     touch-action: pan-y !important;
   }
