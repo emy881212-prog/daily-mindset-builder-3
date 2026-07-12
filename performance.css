@@ -23,6 +23,76 @@ body :is(button,a,input,textarea,select):focus-visible{outline:2px solid #c866ff
 @media (hover:hover) and (pointer:fine){body :is(.card,.glass-card,.journal-card,.insight-card,button):hover{transform:translateY(-2px)}}
 @media (max-width:480px){body{padding-bottom:max(8px,env(safe-area-inset-bottom))}body :is(.card,.glass-card,.journal-card,.insight-card){border-radius:18px!important}}
 
+/* Natural floating star field shared by every application page. */
+html::before,
+html::after {
+  content: "";
+  position: fixed;
+  z-index: 0;
+  inset: -14vh -10vw;
+  width: 120vw;
+  height: 128vh;
+  pointer-events: none;
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+html::before {
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,.92) 0 1px, transparent 1.7px),
+    radial-gradient(circle, rgba(196,163,255,.72) 0 1.2px, transparent 1.9px),
+    radial-gradient(circle, rgba(139,196,255,.58) 0 .8px, transparent 1.5px);
+  background-position: 9px 13px, 48px 67px, 91px 29px;
+  background-size: 97px 103px, 139px 151px, 181px 167px;
+  opacity: .43;
+  animation:
+    appStarsDrift 52s linear infinite,
+    appStarsTwinkle 7s ease-in-out infinite;
+}
+
+html::after {
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,.78) 0 .7px, transparent 1.4px),
+    radial-gradient(circle, rgba(206,126,255,.6) 0 1px, transparent 1.8px);
+  background-position: 31px 43px, 108px 82px;
+  background-size: 157px 173px, 223px 211px;
+  opacity: .27;
+  filter: drop-shadow(0 0 3px rgba(169,101,255,.42));
+  animation:
+    appStarsDriftFar 78s linear infinite,
+    appStarsTwinkleFar 11s ease-in-out infinite reverse;
+}
+
+@keyframes appStarsDrift {
+  0% { transform: translate3d(0,0,0) rotate(.001deg); }
+  50% { transform: translate3d(18px,-34px,0) rotate(.15deg); }
+  100% { transform: translate3d(36px,-68px,0) rotate(.3deg); }
+}
+
+@keyframes appStarsDriftFar {
+  0% { transform: translate3d(0,0,0); }
+  50% { transform: translate3d(-24px,-22px,0); }
+  100% { transform: translate3d(-48px,-44px,0); }
+}
+
+@keyframes appStarsTwinkle {
+  0%,100% { opacity: .34; }
+  45% { opacity: .5; }
+  72% { opacity: .39; }
+}
+
+@keyframes appStarsTwinkleFar {
+  0%,100% { opacity: .19; }
+  50% { opacity: .34; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html::before,
+  html::after {
+    animation: none !important;
+  }
+}
+
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
