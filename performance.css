@@ -5,6 +5,24 @@ html {
   overflow-x: clip;
 }
 
+/* Shared premium space design system */
+:root{--space-bg:#030713;--space-bg-2:#070d1d;--space-card:rgba(7,16,32,.88);--space-card-strong:rgba(8,18,37,.96);--space-border:rgba(93,119,171,.38);--space-purple:#a23cff;--space-violet:#6822dd;--space-magenta:#d05cff;--space-text:#f8f9ff;--space-muted:#aeb8cc;--space-success:#31c986;--space-warning:#f2bc54;--space-radius:22px;--space-shadow:0 18px 48px rgba(0,0,0,.32);--space-glow:0 0 24px rgba(153,55,255,.25);--space-ease:220ms ease}
+html{min-height:100%;background:var(--space-bg)!important;overflow-x:hidden}
+body{min-height:100vh;min-height:100dvh;color:var(--space-text)!important;background:radial-gradient(circle at 78% 9%,rgba(104,34,221,.25),transparent 30%),radial-gradient(circle at 8% 70%,rgba(53,77,156,.17),transparent 34%),radial-gradient(rgba(255,255,255,.22) .7px,transparent 1px),linear-gradient(180deg,var(--space-bg-2),var(--space-bg))!important;background-size:auto,auto,74px 74px,auto!important;overflow-x:hidden}
+body :is(h1,h2,h3,h4,h5,h6,label,strong){color:var(--space-text)}
+body :is(p,small,.subtitle,.description,.helper-text){color:var(--space-muted)}
+body :is(input,textarea,select){color:var(--space-text)!important;background:rgba(5,12,26,.82)!important;border-color:var(--space-border)!important;caret-color:var(--space-magenta)}
+body :is(input,textarea,select)::placeholder{color:#8490a8!important;opacity:1}
+body :is(input,textarea,select):focus{outline:2px solid rgba(173,74,255,.62)!important;outline-offset:2px;box-shadow:var(--space-glow)!important}
+body :is(.card,.glass-card,.header-card,.mission-card,.reward-card,.planet-card,.journal-card,.insight-card,.settings-card,.modal,.popup-content,.dialog){color:var(--space-text)!important;background:linear-gradient(145deg,var(--space-card-strong),var(--space-card))!important;border-color:var(--space-border)!important;box-shadow:var(--space-shadow),inset 0 1px rgba(255,255,255,.04)!important;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+body :is(.save-btn,.primary-btn,.gradient-btn,.upgrade-btn,.submit-btn,.confirm-btn){color:#fff!important;background:linear-gradient(100deg,var(--space-violet),var(--space-purple))!important;border-color:rgba(193,118,255,.45)!important;box-shadow:0 8px 23px rgba(112,31,219,.3)!important}
+body button,body [role=button]{min-height:44px;transition:transform var(--space-ease),box-shadow var(--space-ease),background var(--space-ease)}
+body button:active,body [role=button]:active{transform:scale(.975)}
+body :is(button,a,input,textarea,select):focus-visible{outline:2px solid #c866ff!important;outline-offset:3px}
+.toast,[class*=toast]{position:fixed!important;z-index:1000!important;max-width:min(90vw,420px);pointer-events:none}
+@media (hover:hover) and (pointer:fine){body :is(.card,.glass-card,.journal-card,.insight-card,button):hover{transform:translateY(-2px)}}
+@media (max-width:480px){body{padding-bottom:max(8px,env(safe-area-inset-bottom))}body :is(.card,.glass-card,.journal-card,.insight-card){border-radius:18px!important}}
+
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
