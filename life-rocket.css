@@ -253,3 +253,10 @@ transform:scale(1.08);
 100%{
 transform:scale(1);
 }
+.rocket img{
+width:140px;
+height:auto;
+filter:
+drop-shadow(0 0 20px #c65dff)
+drop-shadow(0 0 40px #c65dff);
+}
