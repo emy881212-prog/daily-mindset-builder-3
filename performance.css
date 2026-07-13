@@ -516,3 +516,42 @@ body.journal-history-page .calendar-note-save:disabled {
     transition-duration: 0.01ms !important;
   }
 }
+
+
+/* Reusable app-wide animated space background */
+html,
+body {
+  min-width: 100%;
+  min-height: 100%;
+  background: #02050f !important;
+  overscroll-behavior-x: none;
+}
+
+body {
+  position: relative;
+  isolation: isolate;
+  background: transparent !important;
+}
+
+.global-space-background {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  display: block;
+  pointer-events: none;
+  z-index: -1;
+  transform: translateZ(0);
+  contain: strict;
+}
+
+body > :not(.global-space-background) {
+  position: relative;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .global-space-background {
+    transform: none;
+  }
+}
