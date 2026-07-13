@@ -4,31 +4,130 @@ document.addEventListener("DOMContentLoaded", () => {
   connectAppMenuLinks();
   initializeJournalHistoryCalendarNotes();
   initializeQuoteCollectionLabels();
-  initializeMainPageStars();
+  initializeGlobalSpaceBackground();
 });
 
-function initializeMainPageStars() {
-  const screen = document.querySelector("main.screen.app-container");
-  if (!screen || screen.querySelector(".main-space-stars")) return;
+function initializeGlobalSpaceBackground() {
+  if (document.getElementById("globalSpaceBackground")) return;
 
-  const layer = document.createElement("div");
-  layer.className = "main-space-stars";
-  layer.setAttribute("aria-hidden", "true");
+  const canvas = document.createElement("canvas");
+  canvas.id = "globalSpaceBackground";
+  canvas.className = "global-space-background";
+  canvas.setAttribute("aria-hidden", "true");
+  document.body.prepend(canvas);
+  document.documentElement.classList.add("space-background-ready");
 
-  for (let index = 0; index < 58; index += 1) {
-    const star = document.createElement("i");
-    const size = 1 + Math.random() * 2.2;
-    star.style.setProperty("--star-x", (2 + Math.random() * 96).toFixed(2) + "%");
-    star.style.setProperty("--star-y", (2 + Math.random() * 96).toFixed(2) + "%");
-    star.style.setProperty("--star-size", size.toFixed(2) + "px");
-    star.style.setProperty("--star-alpha", (0.28 + Math.random() * 0.58).toFixed(2));
-    star.style.setProperty("--star-delay", (-Math.random() * 12).toFixed(2) + "s");
-    star.style.setProperty("--star-speed", (8 + Math.random() * 14).toFixed(2) + "s");
-    star.className = index % 7 === 0 ? "lavender" : index % 11 === 0 ? "blue" : "";
-    layer.appendChild(star);
+  const context = canvas.getContext("2d", { alpha: false });
+  if (!context) return;
+
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const STAR_COUNT = window.innerWidth <= 768 ? 360 : 440;
+  const palette = ["255,255,255", "221,228,255", "200,211,255", "224,202,255"];
+  let width = 0;
+  let height = 0;
+  let density = 1;
+  let stars = [];
+  let animationFrame = 0;
+  let lastTime = performance.now();
+
+  function createStar(index) {
+    const distribution = index / STAR_COUNT;
+    const category = distribution < 0.8 ? "tiny" : distribution < 0.95 ? "medium" : "bright";
+    const angle = Math.random() * Math.PI * 2;
+    const speed = category === "bright" ? 0.55 + Math.random() * 0.45 : 0.18 + Math.random() * 0.42;
+    return {
+      x: Math.random() * width,
+      y: Math.random() * height,
+      radius: category === "tiny" ? 0.35 + Math.random() * 0.55 : category === "medium" ? 0.8 + Math.random() * 0.65 : 1.25 + Math.random() * 1.15,
+      alpha: category === "tiny" ? 0.28 + Math.random() * 0.42 : category === "medium" ? 0.48 + Math.random() * 0.4 : 0.72 + Math.random() * 0.28,
+      twinkle: 0.45 + Math.random() * 1.15,
+      phase: Math.random() * Math.PI * 2,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      color: palette[Math.floor(Math.random() * palette.length)],
+      glow: category === "bright"
+    };
   }
 
-  screen.prepend(layer);
+  function resize() {
+    width = Math.max(window.innerWidth, 1);
+    height = Math.max(window.innerHeight, 1);
+    density = Math.min(window.devicePixelRatio || 1, 1.5);
+    canvas.width = Math.round(width * density);
+    canvas.height = Math.round(height * density);
+    canvas.style.width = width + "px";
+    canvas.style.height = height + "px";
+    context.setTransform(density, 0, 0, density, 0, 0);
+    stars = Array.from({ length: STAR_COUNT }, (_, index) => createStar(index));
+    draw(performance.now(), 0);
+  }
+
+  function paintSpace() {
+    const gradient = context.createLinearGradient(0, 0, 0, height);
+    gradient.addColorStop(0, "#070d1d");
+    gradient.addColorStop(0.48, "#050a18");
+    gradient.addColorStop(1, "#02050f");
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, width, height);
+
+    const nebula = context.createRadialGradient(width * 0.78, height * 0.08, 0, width * 0.78, height * 0.08, width * 0.62);
+    nebula.addColorStop(0, "rgba(104,34,221,0.20)");
+    nebula.addColorStop(0.48, "rgba(44,67,142,0.09)");
+    nebula.addColorStop(1, "rgba(3,7,19,0)");
+    context.fillStyle = nebula;
+    context.fillRect(0, 0, width, height);
+  }
+
+  function draw(now, deltaSeconds) {
+    paintSpace();
+    for (const star of stars) {
+      if (!reducedMotion) {
+        star.x += star.vx * deltaSeconds;
+        star.y += star.vy * deltaSeconds;
+        if (star.x < -4) star.x = width + 4;
+        if (star.x > width + 4) star.x = -4;
+        if (star.y < -4) star.y = height + 4;
+        if (star.y > height + 4) star.y = -4;
+      }
+
+      const shimmer = reducedMotion ? 1 : 0.76 + Math.sin(now * 0.001 * star.twinkle + star.phase) * 0.24;
+      const alpha = Math.max(0.12, star.alpha * shimmer);
+      if (star.glow) {
+        context.beginPath();
+        context.fillStyle = "rgba(" + star.color + "," + (alpha * 0.14) + ")";
+        context.arc(star.x, star.y, star.radius * 3.4, 0, Math.PI * 2);
+        context.fill();
+      }
+      context.beginPath();
+      context.fillStyle = "rgba(" + star.color + "," + alpha + ")";
+      context.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+      context.fill();
+    }
+  }
+
+  function animate(now) {
+    const deltaSeconds = Math.min((now - lastTime) / 1000, 0.05);
+    lastTime = now;
+    draw(now, deltaSeconds);
+    animationFrame = window.requestAnimationFrame(animate);
+  }
+
+  let resizeTimer;
+  window.addEventListener("resize", () => {
+    window.clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(resize, 120);
+  }, { passive: true });
+
+  document.addEventListener("visibilitychange", () => {
+    window.cancelAnimationFrame(animationFrame);
+    if (!document.hidden && !reducedMotion) {
+      lastTime = performance.now();
+      animationFrame = window.requestAnimationFrame(animate);
+    }
+  });
+
+  resize();
+  if (!reducedMotion) animationFrame = window.requestAnimationFrame(animate);
 }
 
 function bootstrapCloudAuthPersistence() {
